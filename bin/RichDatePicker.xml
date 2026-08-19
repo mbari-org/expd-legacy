@@ -1,0 +1,1609 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RichDatePicker</name>
+    </assembly>
+    <members>
+        <member name="T:RicherComponents.DatePickerControl.Util.ResourceJavaScript">
+            <summary>
+            Summary description for ResourceJavaScript.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.Util.ResourceJavaScript.RichDatePickerSupported">
+            <summary>
+            Java Script for Supported browsers except IE5+
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.Util.ResourceJavaScript.RichDatePickerUnSupported">
+            <summary>
+            Java Script for UnSupported browsers except Opera5-
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.Util.ResourceJavaScript.RichDatePickerOpera5Minus">
+            <summary>
+            Java Script for Opera5- browsers
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.Util.ResourceJavaScript.RichDatePickerIE5Plus">
+            <summary>
+            Java Script for IE5+ browsers
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.Util.ResourceJavaScript.RichDatePickerForcePopup">
+            <summary>
+            Force Popup Java Script
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.Util.RichDatePickerException">
+            <summary>
+            Defined RichDatePicker application exception class.
+            The exception that is thrown when a non-fatal application error occurs.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Util.RichDatePickerException.#ctor">
+            <summary>
+            The exception that is thrown when a non-fatal application error occurs.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Util.RichDatePickerException.#ctor(System.String)">
+            <summary>
+            The exception that is thrown when a non-fatal application error occurs.
+            </summary>
+            <param name="message">A message that describes the error.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Util.RichDatePickerException.#ctor(System.String,System.Exception)">
+            <summary>
+            The exception that is thrown when a non-fatal application error occurs.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.</param>
+            <param name="ex">The exception that is the cause of the current exception.</param>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.Dates">
+            <summary>
+            The Dates 
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Dates.#ctor(System.DateTime,System.String)">
+            <summary>
+            Instantiates a new instance of a Dates.
+            </summary>
+            <param name="date">The date of the Date.</param>
+            <param name="dateText">The string of the Date.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Dates.TrackViewState">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.TrackViewState"/>
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Dates.SaveViewState">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.SaveViewState"/>
+            </summary>
+            <returns>The saved viewstate.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Dates.LoadViewState(System.Object)">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.LoadViewState(System.Object)"/>
+            </summary>
+            <param name="state">The state to load.</param>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.Dates.ViewState">
+            <summary>
+            Gets a custom view state bag for storing this controls information required for retaining state.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.Dates.Date">
+            <summary>
+            Gets and Sets the date.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.Dates.DateString">
+            <summary>
+            Gets and Sets the output string of date.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.Dates.System#Web#UI#IStateManager#IsTrackingViewState">
+            <summary>
+            Implements <see cref="P:System.Web.UI.IStateManager.IsTrackingViewState"/>.
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.DatesCollection">
+            <summary>
+            Collection of <see cref="T:RicherComponents.DatePickerControl.Dates"/>'s.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:RicherComponents.DatePickerControl.DatesCollection"/>
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.Add(System.DateTime,System.String)">
+            <summary>
+            Adds a new date to the dates collection.
+            </summary>
+            <param name="date">The date to add.</param>
+            <param name="dateText">The text representation of date</param>
+            <returns>The index where this event was added.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.Add(RicherComponents.DatePickerControl.Dates)">
+            <summary>
+            Adds a new date to the collection.
+            </summary>
+            <param name="tmp">The date to add.</param>
+            <returns>The index where this date was added.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.AddRange(RicherComponents.DatePickerControl.Dates[])">
+            <summary>
+            Adds a range of <see cref="T:RicherComponents.DatePickerControl.Dates"/>'s to the collection.
+            </summary>
+            <param name="dates"></param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.Insert(System.Int32,RicherComponents.DatePickerControl.Dates)">
+            <summary>
+            Inserts a <see cref="T:RicherComponents.DatePickerControl.Dates"/> into the collection at the specified index.
+            </summary>
+            <param name="index">The index where the <see cref="T:RicherComponents.DatePickerControl.Dates"/> is to be inserted.</param>
+            <param name="tmp">The <see cref="T:RicherComponents.DatePickerControl.Dates"/> to be inserted.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.Insert(System.Int32,System.DateTime,System.String)">
+            <summary>
+            Inserts a new date into the Dates collection at the specified index.
+            </summary>
+            <param name="index">The index where the date is to be inserted.</param>
+            <param name="dateText">The text representation of date</param>
+            <param name="date">The date to be inserted.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.Remove(RicherComponents.DatePickerControl.Dates)">
+            <summary>
+            Removes a <see cref="T:RicherComponents.DatePickerControl.Dates"/> from this collection.
+            </summary>
+            <param name="tmp">The <see cref="T:RicherComponents.DatePickerControl.Dates"/> to remove.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.Remove(System.DateTime)">
+            <summary>
+            Removes a date from the Dates collection.
+            </summary>
+            <param name="dateToRemove">The date to remove.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.RemoveAt(System.Int32)">
+            <summary>
+            Removes a <see cref="T:RicherComponents.DatePickerControl.Dates"/> at the specified index.
+            </summary>
+            <param name="index">The index of the Dates to be removed.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.Clear">
+            <summary>
+            Clears the collection of all <see cref="T:RicherComponents.DatePickerControl.Dates"/> items.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.IndexOf(RicherComponents.DatePickerControl.Dates)">
+            <summary>
+            Retrieves the index of the specified <see cref="T:RicherComponents.DatePickerControl.Dates"/>.
+            </summary>
+            <param name="tmp">The Dates to find.</param>
+            <returns>The index of the Dates.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.GetEnumerator">
+            <summary>
+            Gets an enumerator of this Dates collection.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.Reset">
+            <summary>
+            Resets the collection to the begining of the collection.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.MoveNext">
+            <summary>
+            Moves the enumerator to the next object in the collection.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.CopyTo(System.Array,System.Int32)">
+            <summary>
+            Copys this collection to an array.
+            </summary>
+            <param name="array">The array to copy this event collection to.</param>
+            <param name="index">The index to start at</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.TrackViewState">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.TrackViewState"/>.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.SaveViewState">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.SaveViewState"/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.DatesCollection.LoadViewState(System.Object)">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.LoadViewState(System.Object)"/>
+            </summary>
+            <param name="state"></param>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.DatesCollection.Item(System.Int32)">
+            <summary>
+            Gets a <see cref="T:RicherComponents.DatePickerControl.Dates"/> at the corresponding index in the collection.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.DatesCollection.Item(System.DateTime)">
+            <summary>
+            Gets a <see cref="T:RicherComponents.DatePickerControl.Dates"/> with the corresponding date.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.DatesCollection.Current">
+            <summary>
+            Gets the <see cref="T:RicherComponents.DatePickerControl.Dates"/> object that we're currently on.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.DatesCollection.Count">
+            <summary>
+            Gets the number of items located in this collection.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.DatesCollection.IsSynchronized">
+            <summary>
+            Gets a value indicating if this colleciton is synchronized.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.DatesCollection.SyncRoot">
+            <summary>
+            Gets a value indicating the SyncRoot.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.DatesCollection.IsTrackingViewState">
+            <summary>
+            Implements <see cref="P:System.Web.UI.IStateManager.IsTrackingViewState"/>
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.Design.DatePickerDesigner">
+            <summary>
+            This is the HTML designer view for the calendar popup control.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Design.DatePickerDesigner.OnComponentChanged(System.Object,System.ComponentModel.Design.ComponentChangedEventArgs)">
+            <summary>
+            Overridden. Called when the component changes.
+            </summary>
+            <param name="sender">The source of the event. </param>
+            <param name="ce">A <see cref="T:System.ComponentModel.Design.ComponentChangedEventArgs"/> that contains the event data. </param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Design.DatePickerDesigner.GetDesignTimeHtml">
+            <summary>
+            This will build the html designer view of the calendar popup control
+            dependant on the current control being created.
+            </summary>
+            <returns>The html generated for the calendar popup control.</returns>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.PickerTimeOrdering">
+            <summary>
+            This determines how the RichDatePicker control is displayed time picker
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.PickerTimeOrdering.DateThenTime">
+            <summary>
+            This defines that the date is displayed first then time picker.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.PickerTimeOrdering.TimeThenDate">
+            <summary>
+            This defines that the time picker is displayed first then date.
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.DisplayType">
+            <summary>
+            This determines how the RichDatePicker control is displayed to the user.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayType.TextBoxButton">
+            <summary>
+            This defines that the date is displayed in a text box with a button for the 
+            user to click for the popup RichDatePicker.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayType.LabelButton">
+            <summary>
+            This defines that the date is displayed in a label with a button for the
+            user to click for the popup RichDatePicker.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayType.TextBoxImage">
+            <summary>
+            This defines that the date is displayed in a text box with a image for the
+            user to click for the popup RichDatePicker.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayType.LabelImage">
+            <summary>
+            This defines that the date is displayed in a label with a image for the
+            user to click for the popup RichDatePicker.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayType.Button">
+            <summary>
+            This defines that the date is not displayed, but only a button is present
+            to display the popup RichDatePicker.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayType.Image">
+            <summary>
+            This defines that the date is not displayed, but only a image is present
+            to display the popup RichDatePicker.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayType.MultipleImage">
+            <summary>
+            This defines that the date is displayed in a drop down list with a image for the
+            user to click for the popup RichDatePicker.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayType.MultipleButton">
+            <summary>
+            This defines that the date is displayed in a drop down list with a button for the
+            user to click for the popup RichDatePicker.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayType.InPage">
+            <summary>
+            This defines that the picker is shown in the page. So there is no pop-up, and the date picker is always shown.
+            When this is set there is no TextBox, no button, no image.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayType.MultipleInPage">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.DisplayLocation">
+            <summary>
+            This determines where a control is placed in relevance to its parent control.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayLocation.Bottom">
+            <summary>
+            This defines that the control will be placed below its parent control.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayLocation.Left">
+            <summary>
+            This defines that the control will be placed to the left of its parent control.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayLocation.Right">
+            <summary>
+            This defines that the control will be placed to the right of its parent control.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayLocation.Top">
+            <summary>
+            This defines that the control will be placed above its parent control.
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.DisplayAction">
+            <summary>
+            This determines what action is taken when the DisableTextBox entry is true on how
+            the RichDatePicker is displayed.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayAction.OnClick">
+            <summary>
+            This defines that the RichDatePicker will be displayed when the user clicks on the textbox.
+            This is the default property set when DisableTextboxEntry is true.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayAction.OnFocus">
+            <summary>
+            This defines that the RichDatePicker will be displayed when the user gains focus on the textbox either by clicking or tabbing to it.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayAction.OnMouseOver">
+            <summary>
+            This defines that the RichDatePicker will be displayed when the mouse hovers over the textbox.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.DisplayAction.OnButtonClick">
+            <summary>
+            This defines that the RichDatePicker will be displayed when the user clicks the image or button.  This
+            will automatically make the button or image appear.
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.ListItemType">
+            <summary>
+            Specifies the type of an item in the FaqRepeater control.
+            </summary>
+            <remarks>
+            The ListItemType enumeration represents the different items that can be included in a the FaqRepeater control. A typical list control consists of cells that contain elements represented by this enumeration.
+            </remarks>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.ListItemType.Answer">
+            <summary>
+            An item that is the answer to a question.  The template relating to this item is required.  It is data-bound.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.ListItemType.Question">
+            <summary>
+            An item that is the question in the FaqRepeater control. The template relating to this item is required. It is data-bound.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.ListItemType.Separator">
+            <summary>
+            A separator between a set of question and answer items in the FaqRepeater control. It is not data-bound.
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.HorizontalAlignment">
+            <summary>
+            Specifies the location of the text when the textbox is rendered.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.HorizontalAlignment.Left">
+            <summary>
+            This defines that the text in the numeric box will be aligned to the left.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.HorizontalAlignment.Right">
+            <summary>
+            This defines that the text in the numeric box will be aligned to the right.
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.TimeInterval">
+            <summary>
+            Specifies the time interval used for the TimePicker control.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.TimeInterval.OneMinute">
+            <summary>
+            The interval is set to 1 minute at a time
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.TimeInterval.FiveMinutes">
+            <summary>
+            The interval is set to 5 minutes at a time
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.TimeInterval.TenMinutes">
+            <summary>
+            The interval is set to 10 minutes at a time
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.TimeInterval.FifteenMinutes">
+            <summary>
+            The interval is set to 15 minutes at a time
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.TimeInterval.ThirtyMinutes">
+            <summary>
+            The interval is set to 30 minutes at a time
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.TitleStyleContainer">
+            <summary>
+            Specifies how the title style is applied for the control.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.TitleStyleContainer.Normal">
+            <summary>
+            Regular formatting is applied.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.TitleStyleContainer.TitleOnly">
+            <summary>
+            The style is applied to only the title row.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.TitleStyleContainer.EntirePanel">
+            <summary>
+            The style is applied to the entire panel
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.SortType">
+            <summary>
+            Specifies how the sorting is applied for the control.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.SortType.TextAscending">
+            <summary>
+            Allows sorting the list items by text in a ascending manner.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.SortType.TextDescending">
+            <summary>
+            Allows sorting the list items by text in a descending manner.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.SortType.ValueAscending">
+            <summary>
+            Allows sorting the list items by value in a ascending manner.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.SortType.ValueDescending">
+            <summary>
+            Allows sorting the list items by value in a descending manner.
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.TimeControl">
+            <summary>
+            Specifies how the TimePicker control is displayed to the user.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.TimeControl.Button">
+            <summary>
+            With button
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.TimeControl.Image">
+            <summary>
+            With image. If image will not found, will be used Button.
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.DivControl">
+            <summary>
+            Summary description for DivControl.
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.Event">
+            <summary>
+            Class used for defining holidays in the <see cref="T:RicherComponents.DatePickerControl.RichDatePicker"/> control.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Event.#ctor(System.DateTime)">
+            <summary>
+            Instantiates a new instance of a Event.
+            </summary>
+            <param name="dateOfEvent">The date of the Event.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Event.#ctor(System.DateTime,System.String)">
+            <summary>
+            Instantiates a new instance of a Event.
+            </summary>
+            <param name="dateOfEvent">The date of the Event.</param>
+            <param name="desc">The description of the Event.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Event.#ctor(System.DateTime,System.String,System.String)">
+            <summary>
+            Instantiates a new instance of a Event.
+            </summary>
+            <param name="dateOfEvent">The date of the Event.</param>
+            <param name="desc">The description of the Event.</param>
+            <param name="style">The style of the Event.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Event.#ctor(System.DateTime,System.Boolean)">
+            <summary>
+            Instantiates a new instance of a Event.
+            </summary>
+            <param name="dateOfEvent">The date of the Event.</param>
+            <param name="spanAcrossYears">Value indicating if it spans across multiple years.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Event.#ctor(System.DateTime,System.String,System.String,System.Boolean)">
+            <summary>
+            Instantiates a new instance of a Event.
+            </summary>
+            <param name="dateOfEvent">The date of the Event.</param>
+            <param name="desc">The description of the Event.</param>
+            <param name="style">The style of the Event.</param>
+            <param name="spanAcrossYears">Value indicating if it spans across multiple years.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Event.TrackViewState">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.TrackViewState"/>
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Event.SaveViewState">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.SaveViewState"/>
+            </summary>
+            <returns>The saved viewstate.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.Event.LoadViewState(System.Object)">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.LoadViewState(System.Object)"/>
+            </summary>
+            <param name="state">The state to load.</param>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.Event.ViewState">
+            <summary>
+            Gets a custom view state bag for storing this controls information required for retaining state.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.Event.Style">
+            <summary>
+            Gets and Sets the Style of the event.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.Event.Description">
+            <summary>
+            Gets and Sets the description of the event.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.Event.DateOfEvent">
+            <summary>
+            Gets and Sets the date of the event.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.Event.SpanAcrossYears">
+            <summary>
+            Gets and Sets a value indicating if this holiday will span across multiple years.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.Event.System#Web#UI#IStateManager#IsTrackingViewState">
+            <summary>
+            Implements <see cref="P:System.Web.UI.IStateManager.IsTrackingViewState"/>.
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.EventCollection">
+            <summary>
+            Collection of <see cref="T:RicherComponents.DatePickerControl.Event"/>'s.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:RicherComponents.DatePickerControl.EventCollection"/>
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Add(System.DateTime,System.String,System.String,System.Boolean)">
+            <summary>
+            Instantiates a new instance of a Event.
+            </summary>
+            <param name="dateOfEvent">The date of the Event.</param>
+            <param name="desc">The description of the Event.</param>
+            <param name="style">The style of the Event.</param>
+            <param name="spanAcrossYears">Value indicating if it spans across multiple years.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Add(System.DateTime)">
+            <summary>
+            Adds a new date to the holiday collection.
+            </summary>
+            <param name="dateOfEvent">The date to add as a event.</param>
+            <returns>The index where this event was added.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Add(System.DateTime,System.Boolean)">
+            <summary>
+            Adds a new date to the Event collection.
+            </summary>
+            <param name="dateOfEvent">The date to add as a event.</param>
+            <param name="spanAcrossYears">Value indicating if this date will span across years.</param>
+            <returns>The index where this holiday was added.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Add(System.DateTime,System.String)">
+            <summary>
+            Adds a new date to the Event collection.
+            </summary>
+            <param name="dateOfEvent">The date to add as a event.</param>
+            <param name="desc">The description of this event</param>
+            <returns>The index where this holiday was added.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Add(System.DateTime,System.String,System.String)">
+            <summary>
+            Adds a new date to the Event collection.
+            </summary>
+            <param name="dateOfEvent">The date to add as a event.</param>
+            <param name="desc">The description of this event</param>
+            <param name="style">The style of this event</param>
+            <returns>The index where this holiday was added.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Add(RicherComponents.DatePickerControl.Event)">
+            <summary>
+            Adds a new event to the collection.
+            </summary>
+            <param name="tmpEvent">The event to add.</param>
+            <returns>The index where this event was added.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.AddRange(RicherComponents.DatePickerControl.Event[])">
+            <summary>
+            Adds a range of <see cref="T:RicherComponents.DatePickerControl.Event"/>'s to the collection.
+            </summary>
+            <param name="events"></param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Insert(System.Int32,RicherComponents.DatePickerControl.Event)">
+            <summary>
+            Inserts a <see cref="T:RicherComponents.DatePickerControl.Event"/> into the collection at the specified index.
+            </summary>
+            <param name="index">The index where the <see cref="T:RicherComponents.DatePickerControl.Event"/> is to be inserted.</param>
+            <param name="tmpEvent">The <see cref="T:RicherComponents.DatePickerControl.Event"/> to be inserted.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Insert(System.Int32,System.DateTime)">
+            <summary>
+            Inserts a new date into the event collection at the specified index.
+            </summary>
+            <param name="index">The index where the date of the event is to be inserted.</param>
+            <param name="dateOfEvent">The date to be inserted.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Insert(System.Int32,System.DateTime,System.Boolean)">
+            <summary>
+            Inserts a new date into the holiday collection at the specified index.
+            </summary>
+            <param name="index">The index where the date of the holiday is to be inserted.</param>
+            <param name="dateOfEvent">The date to be inserted.</param>
+            <param name="spanAcrossYears">Boolean value indicating if the date should span across years.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Remove(RicherComponents.DatePickerControl.Event)">
+            <summary>
+            Removes a <see cref="T:RicherComponents.DatePickerControl.Event"/> from this collection.
+            </summary>
+            <param name="tmp">The <see cref="T:RicherComponents.DatePickerControl.Event"/> to remove.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Remove(System.DateTime)">
+            <summary>
+            Removes a date from the holiday collection.
+            </summary>
+            <param name="dateToRemove">The date to remove.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.RemoveAt(System.Int32)">
+            <summary>
+            Removes a <see cref="T:RicherComponents.DatePickerControl.Event"/> at the specified index.
+            </summary>
+            <param name="index">The index of the holiday to be removed.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Clear">
+            <summary>
+            Clears the collection of all <see cref="T:RicherComponents.DatePickerControl.Event"/> items.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.IndexOf(RicherComponents.DatePickerControl.Event)">
+            <summary>
+            Retrieves the index of the specified <see cref="T:RicherComponents.DatePickerControl.Event"/>.
+            </summary>
+            <param name="tmp">The Event to find.</param>
+            <returns>The index of the holiday.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.IndexOf(System.DateTime)">
+            <summary>
+            Retrieves the index of the specified date.
+            </summary>
+            <param name="dateOfEvent">The date to find the index of.</param>
+            <returns>The index of the event.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.GetEnumerator">
+            <summary>
+            Gets an enumerator of this event collection.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.Reset">
+            <summary>
+            Resets the collection to the begining of the collection.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.MoveNext">
+            <summary>
+            Moves the enumerator to the next object in the collection.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.CopyTo(System.Array,System.Int32)">
+            <summary>
+            Copys this collection to an array.
+            </summary>
+            <param name="array">The array to copy this event collection to.</param>
+            <param name="index">The index to start at</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.TrackViewState">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.TrackViewState"/>.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.SaveViewState">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.SaveViewState"/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventCollection.LoadViewState(System.Object)">
+            <summary>
+            Implements <see cref="M:System.Web.UI.IStateManager.LoadViewState(System.Object)"/>
+            </summary>
+            <param name="state"></param>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.EventCollection.Item(System.Int32)">
+            <summary>
+            Gets a <see cref="T:RicherComponents.DatePickerControl.Event"/> at the corresponding index in the collection.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.EventCollection.Item(System.DateTime)">
+            <summary>
+            Gets a <see cref="T:RicherComponents.DatePickerControl.Event"/> with the corresponding date.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.EventCollection.Current">
+            <summary>
+            Gets the <see cref="T:RicherComponents.DatePickerControl.Event"/> object that we're currently on.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.EventCollection.Count">
+            <summary>
+            Gets the number of items located in this collection.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.EventCollection.IsSynchronized">
+            <summary>
+            Gets a value indicating if this colleciton is synchronized.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.EventCollection.SyncRoot">
+            <summary>
+            Gets a value indicating the SyncRoot.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.EventCollection.IsTrackingViewState">
+            <summary>
+            Implements <see cref="P:System.Web.UI.IStateManager.IsTrackingViewState"/>
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.EventAlreadyAddedException">
+            <summary>
+            Exception thrown when a event has already been added to the collection.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventAlreadyAddedException.#ctor">
+            <summary>
+            Instantiates a new <see cref="T:RicherComponents.DatePickerControl.EventAlreadyAddedException"/> with a default message.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.EventAlreadyAddedException.#ctor(System.String)">
+            <summary>
+            Instantiates a new <see cref="T:RicherComponents.DatePickerControl.EventAlreadyAddedException"/> with a defined message.
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.PickerDatePeriod">
+            <summary>
+            Summary description for DatePeriod.
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.PickerDatePeriod.SpecificDate">
+            <summary>
+            the user can pick specific date
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.PickerDatePeriod.QuarterYears">
+            <summary>
+            th user  can pick quarter and year
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.PickerDatePeriod.HalfYears">
+            <summary>
+            the user can pick halfyear and year
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.PickerDatePeriod.DayAndMonth">
+            <summary>
+            the user can pick month and a day, but not specify the year
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.PickerDatePeriod.MonthAndYear">
+            <summary>
+            the user can pick month and a year, but not a day/date in that month
+            </summary>
+        </member>
+        <member name="F:RicherComponents.DatePickerControl.PickerDatePeriod.StartOfWeek">
+            <summary>
+            the user can pick a weekof an year
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.DateChangedEventHandler">
+            <summary>
+            This describes the event handler for when the selected date has changed.
+            </summary>
+        </member>
+        <member name="T:RicherComponents.DatePickerControl.RichDatePicker">
+            <summary>
+            The RichDatePicker control is an easy to use, multi-browser control that will
+            allow you to easily add date selection to your web forms.  For DHTML enabled browsers
+            (Internet Explorer 5+ and Netscape 6+), the calendar is displayed within the current window.
+            For non DHTML enabled browsers (Internet Explorer 4 and Netscape 4), the calendar is displayed 
+            as three drop down lists (Day/Month/Year).  Both calendars are dynamically generated by Javascript and displayed.
+            </summary>
+            <remarks>
+            Use the <b>RichDatePicker</b> control to display a single month of a calendar on a web page using
+            DHTML and Javascript. The control allows you to easily select a particular date, which is then displayed
+            in either a textbox or label control.
+            <br/>
+            By default the control displays the a textbox and button.  If the client is using a newer browser that
+            allows for DHTML, a calendar layer will be displayed once the button is clicked.  If the client is using
+            a non-supported browser, a new window will open containing the calendar.
+            </remarks>
+            <example>
+            <code><![CDATA[
+            <%@ Register TagPrefix="RDP" Assembly="RichDatePicker" Namespace="RicherComponents.DatePickerControl" %>
+            <html>
+             <head>
+             </head>
+             <body>
+            	<form runat="server">
+            		<RDP:RichDatePicker id="richdatePicker1" runat="server" ControlDisplay="TextboxImage" Text="Change Date" ImageUrl="~/images/calendar.gif">
+            			<MonthHeaderStyle BackColor="red" ForeColor="black" />
+            			<DayHeaderStyle BackColor="orange" ForeColor="black" />
+            			<WeekdayStyle BackColor="white" ForeColor="black" />
+            			<WeekendStyle BackColor="lightgrey" ForeColor="black" />
+            		</RDP:RichDatePicker>
+            	</form>
+             </body>
+            </html>
+            ]]></code>
+            </example>
+            
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.OnDateChanged(System.EventArgs)">
+            <summary>
+            This invokes the date changed event.  This is called whenever the date is changed.
+            </summary>
+            <param name="e">The event arguments passed in whenever the date has changed.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.OnCommand(System.Web.UI.WebControls.CommandEventArgs)">
+            <summary>
+            This invokes the command event.
+            </summary>
+            <param name="e">The command event arguments passed in whenever the the command has been fired.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.LoadPostData(System.String,System.Collections.Specialized.NameValueCollection)">
+            <summary>
+            This loads data into the control members from the postback information.
+            </summary>
+            <param name="postDataKey">The data key for which this item is related to.</param>
+            <param name="postCollection">The Name Value Collection that contains the the data of the keys posted back.</param>
+            <returns>A boolean indicating if the data has changed since the last postback.</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.RaisePostBackEvent(System.String)">
+            <summary>
+            IPostBackEventHandler
+            </summary>
+            <param name="eventArgument"></param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.RaisePostDataChangedEvent">
+            <summary>
+            This method raises the DateChanged event whenever the date has been changed from postbacks.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.OnInit(System.EventArgs)">
+            <summary>
+            Validation of the properties
+            Base OnInit
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.OnLoad(System.EventArgs)">
+            <summary>
+            OnLoad
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.OnUnload(System.EventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.#ctor">
+            <summary>
+            This is the constructor for a calendar popup control.  It sets the default values for all the styles
+            and properties for the control to be displayed properly.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.OnDataBinding(System.EventArgs)">
+            <summary>
+            Overrides WebControl.OnDataBinding.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.CreateChildControls">
+            <summary>
+            Overrides System.Web.UI.WebControls.WebControl.CreateChildControls.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.OnPreRender(System.EventArgs)">
+            <summary>
+            Overrides System.Web.UI.WebControls.WebControl.OnPreRender
+            </summary>
+            <param name="e">The event arguments for this method.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.Render(System.Web.UI.HtmlTextWriter)">
+            <summary>
+            Overrides <see cref="M:System.Web.UI.WebControls.WebControl.Render(System.Web.UI.HtmlTextWriter)"/>
+            </summary>
+            <param name="output"><see cref="T:System.Web.UI.HtmlTextWriter"/> object of the current controls html output.</param>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.LoadViewState(System.Object)">
+            <summary>
+            Overrides System.Web.UI.WebControl.LoadViewState
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.SaveViewState">
+            <summary>
+            Overrides System.Web.UI.WebControl.SaveViewState
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.TrackViewState">
+            <summary>
+            Overrides System.Web.UI.WebControl.TrackViewState
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.GetOutputString">
+            <summary>
+            Get <see cref="P:RicherComponents.DatePickerControl.RichDatePicker.SelectedDate"/> string formatting by <see cref="P:RicherComponents.DatePickerControl.RichDatePicker.DatePeriod"/> property
+            </summary>
+            <returns>SelectedDate string</returns>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.Clear">
+            <summary>
+            This will clear the arbitrary text and selected date if it is nullable and allows arbitrary text.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.Reset">
+            <summary>
+            This resets the controls SelectedDate property to todays date.
+            </summary>
+        </member>
+        <member name="M:RicherComponents.DatePickerControl.RichDatePicker.Reset(System.DateTime)">
+            <summary>
+            This resets the controls SelectedDate property to the passed in date.
+            </summary>
+            <param name="resetDate">The date to reset the control to.</param>
+        </member>
+        <member name="E:RicherComponents.DatePickerControl.RichDatePicker.DateChanged">
+            <summary>
+            This is the event that fires whenever the selected date has changed in the control 
+            from the particular post backs.
+            </summary>
+        </member>
+        <member name="E:RicherComponents.DatePickerControl.RichDatePicker.Command">
+            <summary>
+            This is the event that fires whenever a command has taken place in the control.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DatePeriod">
+            <summary>
+            This gets or sets how the control pick date from the user using the DatePeriod enumeration.
+            </summary>
+            <value>
+            The default value for this property is RicherComponents.DatePickerControl.PickerDatePeriod.SpecificDate
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.MinimizeScript">
+            <summary>
+            This enable/disable rigister full <see cref="T:RicherComponents.DatePickerControl.RichDatePicker"/> scipt at startup.
+            </summary>
+            <value>
+            The default value for this property is false.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.NeedRegisterScriptAfterPostBack">
+            <summary>
+            Indicated that RichDatePicker must be showed after post back.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.TimePickerEnabled">
+            <summary>
+            This Enable or disable time picker functionality.
+            </summary>
+            <value>
+            The default value for this property is false.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DateTimeOrdering">
+            <summary>
+            This Enable or disable time picker functionality.
+            </summary>
+            <value>
+            The default value for this property is false.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.TimeButtonType">
+            <summary>
+            This gets or sets type of time picker control.
+            </summary>
+            <value>
+            The default value for this property is <see cref="F:RicherComponents.DatePickerControl.TimeControl.Button"/>.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DateFormatting">
+            <summary>
+            This gets or sets how the control output date.
+            Default value will defined by selected Culture.
+            d or D - The day of the month. Single-digit days will not have a leading zero.
+            dd or DD  - The day of the month. Single-digit days will have a leading zero.
+            M - The numeric month. Single-digit months will not have a leading zero.
+            MM - The numeric month. Single-digit months will have a leading zero.
+            MMM - The first 3 char of the month name, as defined in <see cref="P:RicherComponents.DatePickerControl.RichDatePicker.Culture"/>
+            MMMM -  The full name of the month, as defined in <see cref="P:RicherComponents.DatePickerControl.RichDatePicker.Culture"/>
+            yy or YY - The year without the century. Only for 20 and 19 century.
+            yyyy or YYYY - The full year.
+            </summary>
+            <value>
+            The default value for this property define output date formatting by selected Culture.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ControlDisplay">
+            <summary>
+            This gets or sets how the control is displayed to the user using the DisplayType enumeration.
+            </summary>
+            <value>
+            The default value for this property is RicherComponents.DatePickerControl.DisplayType.TextBoxButton
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.EventStyle">
+            <summary>
+            This gets or sets the style of the events displayed in the popup calendar.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.HolidayStyle">
+            <summary>
+            HolidayStyle has been depricated and is only here for backward compatibility.
+            Please see <see cref="P:RicherComponents.DatePickerControl.RichDatePicker.EventStyle"/>
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ReadOnlyStyle">
+            <summary>
+            This gets or sets the style of the Readonly mode.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.LabelStyle">
+            <summary>
+            Gets and Sets Style of the the label when ControlDisplay is Image/Button.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.WeekdayStyle">
+            <summary>
+            This gets or sets the style of the weekday days displayed in the popup calendar.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.WeekendStyle">
+            <summary>
+            This gets or sets the style of the weekend days displayed in the popup calendar.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.OffMonthStyle">
+            <summary>
+            This gets or sets the style of the previous/next month days displayed in the popup calendar.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.SelectedDateStyle">
+            <summary>
+            This gets or sets the style of the selected day displayed in the popup calendar.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.MonthHeaderStyle">
+            <summary>
+            This gets or sets the style of the month header displayed in the popup calendar.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DayHeaderStyle">
+            <summary>
+            This gets or sets the style of the day header displayed in the popup calendar.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.TextboxLabelStyle">
+            <summary>
+            This gets or sets the style of the textbox or label.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ButtonStyle">
+            <summary>
+            This gets or sets the style of the button when displayed as TextboxButton or LabelButton
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ClearDateStyle">
+            <summary>
+            This gets or sets the style of the clear date row when the control allows null values.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.GoToTodayStyle">
+            <summary>
+            This gets or sets the style of the go to today row.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.TodayDayStyle">
+            <summary>
+            This gets or sets the style of todays date.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.WeekSelectionStyle">
+            <summary>
+            This gets or sets the style of week selection button.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.CellPadding">
+            <summary>
+            This gets or sets the cellpadding of the popup calendar.
+            </summary>
+            <value>
+            The default value of this property is 2.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.CellSpacing">
+            <summary>
+            This gets or sets the cellspacing of the popup calendar.
+            </summary>
+            <value>
+            The default value of this property is 0.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.SelectedDate">
+            <summary>
+            This gets or sets the selected date in the popup calendar control. <br/>See <see cref="P:RicherComponents.DatePickerControl.RichDatePicker.PostedDate"/>
+            </summary>
+            <value>
+            The default value of this property is the current date.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.MinutesIntervals">
+            <summary>
+            This gets or sets the time interval, is used in time selection.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.SelectedDates">
+            <summary>
+            This gets or sets the selected dates in multiply selection.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.VisibleDate">
+            <summary>
+            Gets and Sets the date that is initially visible when the calendar loads.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.PostedDate">
+            <summary>
+            This gets the posted date sent back via the server, and it will keep the DateTimeFormat set by the RichDatePicker <see cref="P:RicherComponents.DatePickerControl.RichDatePicker.Culture"/>.<br/>
+            See <see cref="P:RicherComponents.DatePickerControl.RichDatePicker.SelectedDate"/>.
+            <remarks>
+            <br/>This is used for the validation property.
+            </remarks>
+            <value>
+            The default value of this property is the current date as String in a short date format i.e. 29/05/2004<br/>
+            </value>
+            <returns>
+            Returns value.ToString("d", System.Globalization.CultureInfo.InvariantCulture);
+            </returns>
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.Text">
+            <summary>
+            This gets or sets the text displayed in the button that the user clicks
+            on to display the calendar. This is only displayed when using a button type.
+            </summary>
+            <value>
+            The default value of this property is " ... "
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ImagesPathUrl">
+            <summary>
+            This gets or sets the url of the picker images.
+            </summary>
+            <value>
+            The default value of this property is "~/images/"
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ImageUrl">
+            <summary>
+            This gets or sets the url of the image that is displayed when
+            the control has an image mode.
+            </summary>
+            <value>
+            The default value of this property is ""
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DateTimeSpacing">
+            <summary>
+            The property specify the spacing around time picker.
+            </summary>
+            <value>
+            Default value is 0.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.Culture">
+            <summary>
+            This gets or sets the culture of the calendar.
+            </summary>
+            <value>
+            The default culture is the client culture upon visit to the page.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.EnableHideDropDown">
+            <summary>
+            This gets or sets a value indicating if drop-downs (or list boxes) will be hidden when the calendar appears.
+            </summary>
+            <value>
+            The default value is false, drop downs will not be hidden.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DisplayPrevNextYearSelection">
+            <summary>
+            This gets or sets a value indicating if the calendar will display links for jumping to different years.
+            </summary>
+            <value>
+            The default value is false.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.Nullable">
+            <summary>
+            This gets or sets a value indicating if the control can allow null/empty values.
+            </summary>
+            <value>
+            The default value is false.
+            </value>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ReadOnly">
+            <summary>
+            This value indicates if the date on the page is read only
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ValidDateEntered">
+            <summary>
+            This gets a value indicating if the date entered is a valid date
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsSupported">
+            <summary>
+            Indicates whether control should be rendered as downgrade
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsNetscape6Plus">
+            <summary>
+            Indicates whether browser is NS6+. We also should check if control is not expired
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsIE5Plus">
+            <summary>
+            Indicates whether browser is IE. We also should check if control is not expired
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsIE5Exact">
+            <summary>
+            Check to see if IE5.0 as Popup is rendered but not using IE5.5 UI popup code
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsOpera7Plus">
+            <summary>
+            Indicates whether current browser is Opera7
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsBadBrowser">
+            <summary>
+            Add bad browsers detected here:
+            These browsers has problems with date validation. So we have to make it very simple.
+            Currently: Opera 5.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsMozilla">
+            <summary>
+            Mozilla indicates as netscape 5.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.MajorBrowserVersion">
+            <summary>
+            Returns major browser version
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.MinorBrowserVersion">
+            <summary>
+            Returns minor browser version (0.01, 0.75, etc.)
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsIE">
+            <summary>
+            Indicates whether browser is IE5+
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsNetscape">
+            <summary>
+            Indicates whether browser is Nescape 6+
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsNetscape3Minus">
+            <summary>
+            Indicates whether browser is Nescape 3.xx
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsLocalhost">
+            <summary>
+            Indicates whether we connects to local machine.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.IsExpired">
+            <summary>
+            Checks for expire period. Always returns false for localhost
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DaysLeft">
+            <summary>
+            Returns number of days left to the end of evaluation period.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.LowerBoundDate">
+            <summary>
+            This gets or sets the lower bounded date the user can select.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.UpperBoundDate">
+            <summary>
+            This gets or sets the upper bounded date the user can select.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.CalendarLocation">
+            <summary>
+            This gets or sets the location that the calendar will be positioned.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DisableTextboxEntry">
+            <summary>
+            This gets or sets a boolean value indicating if the client can manually type in a date.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.EnableLooseFocus">
+            <summary>
+            Gets or sets a boolean value indicating if the control will override the documents onmouseclick event for the feature of "Loosing Focus" of the control.
+            </summary>
+            <remarks>
+            <b>Note:</b> If you choose to have one control disable this feature, all RichDatePicker controls on the page must disable it or the controls will not function properly.
+            </remarks>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.PadSingleDigits">
+            <summary>
+            Gets or sets a value indicating if single digits of the date string will be padded with a leading zero.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.AutoPostBack">
+            <summary>
+            Gets or sets a value indicating whether an automatic postback to the server will occur whenever the user changes the date.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DisplayOffsetX">
+            <summary>
+            Gets or sets the display offset of the x axis for the calendar popup in terms of pixels.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DisplayOffsetY">
+            <summary>
+            Gets or sets the display offset of the y axis for the calendar popup in terms of pixels.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DisabledEntryDisplayAction">
+            <summary>
+            Gets or sets the display action taken when DisabledTextboxEntry is true.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ShowClearDate">
+            <summary>
+            Gets and sets a boolean value indicating if the Clear Date link will appear when the control is nullable.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ClearDateText">
+            <summary>
+            Gets and sets the Clear Date text displayed when the calendar is rendered.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ShowGoToToday">
+            <summary>
+            Gets and sets a boolean value indicating if the Go To Today link will appear.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.GoToTodayText">
+            <summary>
+            Gets and sets the Go To Today text displayed when the calendar is rendered.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.Height">
+            <summary>
+            Overrides <see cref="P:System.Web.UI.WebControls.WebControl.Height"/>.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.Width">
+            <summary>
+            Overrides <see cref="P:System.Web.UI.WebControls.WebControl.Width"/>.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.DayNameFormat">
+            <summary>
+            Gets and sets the <see cref="P:RicherComponents.DatePickerControl.RichDatePicker.DayNameFormat"/> for displaying the day name.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.MonthYearPopupApplyText">
+            <summary>
+            Gets and sets the text displayed for the 'Apply' button on the MonthYear Popup.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.MonthYearPopupCancelText">
+            <summary>
+            Gets and sets the text displayed for the 'Cancel' button on the MonthYear Popup.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.MonthYearArrowImageUrl">
+            <summary>
+            Gets and sets the image url for the arrow next to the Month/Year.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.JavascriptOnChangeFunction">
+            <summary>
+            Gets and Sets the custom javascript function that will be called when a date has been selected.
+            </summary>
+            <remarks>
+            The function must take in 2 parameters. (1) is the selected date, type string. (2) is the textbox or hidden fields id.
+            </remarks>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.AllowArbitraryText">
+            <summary>
+            Gets and Sets a value allowing the end user to enter arbitrary text into the textbox.
+            </summary>
+            <remarks>
+            This only works with the TextBox format, and DisableTextboxEntry set to false.
+            </remarks>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.CalendarWidth">
+            <summary>
+            Gets and Sets the width of the displayed calendar, in pixels.
+            </summary>
+            <remarks>Set to -1 if you wish it to be based on size of content.</remarks>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.UseExternalResource">
+            <summary>
+            Gets and Sets a value indicating if the external resource javascript file is used instead of inline Javascript.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.ExternalResourcePath">
+            <summary>
+            Gets and Sets the path to the external resource javascript file.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.CommandName">
+            <summary>
+            Gets and Sets the command name associated with the <see cref="T:RicherComponents.DatePickerControl.RichDatePicker"/> control that is passed to the Command event.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.CommandArgument">
+            <summary>
+            Gets and Sets an optional parameter passed to the Command event along with the associated CommandName.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.NullableLabelText">
+            <summary>
+            Gets and Sets the text displayed for the label when it is nulled out.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.LabelText">
+            <summary>
+            Gets and Sets the text displayed for the label when ControlDisplay is Image/Button.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.Event">
+            <summary>
+            Gets the events that will be marked on the calendar.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.EventDataSource">
+            <summary>
+            Gets or sets the data source that provides data for populating the events.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.EventDataMember">
+            <summary>
+            Gets and Sets the data member used for databinding the events.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.EventDateField">
+            <summary>
+            Gets and Sets the date field used for data binding the events.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.NextMonthImageUrl">
+            <summary>
+            Gets and Sets the image url for the next month advancement.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.PreviousMonthImageUrl">
+            <summary>
+            Gets and Sets the image url for the previous year advancement.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.NextYearImageUrl">
+            <summary>
+            Gets and Sets the image url for the next year advancement.
+            </summary>
+        </member>
+        <member name="P:RicherComponents.DatePickerControl.RichDatePicker.PreviousYearImageUrl">
+            <summary>
+            Gets and Sets the image url for the previous year advancement.
+            </summary>
+        </member>
+    </members>
+</doc>

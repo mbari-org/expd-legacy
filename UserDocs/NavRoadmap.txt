@@ -1,0 +1,96 @@
+Subject: Nav stuff
+   Date: Wed, 2 Oct 1996 11:42:56 -0700
+   From: Steve Lowder <lost@mbari.org>
+     To: mccann@mola.mbari.org
+
+
+This note describes some of the formats information regarding this
+navigation data. There are two directories: ptlo and vnta which stand
+for the Pt Lobos and the Ventana.
+
+The ship filenames are like nav92323ptlo0 which means
+navigation, year 1992, julian day 323, Pt. Lobos, and a 0.
+
+The rov filenames are like nav92323vnta0 which means
+navigation, year 1992, julian day 323, Ventana, and a 0.
+
+The trailing 0 has no meaning.
+There is a log file which can be read into a spreedsheet to reference a
+summary of information in these files.
+
+The format for the ship files depends on the device field. If the
+device number is 103 for GPS (satnav) then the ship gps format is
+followed, otherwise the ship standard format is followed.
+
+The format for the rov is standard but may include some pinger information
+on the end of the line.
+
+device numbers
+        SATNAV    103
+        NORTHSTAR 105
+        FALCON    101
+        FURUNO    104
+
+
+ship gps format:
+
+        year 
+        jday 
+        hr:min:sec.frac 
+        jsecs 
+        lat 
+        lon 
+        device_type 
+        trimble_gps.raw_cmg_deg 
+        trimble_gps.raw_smg_mps
+        trimble_gps.raw_timedate 
+        trimble_gps.pdop 
+        trimble_gps.differential_mode trimble_gps.n_satellites
+
+ship standard format:
+
+        year 
+        jday 
+        hour:min:sec.frac
+        jsecs 
+        lat
+        lon
+        device_type
+        ship_x
+        ship_y
+        gyro
+        knts
+        rel_wind_speed
+        rel_wind_direction
+        sdev
+
+
+rov format:
+        year
+        jday
+        hour:min:sec.frac
+        jsecs
+        rov_lat
+        rov_long
+        rov_eastings
+        rov_northings
+        depth
+        heading
+        altitude
+        pitch
+        roll
+        ship_vrp_y
+        ship_vrp_x
+        gyro
+
+there may be some optional pinger information on the end
+of rov records of the following format. 
+
+        usbl_data.pinger_id,
+        usbl_data.pinger_status,
+        usbl_data.dx
+        usbl_data.dy
+        usbl_data.dz
+
+
+

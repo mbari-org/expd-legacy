@@ -1,0 +1,269 @@
+/* This style sheet is for the CSS that works properly on Netscape 4 browsers.*/
+
+/*IMPORT: This tag imports the CSS not supported by Netscape 4 browsers.*/
+@import "interior_modern.css";
+
+body
+{
+	background-color: #FFFFFF;
+	margin: 4px;
+	font-family: Geneva, Helvetica, Arial, sans-serif;
+	color: #000000;
+}
+
+/* TD: This is required for older browsers that do not read fonts from the BODY tag.*/
+td
+{
+	font-family: Geneva, Helvetica, Arial, sans-serif;
+	color: #000000;
+}
+
+/* PAGETABLE: Use this setting to control the width of the web page. Width does not always work on Netscape 4 browsers.*/
+#pagetable
+{
+	width: 80%;
+	background-color: #FFFFFF;
+}
+
+/* SECTION TITLES: This controls the appearance of the main section title located in the header of each page.*/
+#sectiontitle
+{
+	background-color: #FFFFFF;
+	font-weight: bold;
+	line-height: 100%;
+	color: #663300;
+	font-size: 20px;
+}
+
+/* PAGE TITLES: This controls the optional 3rd level page titles that are placed beneath the Section Titles. */
+#pagetitle
+{
+	font-size: 16px;
+	font-weight: bold;
+	color: #000000;
+	line-height: 160%;
+	background-color: #E1E2D5;
+}
+/* PAGE TITLES: This is the same as above except that it is used when there are two lines in the title. */
+#pagetitle_2lines {
+	font-size: 16px;
+	font-weight: bold;
+	color: #000000;
+	line-height: 110%;
+	background-color: #E1E2D5;
+}
+
+#navtitle
+{
+	font-weight: bold;
+	line-height: 110%;
+	color: #663300;
+	font-size: 18px;
+}
+
+#navbar_cell
+{
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 100%;
+	background-color: #E1E2D5;
+}
+
+.subnavbar
+{
+	font-size: 11px;
+	font-weight: bold;
+	line-height: 100%;
+}
+
+#content_cell { width: 100%; }
+
+#content
+{
+	padding: 0px 15px 15px 15px;
+	border-color: #FFFFFF;
+	border-width: 1px;
+	border-style: solid;
+	margin: 0px;
+	font-family: Geneva, Helvetica, Arial, sans-serif;
+	font-size: 1em;
+}
+
+/* MISC FONT SIZE CONTROLS */
+.smalltext
+{
+	font-size: .8em;
+	font-family: Geneva, Helvetica, Arial, sans-serif;
+}
+
+/* APPARENTLY REQUIRED FOR NS 4 */
+.blue_v { font-family: Geneva, Helvetica, Arial, sans-serif; }
+.brown_v { font-family: Geneva, Helvetica, Arial, sans-serif; }
+.blue_dot { font-family: Geneva, Helvetica, Arial, sans-serif; }
+.brown_dot { font-family: Geneva, Helvetica, Arial, sans-serif; }
+
+/* GENERAL SITE LINKS: These are the links in the main text body.*/
+a:link
+{
+	color: #336699;
+	text-decoration: underline;
+}
+
+a:visited
+{
+	color: #663300;
+	text-decoration: underline;
+}
+
+a:active
+{
+	color: #CC9900;
+	text-decoration: underline;
+}
+
+a:hover { text-decoration: underline; }
+
+/* NAVBAR TITLE LINK: This is only for the Title at the top of the navbar.*/
+a.navtitle:link
+{
+	color: #663300;
+	text-decoration: none;
+}
+
+a.navtitle:visited
+{
+	color: #663300;
+	text-decoration: none;
+}
+
+a.navtitle:active
+{
+	color: #CC9900;
+	text-decoration: none;
+}
+
+a.navtitle:hover { text-decoration: underline; }
+
+/* NAVBAR LINKS: This is for the primary second level navbar links.*/
+a.navlink:link
+{
+	color: #336699;
+	text-decoration: none;
+}
+
+a.navlink:visited
+{
+	color: #663300;
+	text-decoration: none;
+}
+
+a.navlink:active
+{
+	color: #CC9900;
+	text-decoration: none;
+}
+
+a.navlink:hover { text-decoration: underline; }
+
+/* SUB NAVBAR LINKS: This is for the smaller third level navbar links.*/
+a.subnavlink:link
+{
+	color: #336699;
+	text-decoration: none;
+}
+
+a.subnavlink:visited
+{
+	color: #663300;
+	text-decoration: none;
+}
+
+a.subnavlink:active
+{
+	color: #CC9900;
+	text-decoration: none;
+}
+
+a.subnavlink:hover { text-decoration: underline; }
+
+/* SPECIAL BODY LINKS: This is for the smaller third level navbar links.*/
+a.bodylink:link
+{
+	color: #336699;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+a.bodylink:visited
+{
+	color: #663300;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+a.bodylink:active
+{
+	color: #CC9900;
+	text-decoration: none;
+}
+
+a.bodylink:hover { text-decoration: underline; }
+
+/* HEADER & FOOTER: These control the background images and colors in the header and footer cells. The PATHS MUST BE ABSOLUTE in order to work properly on old browsers.*/
+#header_1 { background-color: #E1E2D5; }
+
+#header_2
+{
+	background-image: url(http://www.mbari.org/art/interior_levels/header/bg_tile_left_bottom.gif);
+	background-repeat: no-repeat;
+	background-color: #E1E2D5;
+}
+
+#header_3
+{
+	background-image: url(http://www.mbari.org/art/interior_levels/header/bg_tile_right_bottom.gif);
+	background-repeat: repeat-x;
+	background-color: #FFFFFF;
+}
+
+#header_4
+{
+	background-image: url(http://www.mbari.org/art/interior_levels/header/bg_tile_right_bottom.gif);
+	background-repeat: repeat-x;
+	background-color: #FFFFFF;
+}
+
+#footer { background-color: #E1E2D5; }
+
+h1
+{
+	font-size: 20px;
+	font-weight: bold;
+	color: #000000;
+	background-color: #FFFFFF;
+}
+
+h2
+{
+	font-size: 18px;
+	font-weight: bold;
+	color: #000000;
+	background-color: #FFFFFF;
+}
+
+h3
+{
+	font-size: 1em;
+	font-weight: bold;
+	color: #000000;
+	background-color: #FFFFFF;
+}
+
+.timestamp {
+	font-size: .8em;
+	font-family: Geneva, Helvetica, Arial, sans-serif;
+	}
+
+.sandcell {
+	background-color: #E1E2D5;
+}

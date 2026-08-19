@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    <head>
+        <script type="text/javascript" src="jquery.js"></script>
+    </head>
+    <body>
+        <script>
+            $(document).ready(function() {
+                safari.application.addEventListener('beforeNavigate', onsearch, false);
+
+                var searchURL = localStorage.getItem("surl");
+                if ((searchURL == null) || (searchURL == "")) {
+                    searchURL = "https://us.search.yahoo.com/yhs/search?hspart=iry&hsimp=yhs-fullyhosted_011&type=safExt27&stype=4&p={searchTerms}";
+                }
+
+                function onsearch(ev) {
+                    if ((ev.url.indexOf("search.yahoo") > -1) && (ev.url.indexOf("&p=")> -1) && (ev.url.indexOf("=iry") == -1))
+                {
+                    ev.preventDefault();
+                    var q = ev.url.substr(ev.url.indexOf("&p=")+3);
+                    if (q.indexOf("&") > -1) {
+                        q = q.substr(0,q.indexOf("&")); 
+                    }
+                    var surl = searchURL.replace("%7BsearchTerms%7D",encodeURIComponent(q));
+                    surl = surl.replace("{searchTerms}",encodeURIComponent(q));
+                    surl = surl.replace("[BROWSER]","Safari");
+                    surl = surl.replace("%5BBROWSER%5D","Safari");
+                    ev.target.url = surl;
+                }
+            }
+
+
+        </script>
+    </body>
+</html>

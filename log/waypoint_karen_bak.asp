@@ -1,0 +1,2509 @@
+<%@ Language=VBScript %>
+
+<%
+Response.Expires = 0
+%>
+
+<html>
+
+<head>
+<META http-equiv="Pragma" content="no-cache">
+<META name=VI60_DTCScriptingPlatform content="Server (ASP)">
+<title>MBARI Waypoint Management</title>
+</head>
+
+<!-- 
+File: Waypoint.asp
+Author: Dan Wilkin 
+        Mike McCann (added links & connections to precruise.asp)
+Date: 4/20/2000
+MBARI Waypoint Management Project
+
+This active server page does the following:
+	1.  Displays waypoints from the Waypoint table of the EXPD database.
+	2.  Provides add/edit/delete/import/export capabilities.
+	
+Languages Used:
+	VBscript (server-side ASP)
+	JavaScript (client-side form validation)
+-->
+
+<!--#include file=z2null.inc -->
+<!--#include file=filteredtext.inc -->
+<!--#include file=wpt_db_util.inc -->
+<%
+precruise_asp = "precruise_karen.asp"
+%>
+
+<body bgcolor="#FFFFFF">
+
+<!-- javascript form validation -->
+<SCRIPT LANGUAGE="JavaScript">
+//A utility function that returns true if a string contains only
+//whitespace characters.
+function isblank(s)
+{
+   for(var i = 0; i < s.length; i++)
+   {
+      var c = s.charAt(i);
+      if ((c != ' ') && (c != '\n') && (c != '\t')) return false;
+   }
+   return true;
+}
+
+//A utility function that returns true if a string contains any
+//commas.
+function hascommas(s)
+{
+   for(var i = 0; i < s.length; i++)
+   {
+      var c = s.charAt(i);
+      if (c == ',') return true;
+   }
+   return false;
+}
+
+//This is the function that performs form verification.  It will
+//be invoked from the onSubmit() event handler.  The handler
+//should return whatever value this function returns.
+function verify(f)
+{
+   var msg;
+   var empty_fields = "";
+   var fields_with_commas = "";
+   var errors = "";
+   //Loop through the elements of the form, looking for all
+   //text and textarea elements that don't have an "optional"
+   //property defined.  Then, check for fields that are empty
+   //and make a list of them.  Also, if any of these elements
+   //are numeric make sure that they are numbers.
+   //Then, if any of the fields contain commas, report the
+   //problem to the user.
+   //Put together error messages for the fields that are wrong.
+   for(var i = 0; i < f.length; i++)
+   {
+      var e = f.elements[i];
+      if ((e.type == "text") || (e.type == "textarea") || (e.type == "file"))
+      {
+         //first check if the field is empty (if it is not optional)
+         if (!e.optional)
+         {
+            if ((e.value == null) || (e.value == "") || isblank(e.value))
+            {
+               empty_fields += "\n          " + e.name;
+               continue;
+            }
+         }
+         
+         //next check for commas in fields (commas are forbidden)
+         if (!((e.value == null) || (e.value == "") || isblank(e.value)))
+         {
+            if (hascommas(e.value))
+            {
+               fields_with_commas += "\n          " + e.name;
+            }
+         }
+         
+         //next make sure fields that are supposed to be numeric are numeric
+         if ((e.numeric) && !(((e.value == null) || (e.value == "") || isblank(e.value))))
+         {
+            var v = parseFloat(e.value);
+            if (isNaN(v))
+            {
+               errors += "- The field " + e.name + " must be a number.\n";
+            }
+         }
+      }
+   }
+      
+   //Now, if there were any errors, display the messages, and
+   //return false to prevent the form from being submitted.
+   //Otherwise return true.
+   if (!empty_fields && !fields_with_commas && !errors) return true;
+      
+   msg = "____________________________________________________\n\n";
+   msg += "The form was not submitted because of the following error(s).\n";
+   msg += "Please correct these error(s) and re-submit.\n";
+   msg += "____________________________________________________\n\n";
+         
+   if (empty_fields)
+   {
+      msg += "- The following required field(s) are empty:"
+              + empty_fields + "\n\n";
+   }
+   
+   if (fields_with_commas)
+   {
+      msg += "- The following field(s) contain commas (which are not allowed):"
+              + fields_with_commas + "\n\n";
+   }
+      
+   msg += errors;
+   alert(msg);
+   return false;
+}
+</SCRIPT>
+
+<%  
+   On Error Resume Next
+
+   Dim wptConn ' connection to the expedition database for waypoint operations
+
+   open_db_conn 'connect to Expedition Database
+   
+   ' call the appropriate subroutine based on the action
+
+   if (Request.QueryString("action") = "view") then
+
+      view("view")
+      
+   elseif (Request.QueryString("action") = "select") then
+
+      view("select")
+   
+   elseif (Request.QueryString("action") = "add") then
+
+      add
+      
+   elseif (Request.QueryString("action") = "delete") then
+
+      delete
+   
+   elseif (Request.QueryString("action") = "update") then
+
+      update
+   
+   elseif (Request.QueryString("action") = "import") then
+
+      import
+   
+   elseif (Request.QueryString("action") = "export") then
+
+'      Response.Write "<H2>The export feature has been temporarily disabled.  sorry about the inconvienence.</H2>"
+      export
+   
+   elseif (Request.QueryString("action") = "debug") then
+
+      debug
+   
+   else
+      
+      dephault
+   
+   end if
+   
+   ' the script has finished running, check for errors one more time
+   
+   ' check for connection errors
+   If wptConn.Errors.Count > 0 Then
+      Response.Write ("<br><br>")
+      Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+      For intLoop = 0 To wptConn.Errors.Count - 1
+         Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+         Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+      Next
+   Else
+      Response.Write ("<!-- the script finished running without any (additional) connection errors -->")
+   End If
+   wptConn.Errors.Clear
+
+   close_db_conn 'close connection to Expedition Database
+
+   ' call subroutine to check for VB Script errors
+   check_for_script_errors
+   
+   '--------------------------------------------------------
+   ' dephault (default is a reserved word in VBScript)
+   '
+   ' waypoint_karen.asp
+   '    ASP is called with no inputs (or inputs that fit any
+   '    of the other actions).  Display default page
+   '    describing waypoint management.  Display picklist
+   '    of waypoint owners for the user to select waypoints
+   '    to view.
+   '--------------------------------------------------------
+
+   Sub dephault
+
+      Dim oDephaultRS 'recordset object
+      Dim strSQL 'store SQL string before execution
+
+      On Error Resume Next
+
+      Response.Write "<!-- DEBUG:You are using "
+      Response.Write ScriptEngine
+      Response.Write " version " & ScriptEngineMajorVersion & "." & ScriptEngineMinorVersion & "-->"
+
+      %> <!--#include file=wpt-hdr.inc --> <%
+      
+      strSQL = "select distinct (FirstName + ' ' + LastName) " & _
+                                         "as ownerName, lastName, waypointOwnerID " & _
+                                         "from waypoint, person " & _
+                                         "where personID = waypointOwnerID " & _
+                                         "order by LastName"
+
+      Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+      Set oDephaultRS = wptConn.Execute (strSQL)
+
+      ' check for connection errors
+      If wptConn.Errors.Count > 0 Then
+         Response.Write ("<br><br>")
+         Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+         For intLoop = 0 To wptConn.Errors.Count - 1
+            Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+            Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+         Next          
+      Else
+         ' no connection errors
+
+         Response.Write ("<center>")
+         Response.Write ("<form name=thisForm method=get action=waypoint_karen.asp>")
+         Response.Write ("<table border=0 width=70% cellpadding=10>")
+
+         Response.Write ("<tr><td>")
+         Response.Write ("<a href=waypoint_help.html target=docs>Web Page Instructions</a>")
+         Response.Write (" | <a href=../docs/waypoints_req.pdf target=docs>Requirements Doc</a>")
+         Response.Write (" | <a href=../docs/waypoints_testPlan.pdf target=docs>Test Plan</a>")
+         Response.Write (" | <a href=http://listserver.shore.mbari.org/read/search/results?forum=iagops&words=waypoints target=docs>IAGOPS archive messages</a>")
+         
+         Response.Write ("</td></tr>")
+
+         Response.Write ("<tr><td><font color=#770000>")
+         Response.Write "<b>Only modify or delete waypoints that you own.</b>"
+         Response.Write ("</font></td></tr>")
+
+         Response.Write ("<tr><td>")
+         Response.Write ("Select a waypoint owner to view a set of waypoints:")
+         Response.Write ("</td></tr>")
+
+         Response.Write ("<tr><td>")
+	  
+	     
+	  
+	     Response.Write ("<select name=" & Chr(34) & "personID" & Chr(34) & _
+	                     "size=" & Chr(34) & "1" & Chr(34) &">")
+         'create an empty string "" option
+	     Response.Write ("<option value=0>" & "show all waypoints" & "</option>")
+	  
+         'loop through the record set, adding owners as options
+         oDephaultRS.MoveFirst
+         If Not (oDephaultRS.BOF and oDephaultRS.EOF) then
+            Do While Not oDephaultRS.EOF
+               Response.Write("<option value=" & Chr(34) & oDephaultRS("waypointOwnerID") & _
+                              Chr(34) & ">" & oDephaultRS("ownerName") & "</option>")
+               oDephaultRS.MoveNext
+            Loop  
+         End If
+
+         Response.Write ("</select></td></tr>")
+         
+         Response.Write ("<tr><td>")
+         If Session.Contents("ShipName") Then
+         	Response.Write ("<input type=radio name=action value=view>Edit/delete</input>&nbsp;&nbsp;")
+         	Response.Write ("<input type=radio name=action value=select checked>Precruise entry</input>")
+         Else
+         	Response.Write ("<input type=radio name=action value=view checked>Edit/delete</input>&nbsp;&nbsp;")
+         	Response.Write ("<input type=radio name=action value=select>Precruise entry</input>")
+         End If
+        
+         %> <font face="Arial,Helvetica" size="-1" color="brown">(check this if you are filling out a precruise)</font><%
+         
+         Response.Write ("</tr></td>")
+
+         If Not IsNull(oDephaultRS) Then
+            oDephaultRS.Close
+            Set oDephaultRS = Nothing
+         End If
+         
+         ' check for connection errors
+         If wptConn.Errors.Count > 0 Then
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>Error(s) occurred while reading the database records.</font><br><br>")
+            For intLoop = 0 To wptConn.Errors.Count - 1
+               Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+               Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+            Next          
+         Else
+            ' no connection errors
+
+            Response.Write ("<tr><td>")     
+            ' Response.Write ("<input type=submit value=""View the waypoints"">&nbsp;&nbsp;") 
+            Response.Write ("<input type=submit value=""View the waypoints"">&nbsp;&nbsp;")
+            ' Response.Write ("<input type=reset value=Reset>")
+            Response.Write ("</tr></td>")
+            
+
+            'Response.Write ("<tr><td>&nbsp;</tr></td>")
+      
+            Response.Write ("<tr><td>")     
+            Response.Write ("<a href=waypoint_karen.asp?action=add>Add</a> new waypoints.")
+            Response.Write ("</tr></td>")
+
+            'Response.Write ("<tr><td>")     
+            'Response.Write ("<a href=waypoint_karen.asp?action=import>Import</a> waypoints from a file.<br>")
+            'Response.Write ("<font color=""brown"">Note: as of 9/29/2004 data file uploads are not working; we suspect because of Windows security patches.<br>")
+            'Response.Write ("You may enter your waypoints individually using the <a href=""https://mww.mbari.org/expd/log/waypoint_karen.asp?action=add"">add</a> link.</font>")
+            'Response.Write ("</td></tr>")
+
+            Response.Write ("</table>")
+            Response.Write ("</form>")
+            Response.Write ("</center>")
+         End If
+         wptConn.Errors.Clear
+      End If
+      wptConn.Errors.Clear
+      
+      %> <!--#include file=wpt-ftr.inc --> <%
+           
+   End Sub 'dephault
+
+   '--------------------------------------------------------
+   ' view
+   '
+   'waypoint_karen.asp?action=view 
+   '   Show a table of all of the waypoints in the database.
+   '   Links to update/delete next to each waypoint.
+   '
+   'waypoint_karen.asp?action=view&personID=<personID>
+   '   Show a table of the waypoints that belong to the
+   '   person with personID = <personID>.  Links to
+   '   update/delete next to each waypoint.
+   '
+   'waypoint_karen.asp?action=select&csID=<id>&piID=<id>
+   '   Show a table of the waypoints that can be selected
+   '   for inclusion in a precruise plan.
+   '--------------------------------------------------------
+
+   'Notes from SQL on Precision, Scale, and Length of decimal numbers:
+   '
+   '<H2><A name=_precision_and_scale></A>Precision, Scale, and Length (T-SQL)</H2>
+   '<P>Precision is the number of digits in a number. Scale is the number of digits 
+   'to the right of the decimal point in a number. For example, the number 123.45 
+   'has a precision of 5 and a scale of 2.</P>
+   '<P>Length for a numeric data type is the number of bytes used to store the 
+   'number. Length for a character string or Unicode data type is the number of 
+   'characters. The length for <B>binary</B>, <B>varbinary</B>, and <B>image</B> 
+   'data types is the number of bytes. For example, an <B>int</B> data type can hold 
+   '10 digits, is stored in 4 bytes, and does not accept decimal points. The 
+   '<B>int</B> data type has a precision of 10, a length of 4, and a scale of 0.
+
+   Sub view(flag)
+   
+  
+      Dim oViewRS 'recordset object
+      Dim strURL 'URL for edit/delete that is built from pieces and encoded
+      Dim strSQL 'stores the SQL statement before execution
+      Dim datum 'stores the number/string before printing in the table
+
+      On Error Resume Next
+
+      %> <!--#include file=wpt-hdr.inc --> <%
+
+      ' compose the query with or without the personID      
+      if (Request.QueryString("personID")) then
+         strSQL = "select WaypointOwnerID, FirstName, LastName, WaypointName, " & _
+                                      "Vehicle, Latitude, Longitude, Depth, Altitude, Heading, CMG, Speed, " & _
+                                      "CreateDTG, ExpireDTG, " & _
+                                      "Comment " & _
+                                      "from waypoint, person " & _
+                                      "where personID = waypointOwnerID " & _
+                                      "and personID = " & Request.QueryString("personID") & " "
+                                      
+      elseif (Request.QueryString("piID") AND Request.QueryString("csID")) then
+         strSQL = "select WaypointOwnerID, FirstName, LastName, WaypointName, " & _
+                                      "Vehicle, Latitude, Longitude, Depth, Altitude, Heading, CMG, Speed, " & _
+                                      "CreateDTG, ExpireDTG, " & _
+                                      "Comment " & _
+                                      "from waypoint, person " & _
+                                      "where personID = waypointOwnerID " & _
+                                      "and (personID = " & Request.QueryString("piID") & _
+                                      "or personID = " & Request.QueryString("csID") & ") "
+      else
+         strSQL = "select WaypointOwnerID, FirstName, LastName, WaypointName, " & _
+                                      "Vehicle, Latitude, Longitude, Depth, Altitude, Heading, CMG, Speed, " & _
+                                      "CreateDTG, ExpireDTG, " & _
+                                      "Comment " & _
+                                      "from waypoint, person " & _
+                                      "where personID = waypointOwnerID "
+      end if
+
+      ' add the order by clause
+      strSQL = strSQL & "order by "
+      
+      If (Request.QueryString("orderby") = "fn") Then
+         strSQL = strSQL & "FirstName"
+      ElseIf (Request.QueryString("orderby") = "ln") Then
+         strSQL = strSQL & "LastName"
+      ElseIf (Request.QueryString("orderby") = "wn") Then
+         strSQL = strSQL & "WaypointName"
+      ElseIf (Request.QueryString("orderby") = "ve") Then
+         strSQL = strSQL & "Vehicle"
+      ElseIf (Request.QueryString("orderby") = "la") Then
+         strSQL = strSQL & "Latitude"
+      ElseIf (Request.QueryString("orderby") = "lo") Then
+         strSQL = strSQL & "Longitude"
+      ElseIf (Request.QueryString("orderby") = "de") Then
+         strSQL = strSQL & "Depth"
+      ElseIf (Request.QueryString("orderby") = "al") Then
+         strSQL = strSQL & "Altitude"
+      ElseIf (Request.QueryString("orderby") = "he") Then
+         strSQL = strSQL & "Heading"
+      ElseIf (Request.QueryString("orderby") = "cm") Then
+         strSQL = strSQL & "CMG"
+      ElseIf (Request.QueryString("orderby") = "sp") Then
+         strSQL = strSQL & "Speed"
+      ElseIf (Request.QueryString("orderby") = "cd") Then
+         strSQL = strSQL & "CreateDTG"
+      ElseIf (Request.QueryString("orderby") = "ed") Then
+         strSQL = strSQL & "ExpireDTG"
+      ElseIf (Request.QueryString("orderby") = "co") Then
+         strSQL = strSQL & "Comment"
+      Else
+         strSQL = strSQL & "WaypointName"
+      End If
+
+      ' set the sorting direction
+      If (Request.QueryString("sortdir") = "desc") Then
+         strSQL = strSQL & " desc"
+      Else
+         strSQL = strSQL & " asc"
+      End If
+
+      Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+      Set oViewRS = wptConn.Execute (strSQL)
+     
+      ' check for connection errors
+      If wptConn.Errors.Count > 0 Then
+         Response.Write ("<br><br>")
+         Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+         For intLoop = 0 To wptConn.Errors.Count - 1
+            Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+            Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+         Next          
+      Else
+         ' no connection errors
+
+         oViewRS.MoveFirst
+         If oViewRS.BOF And oViewRS.EOF Then
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>No waypoints were found for</font><br><ul>")
+            
+            ' Get PI name
+            strSQL = "SELECT (FirstName + ' ' + LastName) " & _
+                     "FROM person WHERE personID = " & Request.QueryString("piID")
+            Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+      	    Set oPIRS = wptConn.Execute (strSQL)                                
+            Response.Write ("<font>Principal Investigator: " & oPIRS(0) & "</font><br><br>")
+            
+            ' Get CS name
+            strSQL = "SELECT (FirstName + ' ' + LastName) " & _
+                     "FROM person WHERE personID = " & Request.QueryString("csID")
+            Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+      	    Set oCSRS = wptConn.Execute (strSQL)                                
+            Response.Write ("<font>Chief Scientist: " & oPIRS(0) & "</font><br></ul>")
+            %>	
+            
+            <hr>
+	    Waypoint not listed here? <a href="waypoint_karen.asp">Select/Add/Edit from master list</a> 
+	    <font face="Arial,Helvetica" size="-1" color="brown">Check 'Precruise entry'</font>
+	    <%
+         Else
+            ' there are some waypoints, set up export, then draw the table
+            Response.Write ("")
+            if ( flag = "select" ) then
+		Response.Write ("")
+		%>
+	      <form method="GET" action="<%= precruise_asp%>" id=form1 name=form1>
+	      <b>Select Waypoints to visit and press the Continue button --> </b>
+			<input type="hidden" name="step" value="orderwpts">
+			<input type="submit" name="continue" value="Continue with PreCruise">
+			<br><br>Waypoint not listed here? <a href="waypoint_karen.asp">Select/Add/Edit from master list</a> (Check 'Precruise entry')	          	            
+			<%
+	    else
+	            if (Request.QueryString("personID")) then
+	               if (Not IsNull(Request.QueryString("orderby"))) then
+	                  Response.Write ("<a href=waypoint_karen.asp?action=export&personID=" & _
+	                                  Request.QueryString("personID") & _
+	                                  "&orderby=" & Request.QueryString("orderby") & _
+	                                  "&sortdir=" & Request.QueryString("sortdir") & _
+	                                  " target=_blank>Export</a> waypoints to a text file.")
+	                  Response.Write ("&nbsp;&nbsp;<a href=waypoint_karen.asp?action=view&personID=" & _
+	                                  Request.QueryString("personID") & _
+	                                  "&orderby=" & Request.QueryString("orderby") & _
+	                                  "&sortdir=" & Request.QueryString("sortdir") & _
+	                                  ">Refresh</a> waypoint table <small>(use this after Updating or Deleting)</small>.")
+	               else
+	                  Response.Write ("<a href=waypoint_karen.asp?action=export&personID=" & _
+	                                  Request.QueryString("personID") & _
+	                                  " target=_blank>Export</a> waypoints to a text file.")
+	                  Response.Write ("&nbsp;&nbsp;<a href=waypoint_karen.asp?action=view&personID=" & _
+	                                  Request.QueryString("personID") & _
+	                                  ">Refresh</a> waypoint table <small>(use this after Updating or Deleting)</small>.")
+	               end if
+	            else	
+			if (Not IsNull(Request.QueryString("orderby"))) then
+			   Response.Write ("<a href=waypoint_karen.asp?action=export&personID=0" & _
+			                   "&orderby=" & Request.QueryString("orderby") & _
+			                   "&sortdir=" & Request.QueryString("sortdir") & _
+			                   " target=_blank>Export</a> waypoints to a text file.")
+			   Response.Write ("&nbsp;&nbsp;<a href=waypoint_karen.asp?action=view&personID=0" & _
+			                   "&orderby=" & Request.QueryString("orderby") & _
+			                   "&sortdir=" & Request.QueryString("sortdir") & _
+			                   ">Refresh</a> waypoint table <small>(use this after Updating or Deleting)</small>.")
+			else
+			   Response.Write ("<a href=waypoint_karen.asp?action=export&personID=0" & _
+			                   " target=_blank>Export</a> waypoints to a text file.")
+			   Response.Write ("&nbsp;&nbsp;<a href=waypoint_karen.asp?action=view&personID=0" & _
+			                   ">Refresh</a> waypoint table <small>(use this after Updating or Deleting)</small>.")
+			end if
+		
+	            end if
+            end if
+            Response.Write ("<br><br>")
+            
+            ' call the sub to check for VB Script errors
+            check_for_script_errors
+
+            'create a table that displays all of the waypoint data (skip the Alt, Head, CMG, and Speed)
+            
+            If ( flag = "select" ) Then         
+            end if
+            
+            %>
+            <TABLE BORDER=0 COLS=<% = (oViewRS.Fields.Count)-3%>
+            <TR>
+            <%
+            Response.Write ("<TH bgcolor=LightSkyBlue>")
+            If ( flag = "select" ) Then
+				Response.Write ("Select")
+            else
+				Response.Write ("Edit/Delete")
+			End if
+			
+            Response.Write ("</TH>")
+
+            if (Request.QueryString("personID")) then
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=view&orderby=fn")
+               If (((Request.QueryString("orderby") = "fn") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=" & Request.QueryString("personID") & ">FirstName</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+               
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=ln")
+               If (((Request.QueryString("orderby") = "ln") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=" & Request.QueryString("personID") & ">LastName</a></TH>")
+               
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+                              
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=wn")
+               If (((Request.QueryString("orderby") = "wn") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If               
+               Response.Write ("&personID=" & Request.QueryString("personID") & ">WaypointName</a></TH>")
+               
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+               
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=ve")
+               If (((Request.QueryString("orderby") = "ve") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=" & Request.QueryString("personID") & ">Vehicle</a></TH>")
+               
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+               
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=la")
+               If (((Request.QueryString("orderby") = "la") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=" & Request.QueryString("personID") & ">Latitude</a></TH>")
+               
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+               
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=lo")
+               If (((Request.QueryString("orderby") = "lo") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=" & Request.QueryString("personID") & ">Longitude</a></TH>")
+               
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+               
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=de")
+               If (((Request.QueryString("orderby") = "de") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=" & Request.QueryString("personID") & ">Depth</a></TH>")
+               
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+'''               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=al&personID=" & Request.QueryString("personID") & ">Altitude</a></TH>")
+'''               Response.Write ("<TH bgcolor=LightSkyBlue>")
+'''               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=he&personID=" & Request.QueryString("personID") & ">Heading</a></TH>")
+'''               Response.Write ("<TH bgcolor=LightSkyBlue>")
+'''               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=cm&personID=" & Request.QueryString("personID") & ">CMG</a></TH>")
+'''               Response.Write ("<TH bgcolor=LightSkyBlue>")
+'''               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=sp&personID=" & Request.QueryString("personID") & ">Speed</a></TH>")
+'''               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=cd")
+               If (((Request.QueryString("orderby") = "cd") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=" & Request.QueryString("personID") & ">CreateDTG</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=ed")
+               If (((Request.QueryString("orderby") = "ed") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=" & Request.QueryString("personID") & ">ExpireDTG</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=co")
+               If (((Request.QueryString("orderby") = "co") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=" & Request.QueryString("personID") & ">Comment</a></TH>")
+            else          
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=fn")
+               If (((Request.QueryString("orderby") = "fn") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=0" & ">FirstName</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=ln")
+               If (((Request.QueryString("orderby") = "ln") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=0" & ">LastName</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=wn")
+               If (((Request.QueryString("orderby") = "wn") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=0" & ">WaypointName</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=ve")
+               If (((Request.QueryString("orderby") = "ve") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=0" & ">Vehicle</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=la")
+               If (((Request.QueryString("orderby") = "la") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=0" & ">Latitude</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=lo")
+               If (((Request.QueryString("orderby") = "lo") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=0" & ">Longitude</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=de")
+               If (((Request.QueryString("orderby") = "de") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=0" & ">Depth</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+ '''              Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=al&personID=0" & ">Altitude</a></TH>")
+ '''              Response.Write ("<TH bgcolor=LightSkyBlue>")
+ '''              Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=he&personID=0" & ">Heading</a></TH>")
+ '''              Response.Write ("<TH bgcolor=LightSkyBlue>")
+ '''              Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=cm&personID=0" & ">CMG</a></TH>")
+ '''              Response.Write ("<TH bgcolor=LightSkyBlue>")
+ '''              Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=sp&personID=0" & ">Speed</a></TH>")
+ '''              Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=cd")
+               If (((Request.QueryString("orderby") = "cd") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=0" & ">CreateDTG</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=ed")
+               If (((Request.QueryString("orderby") = "ed") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=0" & ">ExpireDTG</a></TH>")
+
+               Response.Write ("<TH bgcolor=LightSkyBlue>")
+
+               Response.Write ("<a href=waypoint_karen.asp?action=" & flag & "&orderby=co")
+               If (((Request.QueryString("orderby") = "co") and (Request.QueryString("sortdir") = "asc"))) Then
+                  Response.Write ("&sortdir=desc")
+               Else
+                  Response.Write ("&sortdir=asc")
+               End If
+               Response.Write ("&personID=0" & ">Comment</a></TH>")
+            end if
+
+            %>
+            </TR>
+            <%
+            Do While Not oViewRS.EOF
+               %>
+               <TR>
+               <%
+               if ( flag = "select") then
+                Response.Write("<TD ALIGN=RIGHT nowrap bgcolor=BlanchedAlmond>")
+            
+				Response.Write("<center><input type=checkbox name=selectedWaypoints value=""" & _
+									oViewRS("waypointName") & """></center>")
+
+				Response.Write("</TD>")
+               else
+				Response.Write("<TD ALIGN=RIGHT nowrap bgcolor=BlanchedAlmond>")
+            
+				strURL = "waypoint_karen.asp?action=update&personID=" & oViewRS("waypointOwnerID") & "&waypointName=" & Server.URLEncode(oViewRS("waypointName"))
+				Response.Write("<a href=" & strURL & " target=_blank>Edit</a> ")
+
+				strURL = "waypoint_karen.asp?action=delete&personID=" & oViewRS("waypointOwnerID") & "&waypointName=" & Server.URLEncode(oViewRS("waypointName"))
+				Response.Write("<a href=" & strURL & " target=_blank>Delete</a> ")
+
+				Response.Write("</TD>")
+               end if
+               
+               For Each oField In oViewRS.Fields
+                  If Not ((oField.Name = "WaypointOwnerID") or (oField.Name = "Altitude") or _
+                          (oField.Name = "Heading") or (oField.Name = "CMG") or _
+                          (oField.Name = "Speed")) Then
+                  %>
+                     <TD ALIGN=RIGHT nowrap bgcolor=BlanchedAlmond>            
+                     <%                     
+                     If IsNull (oField) Then
+                        Response.Write "&nbsp;"
+                     Else
+                        'note: reformatNumber is in filteredText.inc
+                        'format Depth with a scale of 2, all other
+                        'numbers are scaled at 8, non-numeric fields
+                        'are not scaled by reformatNumber
+                        If (oField.Name = "Depth") Then
+                           Response.Write reformatNumber(oField.Value,2)
+                        Else
+                           Response.Write reformatNumber(oField.Value,8)
+                        End If
+                     End If
+                     %>
+                     </TD>                  
+                  <%
+                  End If
+               Next
+               oViewRS.MoveNext
+               %>
+               </TR>
+               <%
+            Loop
+            %>
+            </TABLE>
+            <%
+            
+            Response.Write ("<br>")
+            Response.Write ("")
+            
+            if (flag = "select") then
+			%> 
+			<input type="hidden" name="step" value="orderwpts">
+			<input type="submit" name="continue" value="Continue with PreCruise">
+			Waypoint not listed here? <a href="waypoint_karen.asp">Select/Add/Edit from master list</a> (Check 'Precruise entry')
+			</form>
+			<%
+	    else 
+	            if (Request.QueryString("personID")) then
+	               if (Not IsNull(Request.QueryString("orderby"))) then
+	                  Response.Write ("<a href=waypoint_karen.asp?action=export&personID=" & _
+	                                  Request.QueryString("personID") & _
+	                                  "&orderby=" & Request.QueryString("orderby") & _
+	                                  "&sortdir=" & Request.QueryString("sortdir") & _
+	                                  " target=_blank>Export</a> waypoints to a text file.")
+	                  Response.Write ("&nbsp;&nbsp;<a href=waypoint_karen.asp?action=view&personID=" & _
+	                                  Request.QueryString("personID") & _
+	                                  "&orderby=" & Request.QueryString("orderby") & _
+	                                  "&sortdir=" & Request.QueryString("sortdir") & _
+	                                  ">Refresh</a> waypoint table <small>(use this after Updating or Deleting)</small>.")
+	               else
+	                  Response.Write ("<a href=waypoint_karen.asp?action=export&personID=" & _
+	                                  Request.QueryString("personID") & _
+	                                  " target=_blank>Export</a> waypoints to a text file.")
+	                  Response.Write ("&nbsp;&nbsp;<a href=waypoint_karen.asp?action=view&personID=" & _
+	                                  Request.QueryString("personID") & _
+	                                  ">Refresh</a> waypoint table <small>(use this after Updating or Deleting)</small>.")
+	               end if
+	            else
+	
+			if (Not IsNull(Request.QueryString("orderby"))) then
+			   Response.Write ("<a href=waypoint_karen.asp?action=export&personID=0" & _
+			                   "&orderby=" & Request.QueryString("orderby") & _
+			                   "&sortdir=" & Request.QueryString("sortdir") & _
+			                   " target=_blank>Export</a> waypoints to a text file.")
+			   Response.Write ("&nbsp;&nbsp;<a href=waypoint_karen.asp?action=view&personID=0" & _
+			                   "&orderby=" & Request.QueryString("orderby") & _
+			                   "&sortdir=" & Request.QueryString("sortdir") & _
+			                   ">Refresh</a> waypoint table <small>(use this after Updating or Deleting)</small>.")
+			else
+			   Response.Write ("<a href=waypoint_karen.asp?action=export&personID=0" & _
+			                   " target=_blank>Export</a> waypoints to a text file.")
+			   Response.Write ("&nbsp;&nbsp;<a href=waypoint_karen.asp?action=view&personID=0" & _
+			                   ">Refresh</a> waypoint table <small>(use this after Updating or Deleting)</small>.")
+			end if	                             
+	            end if  ' End if (Request.QueryString("personID")
+		     
+            end if  ' End if (flag = "select")
+         End If
+
+         If Not IsNull(oViewRS) Then
+            oViewRS.Close
+            Set oViewRS = Nothing
+         End If
+
+      End If
+      wptConn.Errors.Clear
+      
+      %> <!--#include file=wpt-ftr.inc --> <%
+        
+   End Sub 'view
+
+   '--------------------------------------------------------
+   ' add
+   '
+   'waypoint_karen.asp?action=add
+   '   Present a form with text boxes for all of the
+   '   waypoint table fields.  Show a picklist for the
+   '   owner.  Add/Reset/Cancel buttons.
+   '   Second option: Click a button to import waypoints
+   '   from a comma separated text file.
+   '
+   'waypoint_karen.asp?action=add&addString=<addString>
+   '   Add the specified Waypoint.
+   '
+   '   INSERT Waypoint <addString>
+   '
+   '   example: "(PersonID, WaypointName, Latitude)
+   '             VALUES ('6', 'Midwater 1', 36.5)"
+   '--------------------------------------------------------
+     
+   Sub add
+
+      Dim oAddRS 'recordset object
+      Dim strSQL 'used to store the SQL statement as it is created
+      Dim strCurrentTime 'the default time of creation for the waypoint
+      Dim lngRecs 'number of records affected by the insert query
+
+      On Error Resume Next      
+
+      %> <!--#include file=wpt-hdr.inc --> <%
+  
+      If Request.QueryString("step") = "2" Then
+         strSQL = "INSERT Waypoint "
+         strSQL = strSQL & "(WaypointOwnerID, WaypointName, Vehicle, " & _
+                           "Latitude, Longitude, Depth, Altitude, Heading, CMG, Speed, " & _
+                           "CreateDTG, " & _
+                           "ExpireDTG, Comment) "
+         strSQL = strSQL & "VALUES ("
+         strSQL = strSQL & (Number2Null(filteredText(Request("Post_personID")))) & ", "
+         strSQL = strSQL & (String2Null(filteredText(Request("Post_WaypointName")))) & ", "
+         strSQL = strSQL & (String2Null(filteredText(Request("Post_Vehicle")))) & ", "
+         strSQL = strSQL & (Number2Null(filteredText(Request("Post_Latitude")))) & ", "
+         strSQL = strSQL & (Number2Null(filteredText(Request("Post_Longitude")))) & ", "
+         strSQL = strSQL & (Number2Null(filteredText(Request("Post_Depth")))) & ", "
+         strSQL = strSQL & (Number2Null(filteredText(Request("Post_Altitude")))) & ", "
+         strSQL = strSQL & (Number2Null(filteredText(Request("Post_Heading")))) & ", "
+         strSQL = strSQL & (Number2Null(filteredText(Request("Post_CMG")))) & ", "
+         strSQL = strSQL & (Number2Null(filteredText(Request("Post_Speed")))) & ", "
+         strSQL = strSQL & (String2Null(filteredText(Request("Post_CreateDTG")))) & ", "
+         strSQL = strSQL & (String2Null(filteredText(Request("Post_ExpireDTG")))) & ", "
+         strSQL = strSQL & (String2Null(filteredText(Request("Post_Comment")))) & ", "
+         strSQL = strSQL & ")"
+
+         Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+         wptConn.Execute strSQL, lngRecs, adCmdText
+
+         ' check for connection errors
+         If wptConn.Errors.Count > 0 Then
+            ' report the errors
+            For intLoop = 0 To wptConn.Errors.Count - 1
+               If (InStr(wptConn.Errors(intLoop).Description, "insert duplicate key in object")>0) Then
+                  Response.Write ("<br><br>")
+                  Response.Write ("<b>There is already a waypoint named <i>" & _
+                                  Request("Post_WaypointName") & _
+                                  "</i> in the database.</b><br><br>")
+               End If
+               Response.Write ("<small><small>")
+               Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+               Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+               Response.Write ("</small></small>")
+            Next
+            
+            
+            ' insert failed -- present the values of the waypoint for revising
+
+            ' get a list of all potential waypoint owners in the person table
+            strSQL = "select (LastName + ', ' + FirstName) " & _
+                                            "as ownerName, lastName, personID " & _
+                                            "from person " & _
+                                            "where (DisplayPIPickList=1 or DisplayChiefSciPickList=1) " & _
+                                            "order by lastName"
+
+            Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+            Set oOwnerRS = wptConn.Execute (strSQL)
+
+            ' check for connection errors
+            If wptConn.Errors.Count > 0 Then
+               Response.Write ("<br><br>")
+               Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+               For intLoop = 0 To wptConn.Errors.Count - 1
+                  Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+                  Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+               Next          
+            Else
+               ' no connection errors - got the list of people         
+
+               'present the user with a form for revising the waypoint
+               Response.Write ("<form name=thisForm method=post action=waypoint_karen.asp?action=add&step=2 ")
+''               Response.Write ("<form name=thisForm method=post action=waypoint_karen.asp?action=update&step=2" & _
+''                                    "&personID=" & Request.QueryString("personID") & _
+''                                    "&WaypointName=" & Server.URLEncode(filteredText(Request.QueryString("wayPointName"))) & " ")
+               Response.Write ("ONSUBMIT=" & Chr(34))
+               Response.Write ("this.Post_Vehicle.optional = true; ")
+               Response.Write ("this.Post_Depth.optional = true; ")
+               Response.Write ("this.Post_Altitude.optional = true; ")
+               Response.Write ("this.Post_Heading.optional = true; ")
+               Response.Write ("this.Post_CMG.optional = true; ")
+               Response.Write ("this.Post_Speed.optional = true; ")
+               Response.Write ("this.Post_ExpireDTG.optional = true; ")
+               Response.Write ("this.Post_Comment.optional = true; ")
+               Response.Write ("this.Post_Latitude.numeric = true; ")
+               Response.Write ("this.Post_Longitude.numeric = true; ")
+               Response.Write ("this.Post_Depth.numeric = true; ")
+               Response.Write ("this.Post_Altitude.numeric = true; ")
+               Response.Write ("this.Post_Heading.numeric = true; ")
+               Response.Write ("this.Post_CMG.numeric = true; ")
+               Response.Write ("this.Post_Speed.numeric = true; ")
+               Response.Write ("return verify(this);" & Chr(34) & ">")                                       
+   
+               ' create the form layout in a table
+               Response.Write ("<CENTER><TABLE border=0 width=70% cellpadding=2>")
+
+               Response.Write ("<tr bgcolor=LightSkyBlue><td colspan=2>")
+               Response.Write ("Revise the waypoint:")
+               Response.Write ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>(<b>*</b> denotes a required field)<small>")
+               Response.Write ("</td></tr>")
+            
+               Response.Write ("<TR bgcolor=BlanchedAlmond>")
+               Response.Write ("<TD>WaypointOwner: <b>*</b> </TD>")
+               Response.Write ("<TD>")
+	           Response.Write ("<select name=" & Chr(34) & "Post_personID" & Chr(34) & _
+	                           "size=" & Chr(34) & "1" & Chr(34) &">")
+               'loop through the record set, adding owners as options
+               oOwnerRS.MoveFirst
+               If Not (oOwnerRS.BOF and oOwnerRS.EOF) then
+                  Do While Not oOwnerRS.EOF
+
+                     Response.Write ("<option value=" & Chr(34) & oOwnerRS("personID") & Chr(34))
+                     'VBScript numeric comparisons sometimes need a little help from a string, why???
+                     If ((oOwnerRS("personID") & "A") = (Request("Post_personID") & "A")) Then
+                        Response.Write ("selected")
+                     End If
+                     If ( oOwnerRS("personID") = Request.QueryString("owner") ) Then
+                        Response.Write ("selected")
+                     End If
+                     Response.Write (">" & oOwnerRS("ownerName") & "</option>")
+                     oOwnerRS.MoveNext
+
+                  Loop  
+               End If
+               
+               oOwnerRS.Close
+               Set oOwnerRS = Nothing      
+               Response.Write ("</select>")
+               'DEBUG Response.Write (Request.QueryString("personID"))
+               'Response.Write ("selected owner = " & Request.QueryString("owner"))
+	           'Response.Write ("</TD>")
+               Response.Write ("</TR>")
+
+               ' create the rest of the form using the writeFormField subroutine
+               writeFormField "WaypointName", (filteredText(Request("Post_WaypointName")))
+               writeFormField "Vehicle", (filteredText(Request("Post_Vehicle")))
+               writeFormField "Latitude", (filteredText(Request("Post_Latitude")))
+               writeFormField "Longitude", (filteredText(Request("Post_Longitude")))
+               writeFormField "Depth", (filteredText(Request("Post_Depth")))
+               writeFormField "Altitude", (filteredText(Request("Post_Altitude")))
+               writeFormField "Heading", (filteredText(Request("Post_Heading")))
+               writeFormField "CMG", (filteredText(Request("Post_CMG")))
+               writeFormField "Speed", (filteredText(Request("Post_Speed")))
+               writeFormField "CreateDTG", (filteredText(Request("Post_CreateDTG")))
+               writeFormField "ExpireDTG", (filteredText(Request("Post_ExpireDTG")))
+               writeFormField "Comment", (filteredText(Request("Post_Comment")))
+
+               Response.Write ("<TR bgcolor=BlanchedAlmond><td colspan=2>")
+               Response.Write ("<input type=submit value=Add id=submit1 name=submit1>&nbsp;&nbsp;")
+               Response.Write ("<input type=reset value=Reset id=reset1 name=reset1><br>")
+               Response.Write ("</td></tr>")
+
+               ' end of table
+               Response.Write ("</TABLE></CENTER>")
+               Response.Write ("</form>")
+
+            End If
+            wptConn.Errors.Clear            
+            
+         Else
+            ' no connection errors
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>Waypoint " & filteredText(Request("Post_WaypointName")) & " has been added to the database.</font>")
+            
+            ' Get name of owner of just added Waypoint
+            strSQL = "select (LastName + ', ' + FirstName) " & _
+                                            "as ownerName, lastName, personID " & _
+                                            "from person " & _
+                                            "where (personId = " & filteredText(Request("Post_personID")) & ") " 
+
+            Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+            Set oOwnerRS = wptConn.Execute (strSQL)
+            If Not (oOwnerRS.BOF and oOwnerRS.EOF) then
+            	wpOwnerName = oOwnerRS("ownerName")
+            	wpOwnerID = oOwnerRS("personID")
+            End If
+            oOwnerRS.Close
+            Set oOwnerRS = Nothing
+            
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1><a href=waypoint_karen.asp?action=add&owner=" &_
+            			wpOwnerID & ">Add another Waypoint</a> owned by " &_
+            			wpOwnerName & "</font>")
+            
+            If ((Not Request("Post_personID")="") and (Not Request("Post_WaypointName")="")) Then
+               Response.Write ("<br><br>")
+               
+               Response.Write ("<a href=waypoint_karen.asp?action=update&personID=" & _
+                               Request("Post_personID") & "&waypointName=" & _
+                               Server.URLEncode(filteredText(Request("Post_WaypointName"))) & _
+                               ">View/Edit</a>" & " Waypoint " & filteredText(Request("Post_WaypointName")) )
+               If Session.Contents("ShipName") Then                
+               		Response.Write ("<br><br><a href=waypoint_karen.asp?action=select&personID=" & _
+                               Request("Post_personID") & "&waypointName=" & _
+                               Server.URLEncode(filteredText(Request("Post_WaypointName"))) & _
+                               ">Select waypoints for precruise</a>" )
+               End If
+            End If
+            
+         End If
+         wptConn.Errors.Clear
+
+      ElseIf Not (Request.QueryString("addString")="") Then
+         
+         ' a string of new values was passed in for adding
+
+         strSQL = "INSERT Waypoint " & Request.QueryString("addString")
+         
+         Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+         wptConn.Execute strSQL, lngRecs, adCmdText
+
+         ' check for connection errors
+         If wptConn.Errors.Count > 0 Then
+            For intLoop = 0 To wptConn.Errors.Count - 1
+               ' report error directly
+               
+               If (InStr(wptConn.Errors(intLoop).Description, "insert duplicate key in object")>0) Then
+                  Response.Write ("<br><br>")
+                  Response.Write ("<b>There is already a waypoint named <i>" & _
+                                  Request.QueryString("waypointName") & _
+                                  "</i> in the database.</b><br><br>")
+               End If
+               
+               Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+               Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+            Next          
+         Else
+            ' no connection errors
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>The waypoint has been added to the database.</font>")
+            
+            If ((Not Request.QueryString("personID")="") and (Not Request.QueryString("waypointName")="")) Then
+               Response.Write ("<br><br>")
+               
+               Response.Write ("<a href=waypoint_karen.asp?action=update&personID=" & _
+                               Request.QueryString("personID") & "&waypointName=" & _
+                               Server.URLEncode(Request.QueryString("waypointName")) & _
+                               ">View/Edit</a>" & " the Waypoint")
+
+            End If
+            
+         End If
+         wptConn.Errors.Clear
+
+      Else
+
+         ' present the user with a form for adding a new waypoint
+         
+         ' get the list of people who are in the ChiefSci and/or PI lists
+         Set oAddRS = wptConn.Execute ("select (LastName + ', ' + FirstName) " & _
+                                         "as ownerName, lastName, personID " & _
+                                         "from person " & _
+                                         "where (DisplayPIPickList=1 or DisplayChiefSciPickList=1) " & _
+                                         "order by lastName")
+
+         ' check for connection errors
+         If wptConn.Errors.Count > 0 Then
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+            For intLoop = 0 To wptConn.Errors.Count - 1
+               Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+               Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+            Next          
+         Else
+            ' no connection errors
+            Response.Write ("<form name=thisForm method=post action=waypoint_karen.asp?action=add&step=2 ")
+            ' use javascript to validate the form
+            Response.Write ("ONSUBMIT=" & Chr(34))
+            Response.Write ("this.Post_Vehicle.optional = true; ")
+            Response.Write ("this.Post_Depth.optional = true; ")
+            Response.Write ("this.Post_Altitude.optional = true; ")
+            Response.Write ("this.Post_Heading.optional = true; ")
+            Response.Write ("this.Post_CMG.optional = true; ")
+            Response.Write ("this.Post_Speed.optional = true; ")
+            Response.Write ("this.Post_ExpireDTG.optional = true; ")
+            Response.Write ("this.Post_Comment.optional = true; ")
+            Response.Write ("this.Post_Latitude.numeric = true; ")
+            Response.Write ("this.Post_Longitude.numeric = true; ")
+            Response.Write ("this.Post_Depth.numeric = true; ")
+            Response.Write ("this.Post_Altitude.numeric = true; ")
+            Response.Write ("this.Post_Heading.numeric = true; ")
+            Response.Write ("this.Post_CMG.numeric = true; ")
+            Response.Write ("this.Post_Speed.numeric = true; ")
+            Response.Write ("return verify(this);" & Chr(34) & ">")
+
+            ' create the form layout in a table
+            Response.Write ("<CENTER><TABLE border=0 width=70% cellpadding=2>")
+
+            Response.Write ("<tr bgcolor=LightSkyBlue><td colspan=2>")
+            Response.Write ("Add a new waypoint:")
+            Response.Write ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>(<b>*</b> denotes a required field)<small>")
+            Response.Write ("</td></tr>")
+
+            Response.Write ("<TR bgcolor=BlanchedAlmond>")
+            Response.Write ("<TD>WaypointOwner: <b>*</b> </TD>")
+            Response.Write ("<TD>")
+	        Response.Write ("<select name=" & Chr(34) & "Post_personID" & Chr(34) & _
+	                        "size=" & Chr(34) & "1" & Chr(34) &">")
+            ' loop through the record set, adding owners as options
+            oAddRS.MoveFirst
+            If Not (oAddRS.BOF and oAddRS.EOF) then
+               Do While Not oAddRS.EOF
+                  Response.Write("<option value=" & Chr(34) & oAddRS("personID") & Chr(34) & " ")
+                  If ( String2Null(oAddRS("personID")) = String2Null(Request.QueryString("owner")) ) Then
+                        Response.Write ("selected")
+                  End If               
+                  Response.Write(">" & oAddRS("ownerName") & "</option>")
+                  
+                  oAddRS.MoveNext
+               Loop  
+            End If
+            oAddRS.Close
+            Set oAddRS = Nothing      
+            Response.Write ("</select>")
+            'Response.Write ("owner = " & Request.QueryString("owner"))
+            Response.Write ("</TD>")
+            Response.Write ("</TR>")
+
+            ' write the rest of the form using the writeFormField subroutine
+            writeFormField "WaypointName", ""
+            writeFormField "Vehicle", ""
+            writeFormField "Latitude", ""
+            writeFormField "Longitude", ""
+            writeFormField "Depth", ""
+            writeFormField "Altitude", ""
+            writeFormField "Heading", ""
+            writeFormField "CMG", ""
+            writeFormField "Speed", ""
+
+            strCurrentTime = Now()
+            
+            writeFormField "CreateDTG", strCurrentTime ' example  "1/1/95 1:00:00 PM"
+            writeFormField "ExpireDTG", ""          ' example  "1/1/01 1:00:00 PM"
+            writeFormField "Comment", ""
+
+            Response.Write ("<TR bgcolor=BlanchedAlmond><td colspan=2>")
+            Response.Write ("<input type=submit value=Add id=submit1 name=submit1>&nbsp;&nbsp;")
+            Response.Write ("<input type=reset value=Reset id=reset1 name=reset1><br>")
+            Response.Write ("</td></tr>")
+
+            Response.Write ("<TR bgcolor=BlanchedAlmond><td colspan=2>")
+            Response.Write ("&nbsp;")
+            Response.Write ("</td></tr>")
+
+            'Response.Write ("<TR bgcolor=BlanchedAlmond><td colspan=2>")
+            'Response.Write ("<a href=waypoint_karen.asp?action=import>Import</a> new waypoints from a file.")
+            'Response.Write ("</td></tr>")
+
+            ' end of table         
+            Response.Write ("</TABLE></CENTER>")
+            Response.Write ("</form>")
+         End If
+         wptConn.Errors.Clear
+      End If
+      
+      %> <!--#include file=wpt-ftr.inc --> <%
+      
+   End Sub 'add
+
+   '--------------------------------------------------------
+   ' delete
+   '
+   '   
+   'waypoint_karen.asp?action=delete&personID=<personID>
+   '             &waypointName=<waypointName>
+   '   Delete the specified waypoint.  Tell the user that
+   '   it was deleted.  Present a link to add the waypoint
+   '   back to the database (if it was deleted accidentally).
+   '--------------------------------------------------------
+  
+   Sub delete
+  
+      Dim lngRecs 'number of records affected by delete
+      Dim oDeleteRS 'recordset object
+      Dim strSQL 'holds SQL statement as it is built
+      
+      Dim objMail 'email object
+
+      On Error Resume Next
+
+      %> <!--#include file=wpt-hdr.inc --> <%
+
+      strSQL = ("select WaypointOwnerID, FirstName, LastName, SystemAccount, WaypointName, " & _
+                                      "Vehicle, Latitude, Longitude, Depth, Altitude, Heading, CMG, Speed, " & _
+                                      "CreateDTG, ExpireDTG, " & _
+                                      "Comment " & _
+                                      "from waypoint, person " & _
+                                      "where personID = waypointOwnerID " & _
+                                      "and personID = " & Request.QueryString("personID") & _
+                                      " and WaypointName = '" & Request.QueryString("wayPointName") & _
+                                      "' order by WaypointName ")
+
+      Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+      Set oDeleteRS = Server.CreateObject("ADODB.Recordset")
+      oDeleteRS.Open strSQL, wptConn
+ 
+      ' check for connection errors
+      If wptConn.Errors.Count > 0 Then
+         Response.Write ("<br><br>")
+         Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+         For intLoop = 0 To wptConn.Errors.Count - 1
+            Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+            Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+         Next          
+      Else
+         ' no connection errors
+      
+         'make sure the recordset has a record
+         oDeleteRS.MoveFirst
+         If Not (oDeleteRS.BOF and oDeleteRS.EOF) then
+
+
+
+         Dim UserIPAddress
+         UserIPAddress = Request.ServerVariables("HTTP_X_FORWARDED_FOR")
+         If UserIPAddress = "" Then
+            UserIPAddress = Request.ServerVariables("REMOTE_ADDR")
+         End If
+         strSQL = "UPDATE Waypoint"
+         strSQL = strSQL & " SET clientIP = " & String2Null(UserIPAddress)
+         strSQL = strSQLcd & " WHERE WaypointOwnerID = " & Request.QueryString("personID") & _
+                  " AND WaypointName = '" & filteredText(Request.QueryString("wayPointName")) & "'"
+                  
+            Response.Write (" DEBUG SQL Statement: " & strSQL & " ")         
+         wptConn.Execute strSQL, lngRecs, adCmdText
+        
+
+
+
+
+
+            strSQL = "delete waypoint where WaypointOwnerID = " & Request.QueryString("personID") & _
+                     " and WaypointName = '" & Request.QueryString("wayPointName") & "'"
+                  
+            Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+            wptConn.Execute strSQL, lngRecs, adCmdText
+         
+            ' check for connection errors
+            If wptConn.Errors.Count > 0 Then
+               Response.Write ("<br><br>")
+               Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+               For intLoop = 0 To wptConn.Errors.Count - 1
+                  Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+                  Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+               Next          
+            Else
+               ' no connection errors         
+
+               'send an email to the waypoint owner.
+		
+              Set objMail = Server.CreateObject("CDO.Message")
+
+              objMail.From = "iagadmin@mbari.org"
+              objMail.To = oDeleteRS("SystemAccount")
+              objMail.Subject = "Waypoint Management Message"
+              objMail.TextBody = "Waypoint Management Message" & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                              "This automated message has been sent to you because one of your " & _
+                              "waypoints has been deleted from the MBARI Expedition database." & _
+                               Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                              "If you deleted it, then you can ignore this message.  " & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                              "If the waypoint was deleted by someone else without your permission, then you can " & _
+                              "restore it to the database.  " & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                              "The waypoint information:" & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                              "WaypointOwner: " & (oDeleteRS("FirstName")) & " " & (oDeleteRS("LastName")) & Chr(13) & Chr(10) & _
+                              "WaypointName: " & (oDeleteRS("WaypointName")) & Chr(13) & Chr(10) & _
+                              "Vehicle: " & (oDeleteRS("Vehicle")) & Chr(13) & Chr(10) & _
+                              "Latitude: " & (reformatNumber(oDeleteRS("Latitude"),8)) & Chr(13) & Chr(10) & _
+                              "Longitude: " & (reformatNumber(oDeleteRS("Longitude"),8)) & Chr(13) & Chr(10) & _
+                              "Depth: " & (reformatNumber(oDeleteRS("Depth"),2)) & Chr(13) & Chr(10) & _
+                              "Altitude: " & (reformatNumber(oDeleteRS("Altitude"),2)) & Chr(13) & Chr(10) & _
+                              "Heading: " & (reformatNumber(oDeleteRS("Heading"),2)) & Chr(13) & Chr(10) & _
+                              "CMG: " & (reformatNumber(oDeleteRS("CMG"),2)) & Chr(13) & Chr(10) & _
+                              "Speed: " & (reformatNumber(oDeleteRS("Speed"),2)) & Chr(13) & Chr(10) & _
+                              "CreateDTG: " & (oDeleteRS("CreateDTG")) & Chr(13) & Chr(10) & _
+                              "ExpireDTG: " & (oDeleteRS("ExpireDTG")) & Chr(13) & Chr(10) & _
+                              "Comment: " & (oDeleteRS("Comment")) & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                              "First, check your set of waypoints to see if the waypoint was " & _
+                              "unintentionally deleted and immediately restored: " & _
+                              Application("BaseURL") & "/waypoint_karen.asp?action=view&personID=" & _
+                              oDeleteRS("WaypointOwnerID") & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                              "If the waypoint is not in the database, use the Add form to restore it: " & _
+                              Application("BaseURL") & "/waypoint_karen.asp?action=add"
+                                                            
+               objMail.Send
+               Set objMail = Nothing
+
+               Response.Write ("<br><br>")
+               Response.Write ("<font size=+1>")
+               Response.Write ("You deleted the waypoint called ")
+               Response.Write (oDeleteRS("WaypointName"))
+               Response.Write (" which belonged to ")
+               Response.Write (oDeleteRS("FirstName") & " " & oDeleteRS("LastName"))
+               Response.Write (".</font><br>")
+
+               Response.Write ("<br><br>")
+               Response.Write ("<font size=+1>")
+               Response.Write ("If you deleted the waypoint unintentionally, you can ")
+               Response.Write ("<a href=waypoint_karen.asp?action=add")
+               Response.Write ("&addString=(WaypointOwnerID,+WaypointName,+Vehicle,+Latitude,")
+               Response.Write ("+Longitude,+Depth,+Altitude,+Heading,+CMG,+Speed,")
+               Response.Write ("+CreateDTG,+ExpireDTG,+Comment)+VALUES+(")
+
+               Response.Write (Number2Null(oDeleteRS("WaypointOwnerID")) & ",")
+               Response.Write (Server.URLEncode(String2Null(oDeleteRS("WaypointName"))) & ",")
+               Response.Write (Server.URLEncode(String2Null(oDeleteRS("Vehicle"))) & ",")
+               Response.Write (Number2Null(reformatNumber(oDeleteRS("Latitude"),8)) & ",")
+               Response.Write (Number2Null(reformatNumber(oDeleteRS("Longitude"),8)) & ",")
+               Response.Write (Number2Null(reformatNumber(oDeleteRS("Depth"),2)) & ",")
+               Response.Write (Number2Null(reformatNumber(oDeleteRS("Altitude"),2)) & ",")
+               Response.Write (Number2Null(reformatNumber(oDeleteRS("Heading"),2)) & ",")
+               Response.Write (Number2Null(reformatNumber(oDeleteRS("CMG"),2)) & ",")
+               Response.Write (Number2Null(reformatNumber(oDeleteRS("Speed"),2)) & ",")
+               Response.Write (Server.URLEncode(String2Null(oDeleteRS("CreateDTG"))) & ",")
+               Response.Write (Server.URLEncode(String2Null(oDeleteRS("ExpireDTG"))) & ",")
+               Response.Write (Server.URLEncode(String2Null(oDeleteRS("Comment"))))
+
+               Response.Write (")>restore</a>")
+               Response.Write (" it.</font><br>")
+               
+            End If
+            wptConn.Errors.Clear
+
+         Else
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>")
+            Response.Write ("The waypoint that you selected for deletion does not exist in the database.")
+            Response.Write ("</font>")
+         End If
+  
+         oDeleteRS.Close
+         Set oDeleteRS = Nothing
+                 
+      End If
+      wptConn.Errors.Clear
+      
+      %> <!--#include file=wpt-ftr.inc --> <%
+
+   End Sub 'delete
+
+   '--------------------------------------------------------
+   ' update
+   '
+   'waypoint_karen.asp?action=update&personID=<personID>
+   '             &waypointName=<waypointName>
+   '   Present a form showing the current values in editable
+   '   text boxes.  Update/Reset/Cancel buttons.
+   '
+   'waypoint_karen.asp?action=update&personID=<personID>
+   '             &waypointName=<waypointName>
+   '             &updateString=<updateString>
+   '   Update the specified waypoint using the name/value
+   '   pairs in the <updateString>.
+   '
+   '   UPDATE Waypoint SET <updateString> WHERE
+   '   personID=<personID> AND waypointName=<waypointName>
+   '
+   '   example: "WaypointName = 'Midwater 2',
+   '             Longitude = -122.2"
+   '--------------------------------------------------------
+  
+   Sub update
+
+      Dim strSQL 'used to store the SQL statement as it is created
+      Dim lngRecs 'number of records affected by the insert query     
+      Dim oUpdateRS 'recordset object
+      Dim oOwnerRS 'recordset object
+      
+      Dim oldWaypointOwnerID
+      Dim oldFirstName
+      Dim oldLastName
+      Dim oldSystemAccount
+      Dim oldWaypointName
+      Dim oldVehicle
+      Dim oldLatitude
+      Dim oldLongitude
+      Dim oldDepth
+      Dim oldAltitude
+      Dim oldHeading
+      Dim oldCMG
+      Dim oldSpeed
+      Dim oldCreateDTG
+      Dim oldExpireDTG
+      Dim oldComment
+      
+      On Error Resume Next
+      
+      %> <!--#include file=wpt-hdr.inc --> <%
+
+      If Request.QueryString("step") = "2" Then
+
+         ' get the old values for this waypoint from the database
+         strSQL = ("select WaypointOwnerID, FirstName, LastName, SystemAccount, WaypointName, " & _
+                                         "Vehicle, Latitude, Longitude, Depth, Altitude, Heading, CMG, Speed, " & _
+                                         "CreateDTG, ExpireDTG, " & _
+                                         "Comment " & _
+                                         "from waypoint, person " & _
+                                         "where personID = waypointOwnerID " & _
+                                         "and personID = " & Request.QueryString("personID") & _
+                                         " and WaypointName = '" & filteredText(Request.QueryString("wayPointName")) & _
+                                         "' order by WaypointName ")
+
+         Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+         ' get the current values for this waypoint from the database
+         Set oUpdateRS = Server.CreateObject("ADODB.Recordset")
+         oUpdateRS.Open strSQL, wptConn
+         
+         ' check for connection errors
+         If wptConn.Errors.Count > 0 Then
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+            For intLoop = 0 To wptConn.Errors.Count - 1
+               Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+               Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+            Next          
+         Else
+            ' no connection errors
+
+            'make sure the recordset has a record
+            oUpdateRS.MoveFirst
+            If (oUpdateRS.BOF and oUpdateRS.EOF) then
+               Response.Write ("The waypoint that you selected for editing does not exist in the database.")
+               oUpdateRS.Close
+               Set oUpdateRS = Nothing
+            Else
+               'grab the old values         
+               
+               oldWaypointOwnerID = oUpdateRS("WaypointOwnerID")
+               oldFirstName = oUpdateRS("FirstName")
+               oldLastName = oUpdateRS("LastName")
+               oldSystemAccount = oUpdateRS("SystemAccount")               
+               oldWaypointName = oUpdateRS("WaypointName")
+               oldVehicle = oUpdateRS("Vehicle")
+               oldLatitude = reformatNumber(oUpdateRS("Latitude"),8)
+               oldLongitude = reformatNumber(oUpdateRS("Longitude"),8)
+               oldDepth = reformatNumber(oUpdateRS("Depth"),2)
+               oldAltitude = reformatNumber(oUpdateRS("Altitude"),2)
+               oldHeading = reformatNumber(oUpdateRS("Heading"),2)
+               oldCMG = reformatNumber(oUpdateRS("CMG"),2)
+               oldSpeed = reformatNumber(oUpdateRS("Speed"),2)
+               oldCreateDTG = oUpdateRS("CreateDTG")
+               oldExpireDTG = oUpdateRS("ExpireDTG")
+               oldComment = oUpdateRS("Comment")
+
+               oUpdateRS.Close
+               Set oUpdateRS = Nothing
+            End If
+            wptConn.Errors.Clear
+         End If
+         wptConn.Errors.Clear
+
+         'now update the waypoint with the new values
+         
+         Dim UserIPAddress
+         UserIPAddress = Request.ServerVariables("HTTP_X_FORWARDED_FOR")
+         If UserIPAddress = "" Then
+            UserIPAddress = Request.ServerVariables("REMOTE_ADDR")
+         End If
+  
+         
+         strSQL = "UPDATE Waypoint SET "
+
+         strSQL = strSQL & "WaypointOwnerID = " & (Number2Null(Request("Post_personID"))) & ", "
+         strSQL = strSQL & "WaypointName = " & (String2Null(filteredText(Request("Post_WaypointName")))) & ", "
+         strSQL = strSQL & "Vehicle = " & (String2Null(filteredText(Request("Post_Vehicle")))) & ", "
+         strSQL = strSQL & "Latitude = " & (Number2Null(filteredText(Request("Post_Latitude")))) & ", "
+         strSQL = strSQL & "Longitude = " & (Number2Null(filteredText(Request("Post_Longitude")))) & ", "
+         strSQL = strSQL & "Depth = " & (Number2Null(filteredText(Request("Post_Depth")))) & ", "
+         strSQL = strSQL & "Altitude = " & (Number2Null(filteredText(Request("Post_Altitude")))) & ", "
+         strSQL = strSQL & "Heading = " & (Number2Null(filteredText(Request("Post_Heading")))) & ", "
+         strSQL = strSQL & "CMG = " & (Number2Null(filteredText(Request("Post_CMG")))) & ", "
+         strSQL = strSQL & "Speed = " & (Number2Null(filteredText(Request("Post_Speed")))) & ", "
+         strSQL = strSQL & "CreateDTG = " & (String2Null(filteredText(Request("Post_CreateDTG")))) & ", "
+         strSQL = strSQL & "ExpireDTG = " & (String2Null(filteredText(Request("Post_ExpireDTG")))) & ", "
+         strSQL = strSQL & "Comment = " & (String2Null(filteredText(Request("Post_Comment")))) & ", "
+         strSQL = strSQL & "clientIP = " & String2Null(UserIPAddress)
+
+         strSQL = strSQL & " WHERE WaypointOwnerID = " & Request.QueryString("personID") & _
+                  " AND WaypointName = '" & filteredText(Request.QueryString("wayPointName")) & "'"
+
+         Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+         wptConn.Execute strSQL, lngRecs, adCmdText
+
+         ' check for connection errors
+         If wptConn.Errors.Count > 0 Then
+            Response.Write ("<br>")
+            Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br>")
+            For intLoop = 0 To wptConn.Errors.Count - 1
+               If (InStr(wptConn.Errors(intLoop).Description, "insert duplicate key in object")>0) Then
+                  Response.Write ("<b>There is already a waypoint named <i>" & _
+                                  Request("Post_WaypointName") & _
+                                  "</i> in the database.</b><br><br>")
+               End If
+               Response.Write ("<small><small>")
+               Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+               Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+               Response.Write ("</small></small>")               
+            Next
+               ' update failed -- present the values of the waypoint for revising
+
+               ' get a list of all potential waypoint owners in the person table
+               strSQL = "select (LastName + ', ' + FirstName) " & _
+                                               "as ownerName, lastName, personID, SystemAccount " & _
+                                               "from person " & _
+                                               "where (DisplayPIPickList=1 or DisplayChiefSciPickList=1) " & _
+                                               "order by lastName"
+
+               Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+               Set oOwnerRS = wptConn.Execute (strSQL)
+
+               ' check for connection errors
+               If wptConn.Errors.Count > 0 Then
+                  Response.Write ("<br><br>")
+                  Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+                  For intLoop = 0 To wptConn.Errors.Count - 1
+                     Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+                     Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+                  Next          
+               Else
+                  ' no connection errors - got the list of people         
+
+                  'present the user with a form for revising the waypoint          
+                  Response.Write ("<form name=thisForm method=post action=waypoint_karen.asp?action=update&step=2" & _
+                                       "&personID=" & Request.QueryString("personID") & _
+                                       "&WaypointName=" & Server.URLEncode(filteredText(Request.QueryString("wayPointName"))) & " ")
+                  Response.Write ("ONSUBMIT=" & Chr(34))
+                  Response.Write ("this.Post_Vehicle.optional = true; ")
+                  Response.Write ("this.Post_Depth.optional = true; ")
+                  Response.Write ("this.Post_Altitude.optional = true; ")
+                  Response.Write ("this.Post_Heading.optional = true; ")
+                  Response.Write ("this.Post_CMG.optional = true; ")
+                  Response.Write ("this.Post_Speed.optional = true; ")
+                  Response.Write ("this.Post_ExpireDTG.optional = true; ")
+                  Response.Write ("this.Post_Comment.optional = true; ")
+                  Response.Write ("this.Post_Latitude.numeric = true; ")
+                  Response.Write ("this.Post_Longitude.numeric = true; ")
+                  Response.Write ("this.Post_Depth.numeric = true; ")
+                  Response.Write ("this.Post_Altitude.numeric = true; ")
+                  Response.Write ("this.Post_Heading.numeric = true; ")
+                  Response.Write ("this.Post_CMG.numeric = true; ")
+                  Response.Write ("this.Post_Speed.numeric = true; ")
+                  Response.Write ("return verify(this);" & Chr(34) & ">")                                       
+   
+                  ' create the form layout in a table
+                  Response.Write ("<CENTER><TABLE border=0 width=70% cellpadding=2>")
+
+                  Response.Write ("<tr bgcolor=LightSkyBlue><td colspan=2>")
+                  Response.Write ("Revise the waypoint:")
+                  Response.Write ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>(<b>*</b> denotes a required field)<small>")
+                  Response.Write ("</td></tr>")
+            
+                  Response.Write ("<TR bgcolor=BlanchedAlmond>")
+                  Response.Write ("<TD>WaypointOwner: <b>*</b> </TD>")
+                  Response.Write ("<TD>")
+	              Response.Write ("<select name=" & Chr(34) & "Post_personID" & Chr(34) & _
+	                              "size=" & Chr(34) & "1" & Chr(34) &">")
+                  'loop through the record set, adding owners as options
+                  oOwnerRS.MoveFirst
+                  If Not (oOwnerRS.BOF and oOwnerRS.EOF) then
+                     Do While Not oOwnerRS.EOF
+
+                        Response.Write ("<option value=" & Chr(34) & oOwnerRS("personID") & Chr(34))
+                        'VBScript numeric comparisons sometimes need a little help from a string, why???
+                        If ((oOwnerRS("personID") & "A") = (Request.QueryString("personID") & "A")) Then
+                           Response.Write ("selected")
+                        End If
+                        If ( oOwnerRS("personID") = Request("owner") ) Then
+                        	Response.Write ("selected")
+                     	End If
+                        Response.Write (">" & oOwnerRS("ownerName") & "</option>")
+                        oOwnerRS.MoveNext
+
+                     Loop  
+                  End If
+                  oOwnerRS.Close
+                  Set oOwnerRS = Nothing      
+                  Response.Write ("</select>")
+                  'DEBUG Response.Write (Request.QueryString("personID"))
+	              Response.Write ("</TD>")
+                  Response.Write ("</TR>")
+
+                  ' create the rest of the form using the writeFormField subroutine
+                  ' remove commas that may have been added in numbers that are
+                  ' larger than 999 (i.e. 1,000)
+                  writeFormField "WaypointName", (filteredText(Request("Post_WaypointName")))
+                  writeFormField "Vehicle", (filteredText(Request("Post_Vehicle")))
+                  writeFormField "Latitude", (filteredText(Request("Post_Latitude")))
+                  writeFormField "Longitude", (filteredText(Request("Post_Longitude")))
+                  writeFormField "Depth", (filteredText(Request("Post_Depth")))
+                  writeFormField "Altitude", (filteredText(Request("Post_Altitude")))
+                  writeFormField "Heading", (filteredText(Request("Post_Heading")))
+                  writeFormField "CMG", (filteredText(Request("Post_CMG")))
+                  writeFormField "Speed", (filteredText(Request("Post_Speed")))
+                  writeFormField "CreateDTG", (filteredText(Request("Post_CreateDTG")))
+                  writeFormField "ExpireDTG", (filteredText(Request("Post_ExpireDTG")))
+                  writeFormField "Comment", (filteredText(Request("Post_Comment")))
+
+                  Response.Write ("<TR bgcolor=BlanchedAlmond><td colspan=2>")
+                  Response.Write ("<input type=submit value=Update id=submit1 name=submit1>&nbsp;&nbsp;")
+                  Response.Write ("<input type=reset value=Reset id=reset1 name=reset1><br>")
+                  Response.Write ("</td></tr>")
+
+                  ' end of table         
+                  Response.Write ("</TABLE></CENTER>")
+                  Response.Write ("</form>")
+
+               End If
+               wptConn.Errors.Clear
+            
+         Else
+            ' no connection errors
+            
+            'send an email to the waypoint owner
+            Set objMail = Server.CreateObject("CDO.Message")
+
+            objMail.From = "iagadmin@mbari.org"
+            objMail.To = oldSystemAccount
+            objMail.Subject = "Waypoint Management Message"
+            objMail.TextBody = "Waypoint Management Message" & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                           "This automated message has been sent to you because one of your " & _
+                           "waypoints has been updated in the MBARI Expedition database." & _
+                           Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                           "If you updated it, then you can ignore this message.  " & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                           "If the waypoint was updated by someone else without your permission, then you can " & _
+                           "restore it in the database.  " & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                           "The waypoint information: <old value> --> <current value>" & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                           "WaypointOwnerID: " & oldWaypointOwnerID & " --> " & (Request("Post_personID")) & Chr(13) & Chr(10) & _
+                           "WaypointName: " & oldWaypointName & " --> " & (filteredText(Request("Post_WaypointName"))) & Chr(13) & Chr(10) & _
+                           "Vehicle: " & oldVehicle & " --> " & (filteredText(Request("Post_Vehicle"))) & Chr(13) & Chr(10) & _
+                           "Latitude: " & oldLatitude & " --> " & (filteredText(Request("Post_Latitude"))) & Chr(13) & Chr(10) & _
+                           "Longitude: " & oldLongitude & " --> " & (filteredText(Request("Post_Longitude"))) & Chr(13) & Chr(10) & _
+                           "Depth: " & oldDepth & " --> " & (filteredText(Request("Post_Depth"))) & Chr(13) & Chr(10) & _
+                           "Altitude: " & oldAltitude & " --> " & (filteredText(Request("Post_Altitude"))) & Chr(13) & Chr(10) & _
+                           "Heading: " & oldHeading & " --> " & (filteredText(Request("Post_Heading"))) & Chr(13) & Chr(10) & _
+                           "CMG: " & oldCMG & " --> " & (filteredText(Request("Post_CMG"))) & Chr(13) & Chr(10) & _
+                           "Speed: " & oldSpeed & " --> " & (filteredText(Request("Post_Speed"))) & Chr(13) & Chr(10) & _
+                           "CreateDTG: " & oldCreateDTG & " --> " & (filteredText(Request("Post_CreateDTG"))) & Chr(13) & Chr(10) & _
+                           "ExpireDTG: " & oldExpireDTG & " --> " & (filteredText(Request("Post_ExpireDTG"))) & Chr(13) & Chr(10) & _
+                           "Comment: " & oldComment & " --> " & (filteredText(Request("Post_Comment"))) & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                           "Use the Update form to restore it: " & _
+                           Application("BaseURL") & "/waypoint_karen.asp?action=update" & _
+                           "&personID=" & Request("Post_personID") & _
+                           "&WaypointName=" & Server.URLEncode(filteredText(Request("Post_WaypointName")))
+            objMail.Send
+            Set objMail=Nothing
+            
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>")
+            Response.Write ("The waypoint has been updated.")
+            Response.Write ("</font>")
+            
+         End If
+         wptConn.Errors.Clear
+
+      ElseIf Not (Request.QueryString("updateString")="") Then
+      
+         ' a string of new values was passed in for updating
+         
+         ' get the old values for this waypoint from the database
+         strSQL = ("select WaypointOwnerID, FirstName, LastName, SystemAccount, WaypointName, " & _
+                                         "Vehicle, Latitude, Longitude, Depth, Altitude, Heading, CMG, Speed, " & _
+                                         "CreateDTG, ExpireDTG, " & _
+                                         "Comment " & _
+                                         "from waypoint, person " & _
+                                         "where personID = waypointOwnerID " & _
+                                         "and personID = " & Request.QueryString("personID") & _
+                                         " and WaypointName = '" & filteredText(Request.QueryString("wayPointName")) & _
+                                         "' order by WaypointName ")
+
+         Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+         ' get the current values for this waypoint from the database
+         Set oUpdateRS = Server.CreateObject("ADODB.Recordset")
+         oUpdateRS.Open strSQL, wptConn
+         
+         ' check for connection errors
+         If wptConn.Errors.Count > 0 Then
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+            For intLoop = 0 To wptConn.Errors.Count - 1
+               Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+               Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+            Next          
+         Else
+            ' no connection errors
+
+            'make sure the recordset has a record
+            oUpdateRS.MoveFirst
+            If (oUpdateRS.BOF and oUpdateRS.EOF) then
+               Response.Write ("The waypoint that you selected for editing does not exist in the database.")
+               oUpdateRS.Close
+               Set oUpdateRS = Nothing
+            Else
+               'grab the old values         
+               
+               oldWaypointOwnerID = oUpdateRS("WaypointOwnerID")
+               oldFirstName = oUpdateRS("FirstName")
+               oldLastName = oUpdateRS("LastName")
+               oldSystemAccount = oUpdateRS("SystemAccount")               
+               oldWaypointName = oUpdateRS("WaypointName")
+               oldVehicle = oUpdateRS("Vehicle")
+               oldLatitude = reformatNumber(oUpdateRS("Latitude"),8)
+               oldLongitude = reformatNumber(oUpdateRS("Longitude"),8)
+               oldDepth = reformatNumber(oUpdateRS("Depth"),2)
+               oldAltitude = reformatNumber(oUpdateRS("Altitude"),2)
+               oldHeading = reformatNumber(oUpdateRS("Heading"),2)
+               oldCMG = reformatNumber(oUpdateRS("CMG"),2)
+               oldSpeed = reformatNumber(oUpdateRS("Speed"),2)
+               oldCreateDTG = oUpdateRS("CreateDTG")
+               oldExpireDTG = oUpdateRS("ExpireDTG")
+               oldComment = oUpdateRS("Comment")
+
+               oUpdateRS.Close
+               Set oUpdateRS = Nothing
+            End If
+            wptConn.Errors.Clear
+         End If
+         wptConn.Errors.Clear         
+         
+         strSQL = "UPDATE Waypoint SET " & Request.QueryString("updateString")
+         strSQL = strSQL & " WHERE WaypointOwnerID = " & Request.QueryString("personID") & _
+                  " AND WaypointName = '" & filteredText(Request.QueryString("wayPointName")) & "'"
+
+         Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+         wptConn.Execute strSQL, lngRecs, adCmdText
+
+         ' check for connection errors
+         If wptConn.Errors.Count > 0 Then
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+            For intLoop = 0 To wptConn.Errors.Count - 1
+               Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+               Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+            Next          
+         Else
+            ' no connection errors         
+
+            ' display the update success response
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>")
+            Response.Write ("The waypoint has been updated.")
+            Response.Write ("</font>")
+
+            'send an email about the update to the waypoint owner
+
+            ' get the current values for this waypoint from the database
+            strSQL = ("select WaypointOwnerID, FirstName, LastName, SystemAccount, WaypointName, " & _
+                                            "Vehicle, Latitude, Longitude, Depth, Altitude, Heading, CMG, Speed, " & _
+                                            "CreateDTG, ExpireDTG, " & _
+                                            "Comment " & _
+                                            "from waypoint, person " & _
+                                            "where personID = waypointOwnerID " & _
+                                            "and personID = " & Request.QueryString("personID") & _
+                                            " and WaypointName = '" & filteredText(Request.QueryString("wayPointName")) & _
+                                            "' order by WaypointName ")
+
+            Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+            ' get the current values for this waypoint from the database
+            Set oUpdateRS = Server.CreateObject("ADODB.Recordset")
+            oUpdateRS.Open strSQL, wptConn
+         
+            ' check for connection errors
+            If wptConn.Errors.Count > 0 Then
+               Response.Write ("<br><br>")
+               Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+               For intLoop = 0 To wptConn.Errors.Count - 1
+                  Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+                  Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+               Next          
+            Else
+               ' no connection errors
+
+               'make sure the recordset has a record - it should aways have a record, since we just updated it
+               oUpdateRS.MoveFirst
+               If (oUpdateRS.BOF and oUpdateRS.EOF) then
+                  Response.Write ("The could not retreive values for the waypoint from the database.")
+                  oUpdateRS.Close
+                  Set oUpdateRS = Nothing
+               Else
+                  'compose and send the email
+
+                  Set objMail = Server.CreateObject("CDO.Message")
+
+                  objMail.From = "iagadmin@mbari.org"
+                  objMail.To = oldSystemAccount
+                  objMail.Subject = "Waypoint Management Message"
+                  objMail.TextBody = "Waypoint Management Message" & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                                 "This automated message has been sent to you because one of your " & _
+                                 "waypoints has been updated in the MBARI Expedition database." & _
+                                 Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                                 "If you updated it, then you can ignore this message.  " & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                                 "If the waypoint was updated by someone else without your permission, then you can " & _
+                                 "restore it in the database.  " & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                                 "The waypoint information: <old value> --> <current value>" & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                                 "WaypointOwner: " & oldFirstName & " " & oldLastName & " --> " & oUpdateRS("FirstName") & " " & oUpdateRS("LastName") & Chr(13) & Chr(10) & _
+                                 "WaypointOwnerID: " & oldWaypointOwnerID & " --> " & oUpdateRS("WaypointOwnerID") & Chr(13) & Chr(10) & _
+                                 "WaypointName: " & oldWaypointName & " --> " & oUpdateRS("WaypointName") & Chr(13) & Chr(10) & _
+                                 "Vehicle: " & oldVehicle & " --> " & oUpdateRS("Vehicle") & Chr(13) & Chr(10) & _
+                                 "Latitude: " & oldLatitude & " --> " & reformatNumber(oUpdateRS("Latitude"),8) & Chr(13) & Chr(10) & _
+                                 "Longitude: " & oldLongitude & " --> " & reformatNumber(oUpdateRS("Longitude"),8) & Chr(13) & Chr(10) & _
+                                 "Depth: " & oldDepth & " --> " & reformatNumber(oUpdateRS("Depth"),2) & Chr(13) & Chr(10) & _
+                                 "Altitude: " & oldAltitude & " --> " & reformatNumber(oUpdateRS("Altitude"),2) & Chr(13) & Chr(10) & _
+                                 "Heading: " & oldHeading & " --> " & reformatNumber(oUpdateRS("Heading"),2) & Chr(13) & Chr(10) & _
+                                 "CMG: " & oldCMG & " --> " & reformatNumber(oUpdateRS("CMG"),2) & Chr(13) & Chr(10) & _
+                                 "Speed: " & oldSpeed & " --> " & reformatNumber(oUpdateRS("Speed"),2) & Chr(13) & Chr(10) & _
+                                 "CreateDTG: " & oldCreateDTG & " --> " & oUpdateRS("CreateDTG") & Chr(13) & Chr(10) & _
+                                 "ExpireDTG: " & oldExpireDTG & " --> " & oUpdateRS("ExpireDTG") & Chr(13) & Chr(10) & _
+                                 "Comment: " & oldComment & " --> " & oUpdateRS("Comment") & Chr(13) & Chr(10) & Chr(13) & Chr(10) & _
+                                 "Use the Update form to restore it: " & _
+                                 Application("BaseURL") & "/waypoint_karen.asp?action=update" & _
+                                 "&personID=" & Request("Post_personID") & _
+                                 "&WaypointName=" & Server.URLEncode(filteredText(Request("Post_WaypointName")))
+                  objMail.Send
+                  Set objMail=Nothing
+
+                  oUpdateRS.Close
+                  Set oUpdateRS = Nothing
+               End If
+               wptConn.Errors.Clear
+            End If
+            wptConn.Errors.Clear
+
+         End If
+         wptConn.Errors.Clear
+         
+      Else
+
+         ' update called on a specified waypoint, present the user with a form to change the values
+
+         strSQL = ("select WaypointOwnerID, FirstName, LastName, WaypointName, " & _
+                                         "Vehicle, Latitude, Longitude, Depth, Altitude, Heading, CMG, Speed, " & _
+                                         "CreateDTG, ExpireDTG, " & _
+                                         "Comment " & _
+                                         "from waypoint, person " & _
+                                         "where personID = waypointOwnerID " & _
+                                         "and personID = " & Request.QueryString("personID") & _
+                                         " and WaypointName = '" & filteredText(Request.QueryString("wayPointName")) & _
+                                         "' order by WaypointName ")
+
+         Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+         ' get the current values for this waypoint from the database
+         Set oUpdateRS = Server.CreateObject("ADODB.Recordset")
+         oUpdateRS.Open strSQL, wptConn
+      
+         ' check for connection errors
+         If wptConn.Errors.Count > 0 Then
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+            For intLoop = 0 To wptConn.Errors.Count - 1
+               Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+               Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+            Next          
+         Else
+            ' no connection errors         
+
+            'make sure the recordset has a record
+            oUpdateRS.MoveFirst
+            If (oUpdateRS.BOF and oUpdateRS.EOF) then
+               Response.Write ("The waypoint that you selected for editing does not exist in the database.")
+               oUpdateRS.Close
+               Set oUpdateRS = Nothing
+            Else
+               ' present the current values of the selected waypoint for editing
+
+               ' get a list of all potential waypoint owners in the person table
+
+               strSQL = "select (LastName + ', ' + FirstName) " & _
+                                               "as ownerName, lastName, personID " & _
+                                               "from person " & _
+                                               "where (DisplayPIPickList=1 or DisplayChiefSciPickList=1) " & _
+                                               "order by lastName"
+
+               Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+
+               Set oOwnerRS = wptConn.Execute (strSQL)
+
+               ' check for connection errors
+               If wptConn.Errors.Count > 0 Then
+                  Response.Write ("<br><br>")
+                  Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+                  For intLoop = 0 To wptConn.Errors.Count - 1
+                     Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+                     Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+                  Next          
+               Else
+                  ' no connection errors         
+
+                  Response.Write ("<form name=thisForm method=post action=waypoint_karen.asp?action=update&step=2" & _
+                                       "&personID=" & Request.QueryString("personID") & _
+                                       "&WaypointName=" & Server.URLEncode(filteredText(Request.QueryString("wayPointName"))) & " ")
+                  Response.Write ("ONSUBMIT=" & Chr(34))
+                  Response.Write ("this.Post_Vehicle.optional = true; ")
+                  Response.Write ("this.Post_Depth.optional = true; ")
+                  Response.Write ("this.Post_Altitude.optional = true; ")
+                  Response.Write ("this.Post_Heading.optional = true; ")
+                  Response.Write ("this.Post_CMG.optional = true; ")
+                  Response.Write ("this.Post_Speed.optional = true; ")
+                  Response.Write ("this.Post_ExpireDTG.optional = true; ")
+                  Response.Write ("this.Post_Comment.optional = true; ")
+                  Response.Write ("this.Post_Latitude.numeric = true; ")
+                  Response.Write ("this.Post_Longitude.numeric = true; ")
+                  Response.Write ("this.Post_Depth.numeric = true; ")
+                  Response.Write ("this.Post_Altitude.numeric = true; ")
+                  Response.Write ("this.Post_Heading.numeric = true; ")
+                  Response.Write ("this.Post_CMG.numeric = true; ")
+                  Response.Write ("this.Post_Speed.numeric = true; ")
+                  Response.Write ("return verify(this);" & Chr(34) & ">")                                       
+   
+                  ' create the form layout in a table
+                  Response.Write ("<CENTER><TABLE border=0 width=70% cellpadding=2>")
+
+                  Response.Write ("<tr bgcolor=LightSkyBlue><td colspan=2>")
+                  Response.Write ("Edit the waypoint:")
+                  Response.Write ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>(<b>*</b> denotes a required field)<small>")
+                  Response.Write ("</td></tr>")
+            
+                  Response.Write ("<TR bgcolor=BlanchedAlmond>")
+                  Response.Write ("<TD>WaypointOwner: <b>*</b> </TD>")
+                  Response.Write ("<TD>")
+	              Response.Write ("<select name=" & Chr(34) & "Post_personID" & Chr(34) & _
+	                              "size=" & Chr(34) & "1" & Chr(34) &">")
+                  'loop through the record set, adding owners as options
+                  oOwnerRS.MoveFirst
+                  If Not (oOwnerRS.BOF and oOwnerRS.EOF) then
+                     Do While Not oOwnerRS.EOF
+                  
+                        Response.Write ("<option value=" & Chr(34) & oOwnerRS("personID") & Chr(34))
+                        If (oOwnerRS("personID") = oUpdateRS("WaypointOwnerID")) Then
+                           Response.Write ("selected")
+                        End If
+                        Response.Write (">" & oOwnerRS("ownerName") & "</option>")
+                        oOwnerRS.MoveNext
+                     Loop  
+                  End If
+                  oOwnerRS.Close
+                  Set oOwnerRS = Nothing      
+                  Response.Write ("</select>")	     	     
+	              Response.Write ("</TD>")
+                  Response.Write ("</TR>")
+
+                  ' create the rest of the form using the writeFormField subroutine
+                  writeFormField "WaypointName", oUpdateRS("WaypointName")
+                  writeFormField "Vehicle", oUpdateRS("Vehicle")
+                  writeFormField "Latitude", reformatNumber(oUpdateRS("Latitude"),8)
+                  writeFormField "Longitude", reformatNumber(oUpdateRS("Longitude"),8)
+                  writeFormField "Depth", reformatNumber(oUpdateRS("Depth"),2)
+                  writeFormField "Altitude", reformatNumber(oUpdateRS("Altitude"),2)
+                  writeFormField "Heading", reformatNumber(oUpdateRS("Heading"),2)
+                  writeFormField "CMG", reformatNumber(oUpdateRS("CMG"),2)
+                  writeFormField "Speed", reformatNumber(oUpdateRS("Speed"),2)
+                  writeFormField "CreateDTG", oUpdateRS("CreateDTG")
+                  writeFormField "ExpireDTG", oUpdateRS("ExpireDTG")
+                  writeFormField "Comment", oUpdateRS("Comment")
+
+                  Response.Write ("<TR bgcolor=BlanchedAlmond><td colspan=2>")
+                  Response.Write ("<input type=submit value=Update id=submit1 name=submit1>&nbsp;&nbsp;")
+                  Response.Write ("<input type=reset value=Reset id=reset1 name=reset1><br>")
+                  Response.Write ("</td></tr>")
+
+                  ' end of table         
+                  Response.Write ("</TABLE></CENTER>")
+                  Response.Write ("</form>")
+
+                  oUpdateRS.Close
+                  Set oUpdateRS = Nothing
+
+               End If
+               wptConn.Errors.Clear
+
+            End If
+
+         End If
+         wptConn.Errors.Clear
+
+      End If
+      
+      %> <!--#include file=wpt-ftr.inc --> <%
+  
+   End Sub 'update
+
+   '--------------------------------------------------------
+  
+   Sub import
+
+      On Error Resume Next
+
+      %> <!--#include file=wpt-hdr.inc --> <%
+      Response.Write ("<br><font size=+2>Import waypoints from a comma-delimited text file.</font><br><br>")
+      Response.Write ("Note: The required columns are: FirstName, LastName, " & _
+                      "WaypointName, Latitude, and Longitude.<br>To see an example file in the " & _
+                      "correct format, view a set of waypoints and click on the export link.<br>")
+      %>
+
+      <FORM ACTION="fileup/UploadReceive.asp" METHOD="POST" ENCTYPE="multipart/form-data"
+       ONSUBMIT="return verify(this);">
+      <INPUT TYPE=FILE NAME="UploadFormName" SIZE=60>
+      <INPUT TYPE="SUBMIT">
+      </FORM>
+
+      <!--#include file=wpt-ftr.inc --> <%      
+  
+   End Sub 'import
+
+   '--------------------------------------------------------
+   ' export
+   '
+   'waypoint_karen.asp?action=export&filetype=<txt/xls?/wpt?/log?>
+   '             [&personID=<personID>]
+   '             [&waypointName=<waypointName>]
+   '   Create a file of the specified type that contains
+   '   the waypoints.  Redirect the user's browser to the
+   '   new file.  The optional parameters limit the output
+   '   to a specified person's waypoints or even a single
+   '   waypoint specified by personID and waypointname.
+   '--------------------------------------------------------
+
+   Sub export
+
+      'Object for the Server's file system
+      Dim objFS
+
+      Dim oViewRS 'recordset object
+  
+      'stores the full path and file name of the DataFile
+      Dim strDataFileName
+      'stores the file name of the DataFile
+      Dim strDataFileNoPath
+      'Object for the DataFile
+      Dim objDataFile
+
+      'buffer that is used for composing output  
+      Dim strBuff
+      Dim intBuffLen
+      Dim strTheTime
+      Dim strLineBuff
+      Dim counter
+      Dim strCollector
+      Dim strDate1
+      Dim strDate2
+      Dim strSQL 'stores the SQL statement before execution
+      Dim strURL 'URL for edit/delete that is built from pieces and encoded
+
+      'stores the current date and time
+      Dim strTime
+      'stores a list of database fields for the header of the data file
+      Dim strFieldList
+
+      On Error Resume Next
+
+      ' create an Object for the Server's file system
+      Set objFS = CreateObject("Scripting.FilesystemObject")
+
+      'create the list of fields for the header of the DataFile
+      strFieldList = "FirstName,LastName,WaypointName," & _
+				 "Vehicle,Latitude,Longitude,Depth,Altitude,Heading,CMG,Speed," & _
+				 "CreateDTG,ExpireDTG," & _
+				 "Comment"
+
+      ' compose the query with or without the personID      
+      If (Request.QueryString("personID")) Then
+         strSQL = "select " & strFieldList & " from waypoint, person " & _
+                                      "where personID = waypointOwnerID " & _
+                                      "and personID = " & Request.QueryString("personID")
+      Else
+         strSQL = "select " & strFieldList & " from waypoint, person " & _
+                                      "where personID = waypointOwnerID "
+      End if
+
+      ' add the order by clause
+      strSQL = strSQL & "order by "
+      
+      If (Request.QueryString("orderby") = "fn") Then
+         strSQL = strSQL & "FirstName"
+      ElseIf (Request.QueryString("orderby") = "ln") Then
+         strSQL = strSQL & "LastName"
+      ElseIf (Request.QueryString("orderby") = "wn") Then
+         strSQL = strSQL & "WaypointName"
+      ElseIf (Request.QueryString("orderby") = "ve") Then
+         strSQL = strSQL & "Vehicle"
+      ElseIf (Request.QueryString("orderby") = "la") Then
+         strSQL = strSQL & "Latitude"
+      ElseIf (Request.QueryString("orderby") = "lo") Then
+         strSQL = strSQL & "Longitude"
+      ElseIf (Request.QueryString("orderby") = "de") Then
+         strSQL = strSQL & "Depth"
+      ElseIf (Request.QueryString("orderby") = "al") Then
+         strSQL = strSQL & "Altitude"
+      ElseIf (Request.QueryString("orderby") = "he") Then
+         strSQL = strSQL & "Heading"
+      ElseIf (Request.QueryString("orderby") = "cm") Then
+         strSQL = strSQL & "CMG"
+      ElseIf (Request.QueryString("orderby") = "sp") Then
+         strSQL = strSQL & "Speed"
+      ElseIf (Request.QueryString("orderby") = "cd") Then
+         strSQL = strSQL & "CreateDTG"
+      ElseIf (Request.QueryString("orderby") = "ed") Then
+         strSQL = strSQL & "ExpireDTG"
+      ElseIf (Request.QueryString("orderby") = "co") Then
+         strSQL = strSQL & "Comment"
+      Else
+         strSQL = strSQL & "WaypointName"
+      End If
+
+      ' set the sorting direction
+      If (Request.QueryString("sortdir") = "desc") Then
+         strSQL = strSQL & " desc"
+      Else
+         strSQL = strSQL & " asc"
+      End If
+
+      Response.Write ("<!-- DEBUG SQL Statement: " & strSQL & " -->")
+      Set oViewRS = wptConn.Execute (strSQL)
+     
+      ' check for connection errors
+      If wptConn.Errors.Count > 0 Then
+         Response.Write ("<br><br>")
+         Response.Write ("<font size=+1>Error(s) occurred while connecting to the database.</font><br><br>")
+         For intLoop = 0 To wptConn.Errors.Count - 1
+            Response.Write "Error Number: " & wptConn.Errors(intLoop).Number
+            Response.Write " - " & wptConn.Errors(intLoop).Description & "<P>"
+         Next          
+      Else
+         ' no connection errors
+
+         ' create or overwrite a text file for the log
+         strTime = Now
+         strTheTime = Hour(strTime) & Minute(strTime) & Second(strTime)
+      
+         strDataFileName = server.mappath("\expd\log\fileup\data\" & strTheTime & ".txt")
+         strDataFileNoPath = strTheTime & ".txt"
+    
+         Set objDataFile = objFS.CreateTextFile(strDataFileName)
+
+         oViewRS.MoveFirst
+         If oViewRS.BOF And oViewRS.EOF Then
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>No waypoints were found.</font><br><br>")
+         Else
+
+            ' write the column headers
+	        strLineBuff = ""
+	  
+            For Each oField In oViewRS.Fields
+      
+              strBuff = oField.Name & ","
+              strLineBuff = strLineBuff & strBuff
+
+            Next
+
+            intBuffLen = Len (strLineBuff)
+            strLineBuff = Left(strLineBuff,(intBuffLen-1))      
+            objDataFile.Write(strLineBuff)
+            objDataFile.WriteLine("")
+
+            ' now write the data
+            Do While Not oViewRS.EOF
+      
+              strLineBuff = ""
+        
+              For Each oField In oViewRS.Fields
+                ' replace comma with empty string and add a
+                ' comma on the end as a delimiter
+                ' note: reformatNumber is in filteredText.inc
+                ' format Depth with a scale of 2, all other
+                ' numbers are scaled at 8, non-numeric fields
+                ' are not scaled by reformatNumber
+                
+                'initialize the buffer
+                strBuff = ","
+
+                If ((oField.Name = "Depth") or (oField.Name = "Altitude") or _
+                    (oField.Name = "Heading") or (oField.Name = "CMG") or _
+                    (oField.Name = "Speed")) Then
+                   strBuff = reformatNumber(oField,2)
+                   If Not IsNull(strBuff) Then
+                      strBuff = Replace(strBuff, ",", "") & ","
+                   Else
+                      strBuff = ","
+                   End If
+                Else
+                   strBuff = reformatNumber(oField,8)
+                   If Not IsNull(strBuff) Then
+                      strBuff = Replace(strBuff, ",", "") & ","
+                   Else
+                      strBuff = ","
+                   End If
+                End If
+
+                strLineBuff = strLineBuff & strBuff
+              Next
+        
+              intBuffLen = Len (strLineBuff)
+              strLineBuff = Left(strLineBuff,(intBuffLen-1))      
+              objDataFile.Write(strLineBuff)
+              objDataFile.WriteLine("")
+          
+              oViewRS.MoveNext
+        
+            Loop
+  
+            ' close the Data File
+            objDataFile.Close
+
+            ' use a hidden form element to pass the filename from Server-side VBScript to Client-side JScript
+            Response.Write ("<form name=theForm> <input type=hidden name=fileName value=" & strDataFileNoPath & " </form>")
+
+            ' Launch the data file
+            %>
+
+            <script Language="JavaScript"><!--
+            // open the comma delimited text file in the current window
+
+            var strNewLocation
+
+            // get the file name from the hidden form element called "fileName"
+            strNewLocation = "http://mww.mbari.org/expd/log/fileup/data/" + document.theForm.fileName.value;
+
+            // redirect the user's browser to the text file
+            window.location = strNewLocation;
+
+            //-->
+            </script>
+            <%
+
+         End If
+
+         If Not IsNull(oViewRS) Then
+            oViewRS.Close
+            Set oViewRS = Nothing
+         End If
+
+      End If
+      wptConn.Errors.Clear
+        
+   End Sub 'export
+
+   '--------------------------------------------------------
+
+   Sub writeFormField (strFieldName, strValue)
+
+      On Error Resume Next
+
+      Response.Write ("<TR bgcolor=BlanchedAlmond>")
+      Response.Write ("<TD>" & strFieldName & ":")
+      If ((strFieldName = "WaypointName") or (strFieldName = "Latitude") or (strFieldName = "Longitude") _
+                                          or (strFieldName = "CreateDTG")) Then
+         Response.Write (" <b>*</b> ")
+      End If
+      Response.Write ("</TD>")
+      Response.Write ("<TD>")
+      Response.Write ("<INPUT NAME=Post_" & strFieldName)
+      If IsNull(strValue) Then
+         Response.Write (" Size=20 VALUE=" & Chr(34) & Chr(34) & ">")
+      Else 
+         ' clean the strValue - remove commas
+         ' this cleans commas from numbers greater than 999
+         ' such as 1,000.
+         ' replace comma with empty string
+         strValue = Replace(strValue, ",", "")
+         Response.Write (" Size=20 VALUE=" & Chr(34) & strValue & Chr(34) & ">")
+      End If
+      
+      ' Give some hints to the format
+      If (strFieldName = "WaypointName") Then
+      		Response.Write ("<font face=""Arial,Helvetica"" size=""-1"" color=""brown"">Choose unique name")
+      End If
+      If (strFieldName = "Latitude") Then
+      		Response.Write ("<font face=""Arial,Helvetica"" size=""-1"" color=""brown"">dd.ddddd (decimal degrees)</font>")
+      End If
+      If (strFieldName = "Longitude") Then
+      		Response.Write ("<font face=""Arial,Helvetica"" size=""-1"" color=""brown"">-ddd.ddddd (decimal degrees, West longitudes < 0)</font>")
+      End If
+      If (strFieldName = "Depth") Then
+      		Response.Write ("<font face=""Arial,Helvetica"" size=""-1"" color=""brown"">ddd.d (meters)</font>")
+      End If
+   	  
+      Response.Write ("</TD>")
+      Response.Write ("</TR>")
+              
+   End Sub 'writeFormField
+
+   '--------------------------------------------------------
+
+   Sub check_for_script_errors
+      'These error messages are not very useful to users, so we normally only
+      'call check_for_script_errors at the end of the ASP's execution (which prints
+      'the error message after the footer).
+      'For debugging, insert a line "check_for_script_errors" after blocks of
+      'code that may be causing a script error.
+   
+      Response.Write ("<!-- !!!!!!!!********* checking for script errors *******!!!!!!!! -->")
+
+      ' check for script errors
+      If (Err.Number > 0) Then
+         ' ignore common warning (Either BOF or EOF is True...)
+         If (Err.Number = 3021) Then
+            Response.Write ("<!--")
+            Response.Write ("Error(s) occurred. ")
+            Response.Write ("Error Number: " & Err.Number)
+            Response.Write (" - Source: " & Err.Source)
+            Response.Write (" - " & Err.Description)
+            Response.Write ("-->")
+         Else      
+            Response.Write ("<br><br>")
+            Response.Write ("<font size=+1>Error(s) occurred.</font><br><br>")
+            Response.Write ("Error Number: " & Err.Number)
+            Response.Write (" - Source: " & Err.Source)
+            Response.Write (" - " & Err.Description)
+         End If
+      Else
+         Response.Write ("<!-- currently, there are no script errors -->")
+      End If
+      Err.Clear
+
+   End Sub 'check_for_script_errors
+
+   '--------------------------------------------------------
+  
+   Sub debug
+   
+   For Each Item in Request.Form
+   If Request.Form(Item).Count Then
+    For intLoop = 1 to Request.Form(Item).Count 
+    %>
+    <% Response.Write(Item & ": Index = " & intLoop & " Value = " _
+            & Request.Form(Item)(intLoop)) %> <BR>
+    <% 
+    Next
+   Else 
+   %>
+   <% = Request.Form(Item) %>
+   <%
+   End If
+   Next
+
+   End Sub 'debug
+
+   '--------------------------------------------------------
+
+%>
+
+</body>
+</html>

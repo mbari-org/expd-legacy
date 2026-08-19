@@ -1,0 +1,135 @@
+#!/bin/sh
+#
+# Set environment variables and start vicki for the Pt.Lobos
+#
+# $Log: start.txt,v $
+# Revision 1.1  2005/06/22 23:26:54  mccann
+# Initial checkin to CVS.
+#
+# Revision 1.12  98/09/24  23:28:23  23:28:23  vicki (VICKI video software)
+# More prettying up...
+# 
+# 
+# Revision 1.11  98/09/24  23:23:21  23:23:21  vicki (VICKI video software)
+# Removed extra messages at top, removed clear statement.
+# 
+# 
+# Revision 1.10  98/09/24  23:18:33  23:18:33  vicki (VICKI video software)
+# Tested nettest logic in this script.  Prettied up output a bit.
+# 
+# 
+# Revision 1.9  98/09/24  23:12:43  23:12:43  vicki (VICKI video software)
+# added logic to test for vif file before trying to run VIF2staging
+# and not tests for shore link being up before tryingto copy files over.
+# 
+# 
+
+echo "\nstart script begun at \c"
+date
+
+p=`ps -ef | grep visualworks | grep -v grep | wc -c`
+
+yd=`date -u '+%j'`
+yr=`date -u '+%Y'`
+
+if [ $p -ne 0 ]
+then
+	echo " "
+	echo "Vicki already running, started at `cat vicki.lock` "
+	echo "If this is an error, i.e. you know that vicki is not running,"
+	echo "then 'rm /users/vicki/vicki.lock' and open a new shell"
+	echo "window."
+	echo " "
+	echo "To prevent this from happening in the future be sure to "
+	echo "Exit Visualworks before logging out."
+	echo " "
+	echo "If all you wanted was another shell window and you know"
+	echo "what you are doing then just ignore the above."
+	echo " "
+	exit
+fi
+
+
+date > vicki.lock
+
+VKSNAPHOST=ariel
+export VKSNAPHOST
+VKVIFHOST=ariel
+export VKVIFHOST
+
+
+cat <<EOT
+
+
+			    Vicki Instructions
+
+1. Log into pl_navproc from the VCR panel 
+	- Click on the white button in upper-right corner
+	- Enter your unix loginname and password
+	- Betacam timecode should appear if deck is turned on
+
+2. Open Annotation window before the dive
+	-Click 'New' in the Vicki window, & click 'OK'
+	-In the window called "YYYYDDDPV1.int", select Annotations -> Edit 
+	 (This used to be the "untitled.int" window.)
+
+3. TAG and Snap during the dive
+	-Identify objects using names on the {Midwater,Benthic,...} Maps
+	-Select the big "S" button when taking a sample before taking Snapshot 
+	-The TAG button adds to the VIMS database
+	-Snap Main saves a still image from the main camera, displayed on ariel
+	-Snap Aux saves a still image of the composite input,    "     "    "  
+
+4. Save your .int file after the dive
+	-Click on red "Close" button in the Edit window
+	-In "YYYYDDDPV1.int" window select File -> Save As ...
+	-Use YYYYDDDPV1.int format for naming the .int file (This should
+	 already be entered properly for today's dive).
+
+5. Exit Visualworks from the File pulldown menu. (Do NOT save upon exit)
+
+	  ---------------------------------------------------------
+	  !          New Vicki (vr163) installed 5/18/98          !
+	  !         >>>  See above for instructions.  <<<         !
+	  ---------------------------------------------------------
+	
+Starting vicki ...
+
+EOT
+
+
+##exec nice vtcc.sh &	# Commented out 6/22/98, using pllogger files now.
+
+nohup visualworks vr163.im 
+
+if [ -f ${yr}${yd}PV1.vif ]
+then
+	echo "Running VIF2staging ${yr}${yd}PV1.vif..."
+	VIF2staging ${yr}${yd}PV1.vif
+else
+	echo " "
+	echo "VIF file ${yr}${yd}PV1.vif not found, please save the"
+	echo "interpretation file before exiting vicki."
+fi
+
+echo " "
+echo "Testing for good network link to shore (nettest calypso)..."
+if [ `/users/vicki/bin/nettest calypso` -eq 0 ]
+then
+	echo " "
+	echo "Copying vicki files to calypso data/interpretation area..."
+	rcp ${yr}${yd}PV?.??? calypso:data/interpretation
+else
+	echo " "
+	echo "network link to shore is down, contact Samples coordinator."
+fi
+
+echo " "
+echo "start script finished at \c"
+date
+
+echo " "
+echo "Sending mail and removing start.log file..."
+elm -s "Vicki report ${yr}${yd}" mccann paje < start.log 
+/bin/rm -f start.log
+

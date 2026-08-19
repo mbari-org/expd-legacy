@@ -1,0 +1,54 @@
+<html>
+
+<head>
+<title>Depth calculation code</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<meta name="Microsoft Border" content="none">
+</head>
+
+<body>
+
+<p><strong>C++ code for calculating ROV CTD depth from ROV CTD pressure</strong></p>
+
+<p><font size="2">/************************</font> <br>
+<font size="2">&nbsp;function: calcDepth</font> <br>
+<font size="2">&nbsp;Depth in meters</font> </p>
+
+<p><font size="2">&nbsp;Ref: Saunders &amp; Fofnoff, DSR, 23, 109-111 (1976)</font> <br>
+<font size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Parameters were re-fit for the 1980 equation</font>
+<br>
+<font size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; of state for seawater (EOS80)</font> </p>
+
+<p><font size="2">&nbsp;Variables :</font> <br>
+<font size="2">&nbsp;&nbsp;&nbsp; P&nbsp; - pressure in dbars&nbsp; (not SI)</font> <br>
+<font size="2">&nbsp;&nbsp;&nbsp; L&nbsp; - latitude in degrees</font> </p>
+
+<p><font size="2">************************/</font> <br>
+<font size="2">void CTD::calcDepth (float P, float L)</font> <br>
+<font size="2">{</font> <br>
+<font size="2">&nbsp;&nbsp; const static float deg2rad = M_PI/180;</font> </p>
+
+<p><font size="2">&nbsp;&nbsp; float phi = L * deg2rad;</font> <br>
+<font size="2">&nbsp;&nbsp; float sinPhi&nbsp; = sin( phi );</font> <br>
+<font size="2">&nbsp;&nbsp; float sinPhi2= sinPhi*sinPhi;</font> </p>
+
+<p><font size="2">&nbsp;&nbsp; static const float c0 =&nbsp; 5.2788e-3;</font> <br>
+<font size="2">&nbsp;&nbsp; static const float c1 =&nbsp; 2.36e-5;</font> <br>
+<font size="2">&nbsp;&nbsp; static const float c3 =&nbsp; 1.092e-6;</font> </p>
+
+<p><font size="2">&nbsp;&nbsp; float gr = 9.780318 * (1.0 + (c0 + c1*sinPhi2)*sinPhi2) +
+c3 * P;</font> </p>
+
+<p><font size="2">&nbsp;&nbsp; const static float c4 = -1.82e-15;</font> <br>
+<font size="2">&nbsp;&nbsp; const static float c5 =&nbsp; 2.279e-10;</font> <br>
+<font size="2">&nbsp;&nbsp; const static float c6 =&nbsp; 2.2512e-5;</font> <br>
+<font size="2">&nbsp;&nbsp; const static float c7 =&nbsp; 9.72659;</font> </p>
+
+<p><font size="2">&nbsp;&nbsp; depth = (((c4*P + c5) * P - c6) * P + c7) * P;</font> <br>
+<font size="2">&nbsp;&nbsp; depth = depth / gr;</font> </p>
+
+<p><font size="2">&nbsp;&nbsp; if (Nan(depth) != 0) depth = missingValue;</font> <br>
+<font size="2">&nbsp;&nbsp; return;</font> <br>
+<font size="2">}</font> </p>
+</body>
+</html>

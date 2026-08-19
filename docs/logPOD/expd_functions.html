@@ -1,0 +1,149 @@
+<HTML>
+<HEAD>
+<TITLE>expd_functions.inc - Common included functions for Expedition Log apps</TITLE>
+<LINK REV="made" HREF="mailto:">
+</HEAD>
+
+<BODY>
+
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#FUNCTIONS">FUNCTIONS</A>
+	<UL>
+
+		<UL>
+
+			<LI><A HREF="#open_database_">open_database()</A>
+			<LI><A HREF="#FixString_">FixString()</A>
+			<LI><A HREF="#toGMT_">toGMT()</A>
+			<LI><A HREF="#toGMTfromES_">toGMTfromES()</A>
+			<LI><A HREF="#toYDfromDate_">toYDfromDate()</A>
+			<LI><A HREF="#URLEncode_">URLEncode()</A>
+			<LI><A HREF="#dataLinks_">dataLinks()</A>
+		</UL>
+
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE>    <A HREF="http://expd.mbari.org/expd/log/expd_functions.inc">http://expd.mbari.org/expd/log/expd_functions.inc</A>
+</PRE>
+<P>
+<HR>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+Standard functions used by pre- and post- cruise asps.
+
+<P>
+Mike McCann MBARI
+
+<P>
+November 1998
+
+<P>
+<HR>
+<H1><A NAME="FUNCTIONS">FUNCTIONS</A></H1>
+<P>
+<HR>
+<H3><A NAME="open_database_">open_database()</A></H3>
+<P>
+Create the database connection object. Receive the DSN. Does a little error
+checking. <CODE>$Conn</CODE> is global.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 11/3/8
+
+<P>
+<HR>
+<H3><A NAME="FixString_">FixString()</A></H3>
+<P>
+Put quotes around text values and nothing around numbers escape embedded
+quotes.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 10/28/98
+
+<P>
+<HR>
+<H3><A NAME="toGMT_">toGMT()</A></H3>
+<P>
+Convert local time array to a GMT string that is good for a database DTG
+load.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 10/28/98
+
+<P>
+<HR>
+<H3><A NAME="toGMTfromES_">toGMTfromES()</A></H3>
+<P>
+Convert local time array to a GMT string that is good for a database DTG
+load. Should have overloaded toGMT, but I feel this is safer.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 7/19/99
+
+<P>
+<HR>
+<H3><A NAME="toYDfromDate_">toYDfromDate()</A></H3>
+<P>
+Compute Year and YearDay given a GMT m/d/y.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 7/27/99
+
+<P>
+<HR>
+<H3><A NAME="URLEncode_">URLEncode()</A></H3>
+<P>
+Make variables safe for a URL.
+
+<P>
+Author: <A
+HREF="http://eclectic.kluge.net/codesnippets/perl/URLEncode.html">http://eclectic.kluge.net/codesnippets/perl/URLEncode.html</A>
+
+
+<P>
+Date Created: 10/28/98
+
+<P>
+<HR>
+<H3><A NAME="dataLinks_">dataLinks()</A></H3>
+<P>
+Do DB query against ExpeditionData table and output href links a text.
+Assumes <CODE>$Conn</CODE> object already opened. This function is to be
+called within an area where the DB is opened.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 9/15/99
+
+</BODY>
+
+</HTML>

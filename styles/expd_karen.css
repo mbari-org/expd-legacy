@@ -1,0 +1,502 @@
+input.reset {
+	background-color: white;
+}
+input:disabled 
+{
+    background-color: grey;
+}
+input:hover 
+{
+	background: beige;
+}
+select:disabled 
+{
+	background-color: grey;
+}
+select:hover
+{
+	background: beige;
+}
+textarea 
+{
+	width: 95%;
+}
+textarea:disabled
+{
+	background-color: grey;
+}
+textarea:hover
+{
+	background: beige;
+}
+
+
+table.a {
+	table-layout: fixed;
+	width:830px;
+}
+table.a tbody {
+	width:700px;
+}
+table.a td {
+	width:10px;
+}
+table.a td:first-child
+{ 
+	width:2px;
+}
+
+
+table.b {
+	table-layout: auto;
+	width:680px;
+}
+table.b tbody {
+	width:700px;
+}
+table.b td {
+	width:680px;
+}
+table.b td:first-child
+{
+	width:10px;
+}
+
+
+table.c {
+	table-layout: fixed;
+	max-width: 830px;
+	width:620px;
+}
+
+
+.wrap
+{
+    width: 600px; 
+  	word-wrap: break-word;
+}
+.wrap2
+{
+    width: 800px; 
+  	word-wrap: break-word;
+}
+body
+{
+	/*overflow-y: scroll;*/
+	background-color: #FFFFFF;
+	margin: 4px;
+	font-family: Geneva, Helvetica, Arial, sans-serif;
+	font-size: .9em;
+	color: #000000;
+	/*idth: 800px;*/
+}
+tr {
+	width:650px;
+}
+
+/* TD: This is required for older browsers that do not read fonts from the BODY tag.*/
+td .input
+{
+	/*font-family: Geneva, Helvetica, Arial, sans-serif;
+	color: #000000;*/
+	width:21px;
+	/*word-wrap: break-word;*/
+}
+
+td .timesText 
+{
+	font-family: "Times New Roman", Times, serif;
+	font-size: 16px;
+	/*word-wrap: break-word;*/
+}
+
+td .smalltimesText 
+{
+	font-family: "Times New Roman", Times, serif;
+	font-size: 14px;
+	/*word-wrap: break-word;*/
+}
+.button.big 
+{
+    font: 14px Arial;
+    text-decoration: none;
+    color: white;
+    border-color : #2989d8;
+    padding: 5px 10px 5px 10px;
+    background: #2989d8;
+    background: -moz-linear-gradient(top, #2989d8 0%, #1e5799 100%);
+    background: -webkit-gradient(linear, left top, left bottom, 
+         color-stop(0%,#2989d8), color-stop(100%,#1e5799));
+    background: -webkit-linear-gradient(top, #2989d8 0%,#1e5799 100%);
+    background: -o-linear-gradient(top, #2989d8 0%,#1e5799 100%);
+    background: -ms-linear-gradient(top, #2989d8 0%,#1e5799 100%);
+    background: -linear-gradient(top, #2989d8 0%,#1e5799 100%);
+         filter: progid:DXImageTransform.Microsoft.gradient( 
+         startColorstr='#2989d8', endColorstr='#1e5799',GradientType=0 );
+}
+
+.button.big:hover
+{
+    box-shadow: 0 14px 18px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+	-webkit-transform(scale(1.2));
+  	-ms-transform:(scale(1.2));
+    transform:scale(1.2);
+}
+
+.button.blue 
+{
+    font: 12px Arial;
+    text-decoration: none;
+    border-color : #2989d8;
+    color: white;
+    padding: 5px 10px 5px 10px;
+    background: #2989d8;
+    background: -moz-linear-gradient(top, #2989d8 0%, #1e5799 100%);
+    background: -webkit-gradient(linear, left top, left bottom, 
+        color-stop(0%,#2989d8), color-stop(100%,#1e5799));
+    background: -webkit-linear-gradient(top, #2989d8 0%,#1e5799 100%);
+    background: -o-linear-gradient(top, #2989d8 0%,#1e5799 100%);
+    background: -ms-linear-gradient(top, #2989d8 0%,#1e5799 100%);
+    background: -linear-gradient(top, #2989d8 0%,#1e5799 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#2989d8', endColorstr='#1e5799',GradientType=0 );
+}
+
+.button.blue:hover
+{
+    box-shadow: 0 14px 18px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+	-webkit-transform(scale(1.2));
+  	-ms-transform:(scale(1.2));
+    transform:scale(1.2);
+}
+
+.button.gray 
+{
+    font: 12px Arial;
+    font-weight: bold;
+    text-decoration: none;
+    background-color: #E6E6E6;
+    color: #333333;
+    padding: 5px 10px 5px 10px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+}
+
+.button.gray:hover
+{
+    box-shadow: 0 14px 18px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+	-webkit-transform(scale(1.2));
+  	-ms-transform:(scale(1.2));
+    transform:scale(1.2);
+}
+
+.button.delete 
+{
+    font: 12px Arial;
+    font-weight: bold;
+    text-decoration: none;
+    background-color: #E6E6E6;
+    color: #333333;
+    padding: 5px 10px 5px 10px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+}
+.button.delete:hover 
+{
+	background-color: red;
+	color: white;
+    box-shadow: 0 14px 18px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+	-webkit-transform(scale(1.2));
+  	-ms-transform:(scale(1.2));
+    transform:scale(1.2);	
+}
+
+.button.green 
+{
+    font: 12px Arial;
+    font-weight: bold;
+    text-decoration: none;
+    background-color: #E6E6E6;
+    color: #333333;
+    padding: 5px 10px 5px 10px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+}
+.button.green:hover 
+{
+	background-color: #408080;
+	color: white;
+    box-shadow: 0 14px 18px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+	-webkit-transform(scale(1.2));
+  	-ms-transform:(scale(1.2));
+    transform:scale(1.2);	
+}
+
+.img
+{
+	width: 100;
+	height: auto;
+	-webkit-transition: .3s ease-in-out;
+	transition: .3s ease-in-out;		
+}
+
+.img:hover
+{
+   width: 110;
+}
+
+.img.edit
+{
+	width: 114;
+	height: 21;
+	-webkit-transition: .3s ease-in-out;
+	transition: .3s ease-in-out;	
+}
+
+.img.edit:hover
+{
+   width: 125;
+}
+
+.greenText
+{
+	color: #408080;
+}
+
+.brownText
+{
+	color: brown;
+}
+
+.smallbrownText 
+{
+    color: brown;
+    font-size: 10pt;
+    /*font-size: 9pt*/;
+}
+
+.errorText
+{
+	color: red;
+}
+
+.underline {
+	text-decoration: underline;
+}
+
+.captionCell
+{
+	vertical-align: top;
+	font-weight: bold;
+	font-size: smaller;
+	border-bottom: 3px solid black
+}
+
+.dateCell
+{
+	vertical-align: top;
+	font-weight: bold;
+	background-color: #FFFF00;
+	color: #000000;
+	font-size: smaller;
+}
+
+.coloredCell
+{
+	vertical-align: top;
+	background-color: #E7F1F1;
+	font-size: smaller;
+}
+
+.topCell
+{
+	vertical-align: top;
+	font-size: smaller;
+	border: 0px solid black
+}
+/* color of returnCell used to be #f7efde */
+.middleCell
+{
+	vertical-align: middle;
+	text-align: center;
+	font-size: smaller;
+	border: 0px solid black
+}
+.checkboxCell
+{
+	vertical-align: middle;
+	text-align: center;
+	font-size: smaller;
+}
+
+.bigCheckbox {
+	width : 40px; 
+	height: 40px;
+}
+
+.imageCell
+{
+	vertical-align: middle;
+	text-align: center;
+	font-size: smaller;
+}
+
+
+.returnCell_Nowrap
+{
+	vertical-align: top;
+	font-size: smaller;
+	white-space: nowrap;
+}
+
+.commentTextarea { 
+	overflow: auto; 
+}
+
+.topnavbar
+{
+	padding: 5px 0px 5px 0px;
+	font-weight: bold;
+	font-size: .8em;
+	line-height: 140%;
+}
+
+.navbarSamp
+{
+	padding: 5px 0px 5px 75px;
+	font-weight: bold;
+	font-size: .9em;
+	line-height: 140%;
+}
+
+.subnavbarSamp
+{
+	padding: 5px 0px 5px 100px;
+	font-weight: bold;
+    font-size: smaller;
+	line-height: 100%;
+}
+
+
+
+/* PAGETABLE: Use this setting to control the width of the web page. Width does not always work on Netscape 4 browsers.*/
+#pagetable
+{
+	width: 90%;
+	background-color: #FFFFFF;
+}
+
+#content_cell { width: 100%; }
+
+#content
+{
+	padding: 0px 15px 15px 15px;
+	border-color: #FFFFFF;
+	border-width: 1px;
+	border-style: solid;
+	margin: 0px;
+	font-family: Geneva, Helvetica, Arial, sans-serif;
+	font-size: .9em;
+}
+/* MISC FONT SIZE CONTROLS */
+.smalltext
+{
+	font-size: .8em;
+	font-family: Geneva, Helvetica, Arial, sans-serif;
+}
+.largertext
+{
+	font-size: larger;
+	font-family: Geneva, Helvetica, Arial, sans-serif;
+	font-weight: bold;
+}
+
+/* APPARENTLY REQUIRED FOR NS 4 */
+.blue_v { font-family: Geneva, Helvetica, Arial, sans-serif; }
+.brown_v { font-family: Geneva, Helvetica, Arial, sans-serif; }
+.blue_dot { font-family: Geneva, Helvetica, Arial, sans-serif; }
+.brown_dot { font-family: Geneva, Helvetica, Arial, sans-serif; }
+
+/* GENERAL SITE LINKS: These are the links in the main text body.*/
+a:link
+{
+	text-decoration: underline;
+}
+
+a:visited
+{
+	text-decoration: underline;
+}
+
+a:active
+{
+	text-decoration: underline;
+}
+
+a:hover 
+{ 
+	text-decoration: underline; 
+	color: red;
+}
+
+a 
+{
+    white-space: nowrap;
+}
+
+h1
+{
+	font-size: 20px;
+	font-weight: bold;
+	color: #000000;
+	background-color: #FFFFFF;
+}
+
+h2
+{
+	font-size: 18px;
+	font-weight: bold;
+	color: #000000;
+	background-color: #FFFFFF;
+}
+
+h3
+{
+	font-size: 16px;
+	font-weight: bold;
+	color: #000000;
+	background-color: #FFFFFF;
+}
+
+li {
+	padding: 0px 15px 15px 15px;
+}
+
+/* HORIZONTAL RULES*/
+.blue_line
+{
+	display: block;
+	padding: 2px 0 2px 0;
+	background-color: #336699;
+	margin: 6px 0 6px 0;
+}
+
+.sand_line
+{
+	display: block;
+	padding: 2px 0 2px 0;
+	background-color: #E1E2D5;
+	margin: 6px 0 6px 0;
+}
+ul {
+
+	list-style-image: url(http://www.mbari.org/art/interior_levels/bullets/blue_v.gif);
+	list-style-position: outside;
+	margin: 20px 0 20px 40px;
+}

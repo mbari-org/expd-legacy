@@ -1,0 +1,282 @@
+<HTML>
+<HEAD>
+<TITLE>DOWD.pm - Directory Of Web Data: Provide info on Expedition data that live on the web</TITLE>
+<LINK REV="made" HREF="mailto:">
+</HEAD>
+
+<BODY>
+
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#NAME">NAME</A>
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<UL>
+
+		<LI><A HREF="#Methods">Methods</A>
+		<UL>
+
+			<LI><A HREF="#init_">init()</A>
+			<LI><A HREF="#nextDir_">nextDir()</A>
+			<LI><A HREF="#nextFile_">nextFile()</A>
+			<LI><A HREF="#_getDirs_">_getDirs()</A>
+			<LI><A HREF="#_getFiles_">_getFiles()</A>
+			<LI><A HREF="#_frameGrabInfo_">_frameGrabInfo()</A>
+			<LI><A HREF="#_rovctdInfo_">_rovctdInfo()</A>
+			<LI><A HREF="#_loggerInfo_">_loggerInfo()</A>
+			<LI><A HREF="#_camlogInfo_">_camlogInfo()</A>
+			<LI><A HREF="#_navInfo_">_navInfo()</A>
+		</UL>
+
+	</UL>
+
+	<LI><A HREF="#SEE_ALSO">SEE ALSO</A>
+	<LI><A HREF="#AUTHOR">AUTHOR</A>
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="NAME">NAME</A></H1>
+<P>
+DOWD.pm - Directory Of Web Data: Provide info on Expedition data that live
+on the web
+
+<P>
+<HR>
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE>    use DOWD;
+</PRE>
+<P>
+<HR>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+This module was written to support the popExpeditionData.pl script which is
+used to (of course) populate the ExpeditionData table inside the Expd
+database. It has some perhaps useful methods to discover files that live at
+web addresses. It make significatnt use of the LWP::Simple module to do
+this.
+
+<P>
+<HR>
+<H2><A NAME="Methods">Methods</A></H2>
+<P>
+<HR>
+<H3><A NAME="init_">init()</A></H3>
+<P>
+Example:
+
+<P>
+<PRE>        $dod = new DOWD;
+        
+        $dod-&gt;init;
+        
+        Initialize internal variables that help this package know about the data.  The primary
+        data member is $dod-&gt;{RootWeb}.
+        
+</PRE>
+<P>
+<HR>
+<H3><A NAME="nextDir_">nextDir()</A></H3>
+<P>
+Example:
+
+<P>
+<PRE>        $dod = new DOWD;
+        
+        for ($year = 1999; $year &lt;= 1999; $year++) {
+        
+                foreach $DataType ( ('frameGrabs', 'rovctd') ) {
+         
+                        $dod-&gt;nextDir( ParentDir =&gt; $DataType, Platform =&gt; 'vnta', Year =&gt; $year);
+        
+        The nextDir() method will setup the necessary internal lists based on the
+        passed parameters.  The method constructs a list of files from which nextFile()
+        reads.
+</PRE>
+<P>
+<HR>
+<H3><A NAME="nextFile_">nextFile()</A></H3>
+<P>
+Example:
+
+<P>
+<PRE>        $dod = new DOWD;
+        
+        while ( $dod-&gt;nextFile ) {
+        
+                        $URL  = $dod-&gt;{url};
+                        
+                        $LinkText  = $dod-&gt;{linktext};
+                        
+                        $s_dtg  = $dod-&gt;{startDtg};
+                        
+                        $e_dtg  = $dod-&gt;{endDtg};
+                        
+                        $UnixPath  = $dod-&gt;{unixpath};
+                        
+                        $WindowsPath  = $dod-&gt;{windowspath};
+                
+        Returns 0 when at the end of the list.
+</PRE>
+<P>
+<HR>
+<H3><A NAME="_getDirs_">_getDirs()</A></H3>
+<P>
+Internal method to get the contents of a web directory. It parses the html
+received by a LWP::Simple <CODE>get()</CODE> call on a URL.
+
+<P>
+<HR>
+<H3><A NAME="_getFiles_">_getFiles()</A></H3>
+<P>
+Internal method to get the contents of a web directory. It parses the html
+received by a LWP::Simple <CODE>get()</CODE> call on a URL. An optional
+second argument can be passed to return only files that end in the
+specified string ($ext).
+
+<P>
+<HR>
+<H3><A NAME="_frameGrabInfo_">_frameGrabInfo()</A></H3>
+<P>
+Internal method to return the information (link text, start &amp; end
+times, and physical paths) about a set of frame grabs that are pointed to
+by a thumbnail index page. Typically called by <CODE>nextDir()</CODE> for
+constructing the list of these items. This method encapsulates the
+knowledge of where and how to look for start &amp; end info and
+unix/Windows path names.
+
+<P>
+Unfortunately, unix and windows paths will often change requiring edits of
+this function. I don't know how important it will be to keep track of this
+info as we plan to keep the <A
+href="/ARCHIVE">http://mww.mbari.org/ARCHIVE</A> the
+``official'' location of these data no matter where they physically reside.
+
+<P>
+Returns a list. Example:
+
+<P>
+($text, $start, $end, $unix) = @{$self-&gt;_frameGrabInfo($_dirstring,
+$file)};
+
+<P>
+<HR>
+<H3><A NAME="_rovctdInfo_">_rovctdInfo()</A></H3>
+<P>
+Internal method to return the information (link text, start &amp; end
+times, and physical paths) about a set of web accessible files that relate
+to ROV CTD data. Typically called by <CODE>nextDir()</CODE> for
+constructing the list of these items. This method encapsulates the
+knowledge of where and how to look for start &amp; end info and
+unix/Windows path names.
+
+<P>
+Unfortunately, unix and windows paths will often change requiring edits of
+this function. I don't know how important it will be to keep track of this
+info as we plan to keep the <A
+href="/ARCHIVE">http://mww.mbari.org/ARCHIVE</A> the
+``official'' location of these data no matter where they physically reside.
+
+<P>
+Returns a list of list references. Example:
+
+<P>
+(\@urlList, \@textList, \@startList, \@endList, \@unixList, \@windowsList)
+= @{$self-&gt;_rovctdInfo($_dirstring, $dir)};
+
+<P>
+<HR>
+<H3><A NAME="_loggerInfo_">_loggerInfo()</A></H3>
+<P>
+Internal method to return the information (link text, start &amp; end
+times, and physical paths) about a set of web accessible files that relate
+to videologr data. Typically called by <CODE>nextDir()</CODE> for
+constructing the list of these items. This method encapsulates the
+knowledge of where and how to look for start &amp; end info and
+unix/Windows path names.
+
+<P>
+Unfortunately, unix and windows paths will often change requiring edits of
+this function. I don't know how important it will be to keep track of this
+info as we plan to keep the <A
+href="/ARCHIVE">http://mww.mbari.org/ARCHIVE</A> the
+``official'' location of these data no matter where they physically reside.
+
+<P>
+Returns a list of list references. Example:
+
+<P>
+(\@urlList, \@textList, \@startList, \@endList, \@unixList, \@windowsList)
+= @{$self-&gt;_rovctdInfo($_dirstring, $dir)};
+
+<P>
+<HR>
+<H3><A NAME="_camlogInfo_">_camlogInfo()</A></H3>
+<P>
+Internal method to return the information (link text, start &amp; end
+times, and physical paths) about a set of web accessible files that relate
+to Camera Log data. Typically called by <CODE>nextDir()</CODE> for
+constructing the list of these items. This method encapsulates the
+knowledge of where and how to look for start &amp; end info and
+unix/Windows path names.
+
+<P>
+Unfortunately, unix and windows paths will often change requiring edits of
+this function. I don't know how important it will be to keep track of this
+info as we plan to keep the <A
+href="/ARCHIVE">http://mww.mbari.org/ARCHIVE</A> the
+``official'' location of these data no matter where they physically reside.
+
+<P>
+Returns a list of list references. Example:
+
+<P>
+(\@urlList, \@textList, \@startList, \@endList, \@unixList, \@windowsList)
+= @{$self-&gt;_rovctdInfo($_dirstring, $dir)};
+
+<P>
+<HR>
+<H3><A NAME="_navInfo_">_navInfo()</A></H3>
+<P>
+Internal method to return the information (link text, start &amp; end
+times, and physical paths) about a set of web accessible files that relate
+to Navigation data. Typically called by <CODE>nextDir()</CODE> for
+constructing the list of these items. This method encapsulates the
+knowledge of where and how to look for start &amp; end info and
+unix/Windows path names.
+
+<P>
+Unfortunately, unix and windows paths will often change requiring edits of
+this function. I don't know how important it will be to keep track of this
+info as we plan to keep the <A
+href="/ARCHIVE">http://mww.mbari.org/ARCHIVE</A> the
+``official'' location of these data no matter where they physically reside.
+
+<P>
+Returns a list of list references. Example:
+
+<P>
+(\@urlList, \@textList, \@startList, \@endList, \@unixList, \@windowsList)
+= @{$self-&gt;_rovctdInfo($_dirstring, $dir)};
+
+<P>
+<HR>
+<H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
+<P>
+<HR>
+<H1><A NAME="AUTHOR">AUTHOR</A></H1>
+<P>
+Mike McCann <EM>&lt;mccann@mbari.org&gt;</EM>
+
+
+
+<P>
+<A HREF="http://www.mbari.org/~mccann">http://www.mbari.org/~mccann</A>
+
+</BODY>
+
+</HTML>

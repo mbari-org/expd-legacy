@@ -1,0 +1,85 @@
+<kml xmlns="http://earth.google.com/kml/2.2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://earth.google.com/kml/2.2
+    http://code.google.com/apis/kml/schema/kml22beta.xsd">
+  <Folder>
+    <name>MBARI Expedition Database links</name>
+    <visibility>0</visibility>
+    <open>1</open>
+    <description>Check boxes, Right-click -> Refresh, visualize data.  
+    
+    Google Earth may be used to do spatial queries of the Expedition Database. 
+    
+    For effective use, zoom your view into an area of interest and select which type of data you wich to visualize, then right-click and select 'Refresh' from the context menu.
+    
+    All of the data are time stamped - you will need to adjust the timeline slider to see their representation in Google Earth.
+    
+    Be careful to not select too big of a region or all of the different data types at once - you will bog down the servers and Google Earth!
+    </description>
+    <NetworkLink>
+      <name>ROV dive tracks</name>
+      <visibility>0</visibility>
+      <open>1</open>
+      <description>Load KML for ROV Dives</description>
+      <refreshVisibility>0</refreshVisibility>
+      <flyToView>0</flyToView>
+      <Link>
+        <href>https://mww.mbari.org/expd/queries/diveKML.asp</href>
+        <viewRefreshMode>onRequest</viewRefreshMode>
+	<viewBoundScale>0.75</viewBoundScale>
+      </Link>
+    </NetworkLink>
+    <NetworkLink>
+      <name>Terrain Data Coverages</name>
+      <visibility>0</visibility>
+      <open>1</open>
+      <description>Query for high resolution terrain coverages.</description>
+      <refreshVisibility>0</refreshVisibility>
+      <flyToView>0</flyToView>
+      <Link>
+        <href>https://mww.mbari.org/expd/queries/terrainKML.asp</href>
+	<viewRefreshMode>onRequest</viewRefreshMode>
+	<viewBoundScale>0.75</viewBoundScale>
+      </Link>
+    </NetworkLink>
+    <NetworkLink>
+      <name>Samples Database</name>
+      <visibility>0</visibility>
+      <open>1</open>
+      <description>Query for Samples</description>
+      <refreshVisibility>0</refreshVisibility>
+      <flyToView>0</flyToView>
+      <Link>
+        <href>https://mww.mbari.org/expd/queries/samplesKML.asp</href>
+        <viewRefreshMode>onRequest</viewRefreshMode>
+	<viewBoundScale>0.75</viewBoundScale>
+      </Link>
+    </NetworkLink>
+    <NetworkLink>
+      <name>VARS Database</name>
+      <visibility>0</visibility>
+      <open>1</open>
+      <description>Query for Annotations</description>
+      <refreshVisibility>0</refreshVisibility>
+      <flyToView>0</flyToView>
+      <Link>
+        <href>https://mww.mbari.org/expd/queries/varsKML.asp</href>
+        <viewRefreshMode>onRequest</viewRefreshMode>
+	<viewBoundScale>0.75</viewBoundScale>
+      </Link>
+    </NetworkLink>
+    <NetworkLink>
+      <name>Waypoints</name>
+      <visibility>0</visibility>
+      <open>1</open>
+      <description>Query for Waypoints</description>
+      <refreshVisibility>0</refreshVisibility>
+      <flyToView>0</flyToView>
+      <Link>
+        <href>https://mww.mbari.org/expd/queries/waypointKML.asp</href>
+        <viewRefreshMode>onRequest</viewRefreshMode>
+	<viewBoundScale>0.75</viewBoundScale>
+      </Link>
+    </NetworkLink>
+  </Folder>
+</kml>

@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>Software Catalog</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table border="0" cellpadding="5" width="705">
+  <tr>
+    <td valign="top" width="120"><!--webbot bot="Include" u-include="toc_techdocs.htm" tag="BODY" startspan -->
+
+<p align="center"><a href="/index.html"><img src="../../../images/mbarilogo-120_sh.gif" border="0" WIDTH="120" HEIGHT="70"></a><br>
+<small><small><font face="Tahoma" color="#008080"><strong>ROVCTD SOFTWARE</strong></font></small></small></p>
+
+<p align="left"><a href="software.htm"><font size="3" face="Arial" color="#008080">Software
+Catalog</font></a><br>
+<br>
+<a href="aquiring/acq_software.htm"><font size="3" face="Arial" color="#008080">Acquiring</font></a><br>
+<br>
+<a href="postProcessing/pstp_software.htm"><font size="3" face="Arial" color="#008080">Post
+processing</font></a><br>
+<br>
+<a href="plotting/plot_software.htm"><font size="3" face="Arial" color="#008080">Plotting</font></a><br>
+<br>
+<a href="dbLoading/dbl_software.htm"><font size="3" face="Arial" color="#008080">DB
+Loading</font></a> <br>
+<br>
+<a href="HowTo.htm"><font size="3" face="Arial" color="#008080">Standard Procedures</font></a><br>
+</p>
+<!--webbot bot="Include" endspan i-checksum="54124" -->
+</td>
+    <td width="585"><h3><img src="../Images/SoftwHeader.gif" alt="SoftwHeader.gif (3926 bytes)" WIDTH="613" HEIGHT="44"><font face="Arial"></h3>
+    <h3>Software Catalog</h3>
+    <p></font>These are the primary programs used to acquire, process, plot and database load
+    the ROV CTD data. Click on the program name for more information.<font face="Arial"></p>
+    <table border="1" cellspacing="0" width="100%" cellpadding="2">
+      </font>
+      <tr>
+        <font size="3"><td width="10%"><strong>Program name</strong></font></td>
+        <td width="53%"><strong>Description</strong></td>
+        <td width="8%"><strong>Type</strong></td>
+        <td width="11%"><strong>Execute on </strong></td>
+        <td width="10%"><strong>Language</strong></td>
+        <td width="8%"><strong>Contact</strong></td>
+      </tr>
+      <tr>
+        <font size="3"><td width="10%"><font face="Arial Narrow">datamgrd</font></font></td>
+        <td width="53%"><font face="Arial Narrow">(data manager) Middleware to provide consistent
+        interface for data consumers/producers.</font></td>
+        <td width="8%"><font face="Arial Narrow">Acq</font></td>
+        <td width="11%"><font face="Arial Narrow">seaspray, lobos, batray, etc.</font></td>
+        <td width="10%">c?</td>
+        <td width="8%"><font face="Arial Narrow">Bob</font></td>
+      </tr>
+      <tr>
+        <font size="3" face="Arial"><td width="10%"></font><font size="3" face="Arial Narrow"><a href="postProcessing/pstp_dat2Raw.htm">dat2Raw.perl</a></font></td>
+        <td width="53%"><font face="Arial Narrow">Converts logr style files into &nbsp;
+        YYYYDDDxxxxRovCtdRaw.txt, YYYYDDDxxxxRovCtdCoef.txt files</font></td>
+        <td width="8%"><font face="Arial Narrow">Postp</font></td>
+        <td width="11%"><font face="Arial Narrow">barnacle</font></td>
+        <td width="10%"><font face="Arial Narrow">Perl</font></td>
+        <td width="8%"><font face="Arial Narrow">Dan</font></td>
+      </tr>
+      <tr>
+        <font size="3"><td width="10%"><a href="aquiring/acq_displayCtd.htm"><font face="Arial Narrow">displayCtd</font></a></font></td>
+        <td width="53%"><font face="Arial Narrow">Displays CTD data items from the data manager.</font></td>
+        <td width="8%"><font face="Arial Narrow">Acq</font></td>
+        <td width="11%"><font face="Arial Narrow">seaspray lobos<br>
+        batray</font></td>
+        <td width="10%"><font face="Arial Narrow">c, Motif</font></td>
+        <td width="8%"><font face="Arial Narrow">Dan, Tom</font></td>
+      </tr>
+      <tr>
+        <font size="3"><td width="10%"></font><a href="dbLoading/dbl_loadRovctd.htm"><font face="Arial Narrow">loadRovctd.pl</font></a></td>
+        <td width="53%"><font face="Arial Narrow">load data into the RovCtd table</font></td>
+        <td width="8%"><font face="Arial Narrow">dbl</font></td>
+        <td width="11%"><font face="Arial Narrow">NT</font></td>
+        <td width="10%"><font face="Arial Narrow">Perl</font></td>
+        <td width="8%"><font face="Arial Narrow">Dan</font></td>
+      </tr>
+      <tr>
+        <font face="Arial" size="3"><td width="10%"></font><font size="3" face="Arial Narrow"><a href="postProcessing/pstp_moveLogrFiles.htm">moveLogrFiles.perl</a></font></td>
+        <td width="53%"><font face="Arial Narrow">Nightly transfers data from datatransfer to the
+        correct shore directories.</font></td>
+        <td width="8%"><font face="Arial Narrow">Postp</font></td>
+        <td width="11%"><font face="Arial Narrow">barnacle</font></td>
+        <td width="10%"><font face="Arial Narrow">Perl</font></td>
+        <td width="8%"><font face="Arial Narrow">Dan</font></td>
+      </tr>
+      <tr>
+        <td width="10%"><font face="Arial Narrow" size="3"><a href="plotting/plot_plotRovctd.htm">plotRovctd.perl</a></font></td>
+        <td width="53%"><font size="3" face="Times New Roman">Calls PV Wave program to plot the
+        data from the derived text file</font></td>
+        <td width="8%"><font face="Arial Narrow">plot</font></td>
+        <td width="11%"><font face="Arial Narrow">barnacle</font></td>
+        <td width="10%"><font face="Arial Narrow">perl</font></td>
+        <td width="8%"><font face="Arial Narrow">Dan</font></td>
+      </tr>
+      <tr>
+        <td width="10%"><font face="Arial Narrow" size="3"><a href="plotting/plot_plot_rovctd.htm">plot_rovctd.pro</a></font></td>
+        <td width="53%"><font size="3" face="Times New Roman">PV Wave program to plot the data
+        from the derived text file</font></td>
+        <td width="8%"><font face="Arial Narrow">plot</font></td>
+        <td width="11%"><font face="Arial Narrow">barnacle</font></td>
+        <td width="10%"><font face="Arial Narrow">PV Wave</font></td>
+        <td width="8%"><font face="Arial Narrow">Debbie</font></td>
+      </tr>
+      <tr>
+        <font face="Arial"><td width="10%"></font><font face="Arial Narrow" size="3"><a href="postProcessing/pstp_processCtd.htm">processCtd</a></font></td>
+        <td width="53%"><font size="3" face="Times New Roman">executes major post processing and
+        plotting routines</font></td>
+        <td width="8%"><font face="Arial Narrow">Postp</font></td>
+        <td width="11%"><font face="Arial Narrow">barnacle</font></td>
+        <td width="10%"><font face="Arial Narrow">Posix Shell</font></td>
+        <td width="8%"><font face="Arial Narrow">Dan</font></td>
+      </tr>
+      <tr>
+        <font size="3"><td width="10%"><a href="postProcessing/pstp_raw2Der.htm"><font face="Arial Narrow">raw2Der.perl</font></a></font></td>
+        <td width="53%"><font face="Arial Narrow">Bin averages raw CTD data to 15 sec and
+        despikes. Calculates derived parameters.</font></td>
+        <td width="8%"><font face="Arial Narrow">Postp</font></td>
+        <td width="11%"><font face="Arial Narrow">barnacle</font></td>
+        <td width="10%"><font face="Arial Narrow">Perl</font></td>
+        <td width="8%"><font face="Arial Narrow">Dan</font></td>
+      </tr>
+      <tr>
+        <font size="3"><td width="10%"><a href="postProcessing/pstp_recalcCtd.htm"><font face="Arial Narrow">recalcCtd</font></a></font></td>
+        <td width="53%"><font face="Arial Narrow">Runs the rovCtd calculations on postprocessed
+        files.</font></td>
+        <td width="8%"><font face="Arial Narrow">Postp</font></td>
+        <td width="11%"><font face="Arial Narrow">barnacle</font></td>
+        <td width="10%"><font face="Arial Narrow">C++</font></td>
+        <td width="8%"><font face="Arial Narrow">Dan</font></td>
+      </tr>
+      <tr>
+        <font size="3"><td width="10%"><a href="aquiring/acq_rovCtd.htm"><font face="Arial Narrow">rovCtd</font></a></font></td>
+        <td width="53%"><font face="Arial Narrow">Logs raw CTD data from datamanger and writes
+        calculated parameters to data manager.</font></td>
+        <td width="8%"><font face="Arial Narrow">Acq</font></td>
+        <td width="11%"><font face="Arial Narrow">seaspray lobos<br>
+        batray</font></td>
+        <td width="10%"><font face="Arial Narrow">C++</font></td>
+        <td width="8%"><font face="Arial Narrow">Dan</font></td>
+      </tr>
+      <tr>
+        <font size="3"><td width="10%"><a href="aquiring/acq_showCtd.htm"><font face="Arial Narrow">showCtd</font></a></font></td>
+        <td width="53%"><font face="Arial Narrow">ROV pilots&#146; GUI interface to begin CTD
+        acquisition and data display.</font></td>
+        <td width="8%"><font face="Arial Narrow">Acq</font></td>
+        <td width="11%"><font face="Arial Narrow">seaspray lobos</font></td>
+        <td width="10%"><font face="Arial Narrow">C++, Motif, Xmt</font></td>
+        <td width="8%"><font face="Arial Narrow">Dan</font></td>
+      </tr>
+      <tr>
+        <font size="3"><td width="10%"></font><a href="dbLoading/dbl_unloadRovctd.htm"><font face="Arial Narrow">unloadRovctd.pl</font></a></td>
+        <td width="53%"><font face="Arial Narrow">unoad data from the RovCtd table</font></td>
+        <td width="8%"><font face="Arial Narrow">dbl</font></td>
+        <td width="11%"><font face="Arial Narrow">NT</font></td>
+        <td width="10%"><font face="Arial Narrow">Perl</font></td>
+        <td width="8%"><font face="Arial Narrow">Dan</font></td>
+      </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

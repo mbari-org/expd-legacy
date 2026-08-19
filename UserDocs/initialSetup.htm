@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>Initial setup of SQL and ODBC drivers</title>
+</head>
+
+<body>
+
+<p><big><big><strong>Initial Setup of SQL Server and ODBC Drivers</strong></big></big></p>
+
+<p>To create advanced queries to the Expedition database, your computer needs software
+that can map the database server to your desktop. This software is built-in to the
+operating system and/or is available from the Microsoft Office package. You only need to
+complete the following installation and configuration steps one time on your computer. If
+you difficulties with the setup, contact the database administrator <a href="mailto:mark@mbari.org">Mark Blackburn</a>.</p>
+
+<p><a name="Microsoft SQL Server Driver Setup"><big><strong>Microsoft SQL Server Driver
+Setup</strong></big></a></p>
+<font SIZE="2">
+
+<p></font><font size="3">A few necessary components are not installed automatically with
+the &quot;typical&quot; Microsoft Office installation. You will need to add the &quot;Data
+Access&quot; components by following the steps below:</p>
+
+<blockquote>
+  <p>1) Run <a href="file://Typhoon/Apps/Office.97/Setup.exe">\\Typhoon\Apps\Office.97\Setup.exe</a><br>
+  2) Press the &quot;Add/Remove&quot; button <br>
+  3) Select the &quot;Data Access&quot; option and press the &quot;Change Options&quot;
+  button<br>
+  4) Select the &quot;Database Drivers&quot; option and press the &quot;Change Options&quot;
+  button<br>
+  5) Check the &quot;Microsoft SQL Server Driver&quot; box and press the &quot;OK&quot;
+  button<br>
+  6) Check the &quot;Microsoft Query&quot; box and press the &quot;OK&quot; button<br>
+  7) Press the &quot;OK&quot; button</p>
+</blockquote>
+</font>
+
+<p><a name="ODBC Setup"><big><strong>ODBC Setup</strong></big></a></p>
+
+<p>Use the Control Panel to map an ODBC driver on your computer to the Expedition
+database.</p>
+
+<blockquote>
+  <p>Beginning at the the Windows Start Bar, <br>
+  1) Select <small><strong>Settings</strong></small>-&gt;<small><strong>Control Panel</strong></small>-&gt;<small><strong>32-bit
+  ODBC</strong></small><br>
+  2) Select the <small><strong>System DSN</strong></small> tab, then <strong><small>Add...</small><br>
+  </strong>3) Select <small><strong>SQL-Server</strong> </small>from the menu list.</p>
+  <table border="0" width="823">
+    <tr>
+      <td valign="top" align="left" width="255">4) In the ODBC SQL-Server setup page **These
+      instructions are generic for Windows-based systems but there are some <a href="initialSetup_NT.htm">differences with WinNT</a>):<p><strong>Data Source Name</strong>
+      is whatever name you want to give this mapping. For example, <strong><font color="#0000FF">ExpeditionDB</font></strong>.</p>
+      <p>The <strong>Server</strong> is <strong><font color="#0000FF">FOG</font></strong> (leave
+      Network Address and Library as Default)</p>
+      <p>Select <strong><small>Options&gt;&gt;</small></strong></p>
+      <p>The <strong>Database Name</strong> is <font color="#0000FF"><strong>expd</strong></font></p>
+      <p>Check <strong><small>Use ANSI Quoted Identifiers</small></strong>, <strong><small>Use
+      ANSI Nulls, Padding and Warnings</small></strong>, and <strong><small>Convert OEM to ANSI
+      characters</small></strong>.</td>
+      <td width="560"><img src="../queries/images/ODBC-setup-fog.jpg" alt="ODBC-setup-fog.jpg (77039 bytes)" WIDTH="640" HEIGHT="480"></td>
+    </tr>
+  </table>
+</blockquote>
+
+<blockquote>
+  <p>5) Press the &quot;OK&quot; button. You may want to restart your computer at this point
+  to ensure that the changes will take effect.</p>
+</blockquote>
+
+<hr>
+
+<p><small>Last updated: <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B %Y" startspan -->01 February 2000<!--webbot bot="Timestamp" endspan i-checksum="40475" --> by DNM<br>
+Copyright © 1998,1999 MBARI</small></p>
+</body>
+</html>

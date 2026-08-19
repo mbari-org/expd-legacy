@@ -1,0 +1,366 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>rovCtd Acquiring Program Documentation</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<div align="left">
+
+<table border="0" cellpadding="5" width="640">
+  <tr>
+    <td valign="top" width="20%"><!--webbot bot="Include" u-include="../toc_techdocs.htm" tag="BODY" startspan -->
+
+<p align="center"><a href="/index.html"><img src="../../../../images/mbarilogo-120_sh.gif" border="0" WIDTH="120" HEIGHT="70"></a><br>
+<small><small><font face="Tahoma" color="#008080"><strong>ROVCTD SOFTWARE</strong></font></small></small></p>
+
+<p align="left"><a href="../software.htm"><font size="3" face="Arial" color="#008080">Software
+Catalog</font></a><br>
+<br>
+<a href="acq_software.htm"><font size="3" face="Arial" color="#008080">Acquiring</font></a><br>
+<br>
+<a href="../postProcessing/pstp_software.htm"><font size="3" face="Arial" color="#008080">Post
+processing</font></a><br>
+<br>
+<a href="../plotting/plot_software.htm"><font size="3" face="Arial" color="#008080">Plotting</font></a><br>
+<br>
+<a href="../dbLoading/dbl_software.htm"><font size="3" face="Arial" color="#008080">DB
+Loading</font></a> <br>
+<br>
+<a href="../HowTo.htm"><font size="3" face="Arial" color="#008080">Standard Procedures</font></a><br>
+</p>
+<!--webbot bot="Include" endspan i-checksum="19340" -->
+</td>
+    <td valign="top" width="80%"><!--webbot bot="ImageMap" rectangle=" (514,14) (610, 33)  acq_diagOverview.htm" src="../../Images/AcquirHeader.gif" alt="AcquirHeader.gif (2504 bytes)" border="0" startspan --><MAP NAME="FrontPageMap"><AREA SHAPE="RECT" COORDS="514, 14, 610, 33" HREF="acq_diagOverview.htm"></MAP><a href="../../../../_vti_bin/shtml.dll/docs/rovctd/1999_techdocs/aquiring/acq_rovCtd.htm/map"><img ismap usemap="#FrontPageMap" border="0" height="44" alt="AcquirHeader.gif (2504 bytes)" src="../../Images/AcquirHeader.gif" width="613"></a><!--webbot bot="ImageMap" endspan i-checksum="44660" --><br>
+    &nbsp; <font size="3" face="Times New Roman"><table border="1" width="100%" bordercolor="#3FA086" bordercolorlight="#3FA086" bordercolordark="#3FA086">
+      <tr>
+        <td valign="top" width="20%" bgcolor="#FFFFFF"><em>Program Name</em></td>
+        <td valign="top" width="80%" bgcolor="#FFFFFF">rovCtd</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%" bgcolor="#FFFFFF"><em>Summary</em> </td>
+        <td valign="top" width="80%" bgcolor="#FFFFFF">Data acquistion ROV&nbsp; program for
+        ventana and tiburon.&nbsp; This process reads the raw CTD data from datamanger, computes
+        calculated values, writes the calculated values to the datamanager.</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%" bgcolor="#FFFFFF"><em>Usage</em></td>
+        <td valign="top" width="80%" bgcolor="#FFFFFF">rovCtd [-option [value] [-option
+        [value]]...]</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%" bgcolor="#FFFFFF"><em>Options</em></td>
+        <td valign="top" width="80%" bgcolor="#FFFFFF"><table CELLSPACING="0" BORDER="1" width="462">
+          <tr>
+            <td WIDTH="95" valign="middle" align="left" bgcolor="#C8CCC8">Option</td>
+            <td WIDTH="75" valign="middle" align="left" bgcolor="#C8CCC8">Value Type</td>
+            <td WIDTH="286" valign="middle" align="left" bgcolor="#C8CCC8">Description</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">DC4b</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Y-intercept for DC channel 4</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">DC4m</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Slope for DC channel 4</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">DC6b</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Y-intercept for DC channel 6</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">DC6m</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Slope for DC channel 6</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">DC7b</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Y-intercept for DC channel 7</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">DC7m</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Slope for DC channel 7</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">DC8b</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Y-intercept for DC channel 8</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">DC8m</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Slope for DC channel 8</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">cfg</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">File to use as configuration file</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">comments</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Dive related comments</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">ctdCalDate</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Oxygen sensor calibration date</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">ctdDBID</td>
+            <td WIDTH="75" valign="middle">Int</td>
+            <td WIDTH="286" valign="middle">Oxygen sensor data base id</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">ctdSenNum</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Oxygen sensor number</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">defLat</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Default latitude for depth calculations</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">dive</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Opps dive number</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">host</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Socket Host {'seaspray'}</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">idat</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Input dat file (for archival processing)</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">inHz</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Input data rate</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">maxBPC</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">25 cm Transmissometer calibration coeff, Max allow beam
+            percent</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">missval</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Value to use as missing value (ex -99.9)</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">mode</td>
+            <td WIDTH="75" valign="middle">Int</td>
+            <td WIDTH="286" valign="middle">Operation mode (0-maintenance, 1-at sea)</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">odat</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Output data file name</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">ofile</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">File to recieve output data ( /tmp/mCTD.out)</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxB</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Seabird dissolved oxygen calibration coeff</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxC</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Seabird dissolved oxygen calibration coeff</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxCalDate</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Oxygen sensor calibration date</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxDBID</td>
+            <td WIDTH="75" valign="middle">Int</td>
+            <td WIDTH="286" valign="middle">Oxygen sensor data base id</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxK</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Seabird dissolved oxygen calibration coeff</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxM</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Seabird dissolved oxygen calibration coeff</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxSenNum</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Oxygen sensor number</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxboc</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Seabird dissolved oxygen calibration bias</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxpcor</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Seabird dissolved oxygen pressure correction factor for
+            membrane permeability</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxsoc</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Seabird dissolved oxygen calibration slope</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxtau</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Seabird dissolved oxygen oxygen sensor response time
+            (seconds)</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxtcor</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Seabird dissolved oxygen temperature correction factor for
+            membrane permeability</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">oxwt</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">Seabird dissolved oxygen weighting fraction of oxygen
+            probe internal temperature</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">project</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Project name</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">rov</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">ROV name</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">scientist</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Scientist name</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">ship</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Ship name</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">site</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Dive site</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">trCalDate</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Transmissometer sensor calibration date</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">trDBID</td>
+            <td WIDTH="75" valign="middle">Int</td>
+            <td WIDTH="286" valign="middle">Transmissometer sensor data base id</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">trSenNum</td>
+            <td WIDTH="75" valign="middle">Char</td>
+            <td WIDTH="286" valign="middle">Transmissometer sensor number</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">writeDM</td>
+            <td WIDTH="75" valign="middle">Int</td>
+            <td WIDTH="286" valign="middle">Write to data manager (0-don't write, 1-do)</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">xB</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">25 cm Transmissometer calibration coeff, Air calibration
+            value (intercept)</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">xLen</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">25 cm Transmissometer calibration coeff, Len of light path
+            in meters</td>
+          </tr>
+          <tr>
+            <td WIDTH="95" valign="middle">xM</td>
+            <td WIDTH="75" valign="middle">Float</td>
+            <td WIDTH="286" valign="middle">25 cm Transmissometer calibration coeff, Air calibration
+            value (slope)</td>
+          </tr>
+        </table>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%" bgcolor="#FFFFFF"><font size="3"><em>Language</em></font></td>
+        <td valign="top" width="80%" bgcolor="#FFFFFF">C++</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%" bgcolor="#FFFFFF"><font size="3"><em>Author</em></font></td>
+        <td valign="top" width="80%" bgcolor="#FFFFFF">Paul Rogers</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%" bgcolor="#FFFFFF"><font size="3"><em>Contact</em></font></td>
+        <td valign="top" width="80%" bgcolor="#FFFFFF">Dan Wilkin</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%" bgcolor="#FFFFFF"><font size="3"><em>Src Location</em></font></td>
+        <td valign="top" width="80%" bgcolor="#FFFFFF">$HOME/src/vnta/rovCtd or
+        $HOME/src/tibr/rovCtd</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%" bgcolor="#FFFFFF"><font size="3"><em>Dependencies</em></font></td>
+        <td valign="top" width="80%" bgcolor="#FFFFFF"><table border="0">
+          <tr>
+            <td>compile: <a NAME="compile"></a></td>
+            <td>ocean:/$dmDir/dm/all/*</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>ocean:$dmDir/vw/h/*</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>$HOME/src/common/*</td>
+          </tr>
+          <tr>
+            <td>execution:<a NAME="execute"></a></td>
+            <td>- cfg file exists (./rovCtd.cfg)</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>- all designated input files exist</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>- data manager is up an running</td>
+          </tr>
+          </font>
+        </table>
+        </td>
+      </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+</div>
+</body>
+</html>

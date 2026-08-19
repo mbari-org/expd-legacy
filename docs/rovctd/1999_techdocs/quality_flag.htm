@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>ROVCTD Data Quality Flag Management</title>
+</head>
+
+<body>
+
+<p><b><font size="5">ROVCTD Data Quality Flag Management</font></b></p>
+
+<p>The ROVCTD <a href="./rovctd_quality_flags.htm">quality flags</a>
+are maintained by the sensor technician.</p>
+
+<p>When the data is automatically loaded by the nightly processing scripts, the flag
+values are set to the default of 2.&nbsp; As the sensor technician and scientists validate
+the data the flags should be updated to indicate their level of quality. Data users should
+contact the sensor technician to apply changes to the quality flags.</p>
+
+<p>The sensor technician (who has change privileges in the database) uses the <strong>change_flag</strong>
+stored procedure to update quality flag values. The Query Analyzer tool, one of the
+Microsoft SQL Server 7.0 client tools, is a way to run this procedure. The change_flag
+stored procedure is used with the following arguments.&nbsp; Note: all of the arguments
+are required.</p>
+
+<p>Usage:</p>
+
+<p>&nbsp;&nbsp;&nbsp; change_flag '<i>rovname</i>', '<i>flagname</i>', <i>newvalue</i>, '<i>start
+date time</i>', '<i>end date time</i>'</p>
+
+<p>Example:</p>
+
+<p>&nbsp;&nbsp;&nbsp; change_flag 'vnta', 'depthFlag', 3, '05/15/1999', '05/16/1999'</p>
+
+<hr>
+
+<p><font size="4">Acceptable values:</font></p>
+
+<p><b>rovname:</b> vnta, tibr</p>
+
+<p><b>flagname:</b> rovCtdDtgFlag, presFlag, temperFlag, latFlag, lonFlag, depthFlag,
+salinFlag, thetaFlag, oxygFlag, lightFlag, beacFlag, soundFlag, sigmathetaFlag</p>
+
+<p><b>newvalue:</b> 0,1,2,3,4</p>
+
+<hr>
+
+<p><font size="4">Calculated flags:</font></p>
+
+<p>The values of some data are calculated from other data.&nbsp; The quality flags of the
+calculated values cannot be set higher than the quality flags of the data that they are
+calculated from.&nbsp; An SQL trigger enforces this rule by immediately changing the flag
+of a calculated value to the lowest flag of the data it depends on if it is accidentally
+set too high.</p>
+<div align="left">
+
+<table border="1" align="left" cellspacing="4" cellpadding="3">
+  <tr>
+    <th>calculated value </th>
+    <th>depends on </th>
+  </tr>
+  <tr>
+    <td>theta</td>
+    <td>temper, pres</td>
+  </tr>
+  <tr>
+    <td>oxyg</td>
+    <td>temper, pres, salin</td>
+  </tr>
+  <tr>
+    <td>sound</td>
+    <td>temper, pres, salin</td>
+  </tr>
+  <tr>
+    <td>sigmatheta</td>
+    <td>temper, pres, salin</td>
+  </tr>
+  <tr>
+    <td>beac</td>
+    <td>light</td>
+  </tr>
+</table>
+</div>
+</body>
+</html>

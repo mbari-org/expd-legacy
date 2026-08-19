@@ -1,0 +1,98 @@
+<html>
+
+<head>
+<title>How depth is calculated</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table border="0" cellpadding="5" cellspacing="0" width="660" height="500">
+  <tr>
+    <td width="100" valign="top"><!--webbot bot="Include" U-Include="toc-rovctd.htm" TAG="BODY" startspan -->
+
+<p><a href="http://www.mbari.org/"><img src="../queries/images/mbarilogo-120_sh.gif" alt="mbarilogo-120_sh.gif (3156 bytes)" border="0" WIDTH="120" HEIGHT="70"></a></p>
+
+<p><a href="../Queries/downloadData.htm"><strong><small><font face="Arial">ROVCTD data</font></small></strong></a></p>
+
+<p><a href="/cruises/"><strong><small><font face="Arial">Expedition
+search</font></small></strong></a></p>
+
+<p><a href="/itd/DataArchives/ArchiveInfo.htm"><strong><small><font face="Arial">Data Archives</font></small></strong></a></p>
+<!--webbot bot="Include" endspan i-checksum="65177" -->
+</td>
+    <td valign="top" height="462"><p align="center"><strong><big><big>How depth is calculated
+    for </big></big><br>
+    <big><big>MBARI ROV CTD data</big></big></strong></p>
+    <p><strong>Pressure is the measured value</strong><br>
+    Pressure is measured by sensors on oceanographic instruments, such as CTD packages
+    (conductivity/temperature/depth). For <em>Ventana</em> and <em>Tiburon</em> ROV CTD
+    pressure, the Falmouth Scientific sensor precision is about 1 dbar and the data is
+    archived to 0.01 dbar in the raw data files, &quot;derived data&quot; files, and in the
+    expedition database.</p>
+    <p><strong>Depth is derived from pressure</strong><br>
+    Depth is often calculated from pressure because depth is more commonly used by scientists
+    to estimate distance below the sea surface and interpret other data. A variety of formulas
+    may be used. For the <em>Ventana</em> and <em>Tiburon</em> ROV CTD depth calculations, the
+    Fofonoff and Millard (1982) algorithm is applied during processing. The depth values are
+    archived in the ROV CTD &quot;derived data&quot; files and in the expedition database.
+    Because of the assumptions and mathematical contortions involved, those who require
+    precise knowledge of ocean parameters find it is better to work directly with the pressure
+    data.</p>
+    <p><strong>The algorithm</strong><br>
+    The algorithm used to calculate MBARI ROV CTD depth, in meters, from pressure, in decibars
+    (dbar), is Fofonoff and Millard (1982) with sea level pressure = 0 dbar. This formula
+    incorporates an equation of state of seawater and the hydrostatic equation, which includes
+    variation of gravity with latitude and depth, and is computed with a least squares
+    polynomial fit. It is reported to be accurate to 0.1 m over the full ocean pressure range
+    of 0 to 10,000 dbar; some sources of error are discussed below. It is endorsed by the
+    UNESCO/SCOR/ICES/IAPSO Joint Panel on Oceanographic Tables and Standards and SCOR Working
+    Group 51 on evaluation of CTD data. <a href="http://expd.mbari.org/expd/docs/source_files/calcDepthCode.htm">Click here to see
+    our depth calculation code.</a> At MBARI, an older algorithm used to be employed to
+    calculate depth (Saunders and Fofonoff, 1976), but the newer algorithm now has been
+    applied to all of our old ROV CTD pressure data to derive depth.</p>
+    <p><strong>Atmospheric pressure correction<br>
+    </strong>The measured pressure is that of the overlying water plus the atmospheric
+    pressure above the surface, which is 1 atm (10 dbar), more or less, at sea level. By
+    convention, the atmospheric pressure component is removed so it is zero at the sea
+    surface. To do this for the ROV CTD data, a constant offset of 10 dbar is subtracted from
+    the initial measurement before pressure is logged, so a slight error is introduced if
+    actual atmospheric pressure is different.</p>
+    <p><strong>Equation of state of seawater<br>
+    </strong>The equation of state of seawater used in this algorithm is the Knudsen-Ekman
+    equation of state. It is for a &quot;standard ocean&quot; of T=0<sup>o</sup>C and
+    S=35&#137;, so it makes some assumptions about the density distributions in the water
+    column that are not corrected for actual conditions.</p>
+    <p><strong>Variation with latitude<br>
+    </strong>The force of gravity varies slightly with latitude due to the earth's geoid. As a
+    result, 10,000 decibars pressure converts to 9725.47 m at the equator, 9699.84 m at 45<sup>o</sup>
+    latitude, and 9674.23 m at the poles (Fofonoff and Millard, 1982). For MBARI ROV CTD depth
+    calculations, a constant latitude is supplied to the equation. For data acquired after
+    8/1/1999, this is the ship's median latitude for the expedition, and if the ship traverses
+    more than 0.1 decimal degree latitude during the expedition, the median latitude is
+    recalculated for the data that fall inside that new 0.1<sup>o</sup>. For expeditions prior
+    to 8/1/1999, this same method was used, but for cruises where there was no navigation
+    data, a value of 36.75<sup>o</sup> latitude (middle of Monterey Bay) was applied. </p>
+    <p><strong>ROV vehicle depth clarification<br>
+    </strong>The ROVs have a second pressure sensor on board (Paroscientific, <a href="http://www.paroscientific.com/Ds.htm">http://www.paroscientific.com/Ds.htm</a>),
+    which is separate from the CTD package and whose pressure data are archived in the ROV
+    navigation data files rather than the CTD data files. From this pressure data, depth is
+    calculated in the vehicle software with a different algorithm that makes no correction for
+    the equation of state of seawater and uses a different, manually supplied constant for
+    latitude. These depth values are the vehicle depth displayed on the ROV console video
+    overlay, are used by Winfrog and ArcView, but are not archived in the navigation data
+    files. </p>
+    <p><strong>References:</strong></p>
+    <p>Fofonoff, N.P. and R.C. Millard Jr., 1982. Algorithms for computation of fundamental
+    properties of seawater. UNESCO Technical Papers in Marine Science #44, 25-28.</p>
+    <p>Saunders, P.M. and N. P. Fofonoff, 1976. Conversion of pressure to depth in the ocean.
+    Deep-Sea Research, 23, 109-111.</td>
+  </tr>
+  <tr>
+    <td width="100" valign="top" colspan="2"><hr>
+    <small><strong><font face="Arial"><p align="center"></font></strong>Questions about this
+    page? Contact <a href="mailto:paje@mbari.org">Jenny Paduan</a>.</small><br>
+    <em><small><small>Last edited <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%m/%d/%Y" startspan -->02/01/2000<!--webbot bot="Timestamp" endspan i-checksum="12496" --> by Jenny Paduan.</small></small></em> </td>
+  </tr>
+</table>
+</body>
+</html>

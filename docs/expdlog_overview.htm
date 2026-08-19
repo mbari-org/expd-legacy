@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>Expedition Log Overview</title>
+</head>
+
+<body>
+
+<h2>Expedition Log system overview </h2>
+
+<p>The Expedition log programs are used to plan MBARI cruises and to log the reports from
+those expeditions. </p>
+
+<h4>The requirements for this system are as follows: </h4>
+
+<p>These is not an exhaustive list of requirements, but does list the salient features of
+the system. 
+
+<ol>
+  <li><strong>Design new Expd data base that <br>
+    </strong>· Preserves the data that have been entered into MODB over the last 10 years<br>
+    · Denormalizes the design to allow for easier loads &amp; queries<br>
+    · Decouples data loads from other database entry events<br>
+    &nbsp; (Doesn't hold any data input hostage to other data being in the database.)<br>
+  </li>
+  <li><strong>Enter a &quot;precruise&quot; into the database</strong><br>
+    · Only the logistics coordinator may enter a precruise into the database. <br>
+    · All other users can file a postcruise using the same web form; however, rather than the
+    entries going into the database they will instead be mailed to the logistics coordinator
+    who will review it and do the database entry.<br>
+    · Upon entry into the database a text mail message will be sent to the
+    'precruise@mbari.org' mail address. <br>
+  </li>
+  <li><strong>Enter a &quot;postcruise&quot; into the database<br>
+    </strong>· Only a &quot;registered user&quot; may enter (or edit) a postcruise in the
+    database. <br>
+    · All other users can file a postcruise using the same web form; however, rather than the
+    entries going into the database they will instead be mailed to the logistics coordinator
+    who will review it and do the database entry.<br>
+    · Upon entry into the database a text mail message will be sent to the
+    'postcruise@mbari.org' mail address. <strong><br>
+    </strong></li>
+  <li><strong>Edit dive information (start &amp; end times, etc.)<br>
+    </strong>· Allow for multiple dives to be assigned to an expedition. <br>
+    · View processing steps of ROVCTD data to help determine start and end times.<br>
+    · Edit dive times using either epoch seconds or local time (pilot's database uses local
+    time).<br>
+  </li>
+  <li><strong>Search the database by</strong><br>
+    · Date range<br>
+    · Any string that can appear in any of the text fields<br>
+    · Dive number<br>
+    · Ship sequence number (record number historically used by logistics coordinator)<br>
+    · Chief Scientist, or Principal Investigator<br>
+  </li>
+  <li><strong>Provide links to associated data, including</strong><br>
+    · Video Frame Grabs<br>
+    · ROVCTDO data<br>
+    · Ship and ROV navigation data<br>
+    · Samples in the Samples database</li>
+</ol>
+
+<h4>Roles</h4>
+
+<p>There are 3 roles defined for users of the Expedition Log system 
+
+<ol>
+  <li><strong>Logistics coordinator:</strong> approves end enters precruises.<br>
+  </li>
+  <li><strong>Registered user: </strong>enters/edits postcruise reports.<br>
+  </li>
+  <li><strong>Everyone else on MBARI's Intranet:</strong> search database, enter precruises
+    &amp; postcruises from web forms, entered into database by Logistics Coordinator.\</li>
+</ol>
+
+<h4>Implementation</h4>
+
+<p>The system is implemented as a set of Active Server Pages running on an NT server with
+IIS4, ActiveState perl, and native connection to SQL 7.0 relational database. </p>
+
+<p>Implementation with web forms insures that anyone with a web browser on MBARI's
+Intranet can submit precruises, file post cruises, and search the database. Furthermore,
+the web implementation (being stateless, it can tolerate network instability) offers the
+ability for postcruise entry from the ship immediately following operations.</p>
+
+<p>For developers only: <a href="for_developers_only.htm">Plain Old Documentation for the
+active server pages</a>.</p>
+
+<hr>
+
+<p>Last updated: <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B %Y" startspan -->27 January 2000<!--webbot bot="Timestamp" endspan i-checksum="32116" -->, Mike
+McCann<br>
+<small>Copyright © 1999 Monterey Bay Aquarium Research Institute (MBARI)</small></p>
+</body>
+</html>

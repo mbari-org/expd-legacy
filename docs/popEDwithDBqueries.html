@@ -1,0 +1,111 @@
+<HTML>
+<HEAD>
+<TITLE>popEDwithDBqueries.pl - Populate ExpeditionData table with Database queries</TITLE>
+<LINK REV="made" HREF="mailto:">
+</HEAD>
+
+<BODY>
+
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#NAME">NAME</A>
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<UL>
+
+		<UL>
+
+			<LI><A HREF="#get_rovctd_link_">get_rovctd_link()</A>
+			<LI><A HREF="#get_samples_link_">get_samples_link()</A>
+			<LI><A HREF="#urlencode_">urlencode()</A>
+		</UL>
+
+	</UL>
+
+	<LI><A HREF="#SEE_ALSO">SEE ALSO</A>
+	<LI><A HREF="#AUTHOR">AUTHOR</A>
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="NAME">NAME</A></H1>
+<P>
+popEDwithDBqueries.pl - Populate ExpeditionData table with Database queries
+
+<P>
+<HR>
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE>    &gt; perl popEDwithDBqueries.pl &lt;startExpeditionID&gt; [endExpeditionID] | &lt;last(ndays)&gt;
+</PRE>
+<P>
+<HR>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+This script steps though all the expeditions defined by the calling
+arguiments picks of the start &amp; end times then constructs a URL with
+these times to various web accessible databases (e.g. SamplesDB, Expd,
+Rovctd, etc.). This is done for both the expedtion times and the dives
+associated with each expedition.
+
+<P>
+The process is basically as follows:
+
+<P>
+1. Loop through the expeditions, query DBs, collect URL, LinkText, and
+foreign keys
+
+<P>
+2. Loop through the dives of each expedition, query DBs, collect URL,
+LinkText, and foreign keys
+
+<P>
+3. Loop through each of the collected records and insert or update them
+into the ExpeditionData table using a stored procedure.
+
+<P>
+<HR>
+<H3><A NAME="get_rovctd_link_">get_rovctd_link()</A></H3>
+<P>
+Uses LWP to test urls to database queries and counts the number of records
+returned.
+
+<P>
+<HR>
+<H3><A NAME="get_samples_link_">get_samples_link()</A></H3>
+<P>
+Uses LWP to test urls to database queries and counts the number of records
+returned.
+
+<P>
+<HR>
+<H3><A NAME="urlencode_">urlencode()</A></H3>
+<P>
+Take a string (mostly DTG) and urlencode it.
+
+<P>
+<HR>
+<H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
+<P>
+<PRE>        LWP
+</PRE>
+<P>
+<HR>
+<H1><A NAME="AUTHOR">AUTHOR</A></H1>
+<P>
+Mike McCann <EM>&lt;mccann@mbari.org&gt;</EM>
+
+
+
+<P>
+This script was developed as part of the MBARI 
+
+<P>
+<A HREF="http://www.mbari.org/~mccann">http://www.mbari.org/~mccann</A>
+
+</BODY>
+
+</HTML>

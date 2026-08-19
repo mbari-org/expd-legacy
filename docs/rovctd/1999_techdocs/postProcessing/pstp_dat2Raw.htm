@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>dat2Raw.perl Postprocessing Program Documentation</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<div align="left">
+
+<table border="0" cellpadding="5" width="640">
+  <tr>
+    <td valign="top" width="20%"><!--webbot bot="Include" u-include="../toc_techdocs.htm" tag="BODY" startspan -->
+
+<p align="center"><a href="/index.html"><img src="../../../../images/mbarilogo-120_sh.gif" border="0" WIDTH="120" HEIGHT="70"></a><br>
+<small><small><font face="Tahoma" color="#008080"><strong>ROVCTD SOFTWARE</strong></font></small></small></p>
+
+<p align="left"><a href="../software.htm"><font size="3" face="Arial" color="#008080">Software
+Catalog</font></a><br>
+<br>
+<a href="../aquiring/acq_software.htm"><font size="3" face="Arial" color="#008080">Acquiring</font></a><br>
+<br>
+<a href="pstp_software.htm"><font size="3" face="Arial" color="#008080">Post
+processing</font></a><br>
+<br>
+<a href="../plotting/plot_software.htm"><font size="3" face="Arial" color="#008080">Plotting</font></a><br>
+<br>
+<a href="../dbLoading/dbl_software.htm"><font size="3" face="Arial" color="#008080">DB
+Loading</font></a> <br>
+<br>
+<a href="../HowTo.htm"><font size="3" face="Arial" color="#008080">Standard Procedures</font></a><br>
+</p>
+<!--webbot bot="Include" endspan i-checksum="30475" -->
+</td>
+    <td valign="top" width="80%"><!--webbot bot="ImageMap" rectangle="(531,17) (608, 33)  ../src_diag.htm" src="../../Images/PostProcessing.gif" border="0" startspan --><MAP NAME="FrontPageMap"><AREA SHAPE="RECT" COORDS="531, 17, 608, 33" HREF="../src_diag.htm"></MAP><a href="../../../../_vti_bin/shtml.dll/docs/rovctd/1999_techdocs/postProcessing/pstp_dat2Raw.htm/map"><img ismap usemap="#FrontPageMap" border="0" height="44" src="../../Images/PostProcessing.gif" width="613"></a><!--webbot bot="ImageMap" endspan i-checksum="20064" --><br>
+    <br>
+    <font size="3" face="Times New Roman"><table border="1" cellpadding="5" width="98%" bordercolor="#008080" bordercolordark="#008080" bordercolorlight="#008080">
+      <tr>
+        <td valign="top" width="20%"><em>Program Name</em></td>
+        <td valign="top" width="80%">dat2Raw.perl</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%"><em>Summary</em></td>
+        <td valign="top" width="80%">Processes the &quot;raw&quot; data from the ROV log file
+        (YYYYJJJrovctdlogr.dat) into the YYYYDDDxxxxRovCtdRaw.txt and YYYYDDDxxxxRovCtdCoef.txt
+        files</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%"><em>Usage</em></td>
+        <td valign="top" width="80%">raw2Dat.perl&nbsp; [fromYYYYJJJ [toYYYYJJJ]]</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%"><em>Options</em></td>
+        <td valign="top" width="80%">fromYYYYJJJ - Starting date number<br>
+        toYYYYJJJ - Ending date number (assume one day if empty)<br>
+        if left blank does all logr files it can find in process</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%"><em>Language</em></td>
+        <td valign="top" width="80%">perl</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%"><em>Author</em></td>
+        <td valign="top" width="80%">Holly Baum</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%"><em>Contact</em></font></td>
+        <td valign="top" width="80%">Dan Wilkin</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%"><em>Src Location</em></td>
+        <td valign="top" width="80%">$HOME/bin</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%"><em>Dependencies</em></td>
+        <td valign="top" width="80%">requires perl version 5.00 or higher<br>
+        requires environment variables; HOME, rovName, shipName, process, archive, webDir and
+        DEBUG</td>
+      </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+</div>
+</body>
+</html>

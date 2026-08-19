@@ -1,0 +1,192 @@
+<html>
+
+<head>
+
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<title>How to read the ROVCTD query results</title>
+
+<meta name="Microsoft Border" content="none"></head>
+
+<body>
+
+<h2>Data format for Standard ROVCTD Query Return</h2>
+
+<p>The ROV CTD values stored in the Expedition database are the measured and derived
+values that have been averaged to 15-second bins and processed through a despiking filter
+before loading into the database. See the following table for a description of the fields
+that are returned in the <a target="_top" href="../Queries/downloadData.htm">standard query</a>. </p>
+
+<table BORDER="1" CELLSPACING="1" CELLPADDING="2" WIDTH="100%">
+  <tr>
+    <td WIDTH="6%" BGCOLOR="#C0C0C0" HEIGHT="49"><b><font FACE="Arial" SIZE="2"><p ALIGN="LEFT"></font><font color="#400040" FACE="Arial" SIZE="2">Column</font></b></td>
+    <td WIDTH="1%" BGCOLOR="#C0C0C0" HEIGHT="49"><b><font FACE="Arial" SIZE="2"><p ALIGN="LEFT"></font><font color="#400040" FACE="Arial" SIZE="2">Data</font></b></td>
+    <td WIDTH="20%" BGCOLOR="#C0C0C0" HEIGHT="49"><font FACE="Arial" SIZE="2"><b><p ALIGN="LEFT"><font color="#400040">Units</font></b></font></td>
+    <td WIDTH="11%" BGCOLOR="#C0C0C0" HEIGHT="49"><font FACE="Arial" SIZE="2"><b><p ALIGN="LEFT"><font color="#400040">Example</font></b></font></td>
+    <td WIDTH="26%" BGCOLOR="#C0C0C0" HEIGHT="49"><font FACE="Arial" SIZE="2"><b><p ALIGN="LEFT"><font color="#400040">Notes</font></b></font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">1</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">usec</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">seconds
+    since January 1, 1970</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">000929731035</font></td>
+    <td WIDTH="26%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">Unix
+    &quot;epoch&quot; seconds; 32-bit number through Dec. 31, 2037</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">2</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">date</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">mm/dd/yyyy
+    </font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">3/18/1999</font></td>
+    <td WIDTH="26%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000">Date</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">3</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">time(utc)</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">hh:mm:ss
+    (24-hour)</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">18:37:15</font></td>
+    <td WIDTH="26%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000">UTC=PST+8 hours; <br>
+    UTC=PDT+7 hours</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="49"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">4</font></td>
+    <td WIDTH="1%" HEIGHT="33"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">depth(m)</font></td>
+    <td WIDTH="20%" HEIGHT="33"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">meters</font></td>
+    <td WIDTH="11%" HEIGHT="33"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">808.8</font></td>
+    <td WIDTH="26%" HEIGHT="33"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">Sea
+    level=0; Fofonoff &amp; Millard, 1982. Accuracy on the order of 1 meter. See <a href="calcDepth.htm">how depth is calculated</a> for more information.</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">5</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">depthFlag</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">unitless</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">2</font></td>
+    <td WIDTH="26%" HEIGHT="16"><a href="rovctd_quality_flags.htm"><font FACE="Arial" SIZE="2" COLOR="#000000">Quality flag</font></a></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="66"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">6</font></td>
+    <td WIDTH="1%" HEIGHT="66"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">temperature(C)</font></td>
+    <td WIDTH="20%" HEIGHT="66"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">degrees
+    C</font></td>
+    <td WIDTH="11%" HEIGHT="66"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">4.741</font></td>
+    <td WIDTH="26%" HEIGHT="66"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">Temperature;
+    accuracy is +/- 0.005 C from -2 to 32 C. The drift is 0.0005 C/month.</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">7</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">temperFlag</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">unitless</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">2</font></td>
+    <td WIDTH="26%" HEIGHT="16"><a href="rovctd_quality_flags.htm"><font FACE="Arial" SIZE="2" COLOR="#000000">Quality flag</font></a></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="66"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">8</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">salinity</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">unitless</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">34.375</font></td>
+    <td WIDTH="26%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">Salinity;
+    accuracy on the order of 0.01.</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">9</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">salinFlag</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">unitless</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">2</font></td>
+    <td WIDTH="26%" HEIGHT="16"><a href="rovctd_quality_flags.htm"><font FACE="Arial" SIZE="2" COLOR="#000000">Quality flag</font></a></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">10</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">oxygen(ml/l)</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">ml/l</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">0.21</font></td>
+    <td WIDTH="26%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000">Oxygen
+    concentration; accuracy on the order of&nbsp; 0.1 ml/l</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">11</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">oxygFlag</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">unitless</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">2</font></td>
+    <td WIDTH="26%" HEIGHT="16"><a href="rovctd_quality_flags.htm"><font FACE="Arial" SIZE="2" COLOR="#000000">Quality flag</font></a></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">12</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">light(%)</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">percent</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">84.5</font></td>
+    <td WIDTH="26%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">Percent
+    light transmittance</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">13</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">lightFlag</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">unitless</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">2</font></td>
+    <td WIDTH="26%" HEIGHT="16"><a href="rovctd_quality_flags.htm"><font FACE="Arial" SIZE="2" COLOR="#000000">Quality flag</font></a></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">14</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">sound(m/s)</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">m/s</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">1482.2</font></td>
+    <td WIDTH="26%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000">Sound velocity</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">15</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">soundFlag</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">unitless</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">2</font></td>
+    <td WIDTH="26%" HEIGHT="16"><a href="rovctd_quality_flags.htm"><font FACE="Arial" SIZE="2" COLOR="#000000">Quality flag</font></a></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">16</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">sigmatheta(kg/m^3)</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">density
+    kg/m^3 at p=0, t=theta</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">27.2169</font></td>
+    <td WIDTH="26%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000">Potential density</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">17</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">sigmathetaFlag</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">unitless</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">2</font></td>
+    <td WIDTH="26%" HEIGHT="16"><a href="rovctd_quality_flags.htm"><font FACE="Arial" SIZE="2" COLOR="#000000">Quality flag</font></a></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">18</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">latitude</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">decimal
+    degrees</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">36.7831700011</font></td>
+    <td WIDTH="26%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000">Latitude</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">19</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">latFlag</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">unitless</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">2</font></td>
+    <td WIDTH="26%" HEIGHT="16"><a href="rovctd_quality_flags.htm"><font FACE="Arial" SIZE="2" COLOR="#000000">Quality flag</font></a></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">20</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">longitude</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">decimal
+    degrees</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">-121.8592583551</font></td>
+    <td WIDTH="26%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000">Longitude</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">21</font></td>
+    <td WIDTH="1%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">lonFlag</font></td>
+    <td WIDTH="20%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="LEFT">unitless</font></td>
+    <td WIDTH="11%" HEIGHT="16"><font FACE="Arial" SIZE="2" COLOR="#000000"><p ALIGN="RIGHT">2</font></td>
+    <td WIDTH="26%" HEIGHT="16"><a href="rovctd_quality_flags.htm"><font FACE="Arial" SIZE="2" COLOR="#000000">Quality flag</font></a></td>
+  </tr>
+</table>
+
+<p><small><small>Last updated: <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%m/%d/%Y %H:%M" startspan -->02/01/2000 09:15<!--webbot bot="Timestamp" endspan i-checksum="25696" --> DNM</small></small></p>
+</body>
+</html>

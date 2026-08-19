@@ -1,0 +1,203 @@
+<HTML>
+<HEAD>
+<TITLE>postcruise.asp - Application for searching and entering post-cruise information</TITLE>
+<LINK REV="made" HREF="mailto:">
+</HEAD>
+
+<BODY>
+
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#FUNCTIONS">FUNCTIONS</A>
+	<UL>
+
+		<UL>
+
+			<LI><A HREF="#step1_">step1()</A>
+			<LI><A HREF="#advanced_search_">advanced_search()</A>
+			<LI><A HREF="#step2_">step2()</A>
+			<LI><A HREF="#step3_">step3()</A>
+			<LI><A HREF="#display_expd_">display_expd()</A>
+			<LI><A HREF="#construct_option_lists_">construct_option_lists()</A>
+			<LI><A HREF="#SelectEpoch_">SelectEpoch()</A>
+			<LI><A HREF="#process_form_entries_">process_form_entries()</A>
+			<LI><A HREF="#update_expedition_">update_expedition()</A>
+			<LI><A HREF="#email_">email()</A>
+			<LI><A HREF="#finished_email_">finished_email()</A>
+		</UL>
+
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE>    <A HREF="http://expd.mbari.org/expd/log/postcruise.asp">http://expd.mbari.org/expd/log/postcruise.asp</A>
+</PRE>
+<P>
+<HR>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+Postcruise processing Active Server Page. Search for existing precruise
+record and offer editing of fields that can be filled in during the
+postcruise process.
+
+<P>
+Mike McCann MBARI
+
+<P>
+November 1998
+
+<P>
+<HR>
+<H1><A NAME="FUNCTIONS">FUNCTIONS</A></H1>
+<P>
+<HR>
+<H3><A NAME="step1_">step1()</A></H3>
+<P>
+Offer simple way to search for existing cruises in the database.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 11/16/98
+
+<P>
+<HR>
+<H3><A NAME="advanced_search_">advanced_search()</A></H3>
+<P>
+Offer ways to search for existing cruises in the database.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 11/16/98
+
+<P>
+<HR>
+<H3><A NAME="step2_">step2()</A></H3>
+<P>
+Return list of cruises from query specified in <CODE>step1()</CODE> or
+<CODE>advanced_search()</CODE>
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 11/16/98
+
+<P>
+<HR>
+<H3><A NAME="step3_">step3()</A></H3>
+<P>
+Present cruise info for editing.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 11/18/98
+
+<P>
+<HR>
+<H3><A NAME="display_expd_">display_expd()</A></H3>
+<P>
+Same as <CODE>step3(),</CODE> but don't present form fields. Save text in
+session variable for postcruise email message.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 12/4/98
+
+<P>
+<HR>
+<H3><A NAME="construct_option_lists_">construct_option_lists()</A></H3>
+<P>
+Construct option lists for use in the DTG Month/day/year pull-down boxes.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 11/19/98
+
+<P>
+<HR>
+<H3><A NAME="SelectEpoch_">SelectEpoch()</A></H3>
+<P>
+Select epoch seconds from database field specified.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 10/28/98
+
+<P>
+<HR>
+<H3><A NAME="process_form_entries_">process_form_entries()</A></H3>
+<P>
+Verify entries before submitting them, does the work of creating all the DB
+session variables. Session variables are not assigned unless it is meant to
+be there, i.e. the field requires updating because it was entered on the
+form and is different from what was in the database.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 10/20/98
+
+<P>
+<HR>
+<H3><A NAME="update_expedition_">update_expedition()</A></H3>
+<P>
+Process the form field entries and insert into the database Here is where
+we need to map the names we have on the HTML forms for all the fields to
+the names of the fields that are actaully in the database table.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 10/28/98
+
+<P>
+<HR>
+<H3><A NAME="email_">email()</A></H3>
+<P>
+Process the form field entries and mail to the Logistics coordinator.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 11/5/98
+
+<P>
+<HR>
+<H3><A NAME="finished_email_">finished_email()</A></H3>
+<P>
+Send message to the postcruise alias (or whatever was entered on the
+<CODE>step3()</CODE> form.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 12/7/98
+
+</BODY>
+
+</HTML>

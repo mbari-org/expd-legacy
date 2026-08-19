@@ -1,0 +1,192 @@
+<html>
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+
+<title>ROVCTD Raw File Format</title>
+<meta name="Microsoft Border" content="none"></head>
+
+<body>
+
+<h2>Raw ROVCTD data file</h2>
+
+<p>The raw data file contains measured values at 2-second intervals. The files are named
+in the convention <b>YYYYDDDvntaCtdRaw.txt</b>. The files are comma-delimited ASCII text
+files that can be easily imported in applications such as MS Excel and ArcView. The first
+line of the file provides a shortened name (a &quot;header&quot;) for the data field.</p>
+
+<table BORDER="1" CELLSPACING="0" CELLPADDING="2" WIDTH="100%">
+  <tr>
+    <td WIDTH="6%" BGCOLOR="#C0C0C0" HEIGHT="16"><font FACE="Arial" SIZE="2"><b><p ALIGN="center"><font color="#400040">Column</font></b></font></td>
+    <td WIDTH="15%" BGCOLOR="#C0C0C0" HEIGHT="16"><font FACE="Arial" SIZE="2"><b><p ALIGN="center"><font color="#400040">Data</font></b></font></td>
+    <td WIDTH="6%" BGCOLOR="#C0C0C0" HEIGHT="16"><font FACE="Arial" SIZE="2"><b><p ALIGN="center"><font color="#400040">Header</font></b></font></td>
+    <td WIDTH="18%" BGCOLOR="#C0C0C0" HEIGHT="16"><font FACE="Arial" SIZE="2"><b><p ALIGN="center"><font color="#400040">Units</font></b></font></td>
+    <td WIDTH="10%" BGCOLOR="#C0C0C0" HEIGHT="16"><font FACE="Arial" SIZE="2"><b><p ALIGN="center"><font color="#400040">Format</font></b></font></td>
+    <td WIDTH="8%" BGCOLOR="#C0C0C0" HEIGHT="16"><font FACE="Arial" SIZE="2"><b><p ALIGN="LEFT"><font color="#400040">Specifyer*</font></b></font></td>
+    <td WIDTH="10%" BGCOLOR="#C0C0C0" HEIGHT="16"><font FACE="Arial" SIZE="2"><b><p ALIGN="center"><font color="#400040">Example</font></b></font></td>
+    <td WIDTH="27%" BGCOLOR="#C0C0C0" HEIGHT="16"><font FACE="Arial" SIZE="2"><b><p ALIGN="center"><font color="#400040">Notes</font></b></font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">1</font></td>
+    <td WIDTH="15%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Unix
+    &quot;epoch&quot; seconds</font></td>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">usec</font></td>
+    <td WIDTH="18%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">seconds
+    since January 1, 1970</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">xxxxxxxxxxxx</font></td>
+    <td WIDTH="8%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">12d</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">000929731035</font></td>
+    <td WIDTH="27%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">32-bit
+    number through Dec. 31, 2037</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">2</font></td>
+    <td WIDTH="15%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Year</font></td>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">year</font></td>
+    <td WIDTH="18%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">YYYY</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">xxxx
+    </font></td>
+    <td WIDTH="8%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">4d</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">1999</font></td>
+    <td WIDTH="27%" HEIGHT="16"></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">3</font></td>
+    <td WIDTH="15%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Day
+    of year</font></td>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">day</font></td>
+    <td WIDTH="18%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">DDD</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">xxx</font></td>
+    <td WIDTH="8%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">3d</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">169</font></td>
+    <td WIDTH="27%" HEIGHT="16"></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">4</font></td>
+    <td WIDTH="15%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Time
+    (UTC)</font></td>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">time</font></td>
+    <td WIDTH="18%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">HH:MM:SS
+    (24 hour clock)</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">xx:xx:xx</font></td>
+    <td WIDTH="8%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">8s</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">18:37:15</font></td>
+    <td WIDTH="27%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">UTC=PST+7hours;
+    UTC=PDT+8hours</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">5</font></td>
+    <td WIDTH="15%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Pressure</font></td>
+    <td WIDTH="6%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">pres</font></td>
+    <td WIDTH="18%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">decibars</font></td>
+    <td WIDTH="10%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">xxxx.x</font></td>
+    <td WIDTH="8%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">6.1f</font></td>
+    <td WIDTH="10%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">816.6</font></td>
+    <td WIDTH="27%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Sea
+    level=0; The stated accuracy of the Falmouth Scientific OPM pressure sensor is 0.12 % of
+    full scale (0 - 7000 dbar).</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">6</font></td>
+    <td WIDTH="15%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Temperature</font></td>
+    <td WIDTH="6%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">temp</font></td>
+    <td WIDTH="18%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">degrees
+    C</font></td>
+    <td WIDTH="10%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">xx.xxx
+    </font></td>
+    <td WIDTH="8%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">6.3f</font></td>
+    <td WIDTH="10%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">4.741</font></td>
+    <td WIDTH="27%" HEIGHT="49"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">The
+    stated accuracy of the Falmouth Scientific OTM temperature sensor is +/- 0.005 C from -2
+    to 32 C. The drift is 0.0005 C/month.</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="66"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">7</font></td>
+    <td WIDTH="15%" HEIGHT="66"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Conductivity</font></td>
+    <td WIDTH="6%" HEIGHT="66"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">cond</font></td>
+    <td WIDTH="18%" HEIGHT="66"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Siemens/m</font></td>
+    <td WIDTH="10%" HEIGHT="66"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">x.xxxxx</font></td>
+    <td WIDTH="8%" HEIGHT="66"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">7.5f</font></td>
+    <td WIDTH="10%" HEIGHT="66"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">3.30481</font></td>
+    <td WIDTH="27%" HEIGHT="66"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">The
+    stated accuracy of the Falmouth Scientific OCM conductivity sensor is +/- 0.0005 S/m over
+    the range 0-6.5 S/m. The stability is +/- 0.00005 S/m/month.</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">8</font></td>
+    <td WIDTH="15%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Oxygen
+    current</font></td>
+    <td WIDTH="6%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">o2curr</font></td>
+    <td WIDTH="18%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">microAmps</font></td>
+    <td WIDTH="10%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">x.xxxx</font></td>
+    <td WIDTH="8%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">6.4f</font></td>
+    <td WIDTH="10%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">0.0177</font></td>
+    <td WIDTH="27%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">&quot;Raw&quot;
+    sensor reports voltages from 2 channels: 1 channel proportional to the current, 1 channel
+    proportional to the temperature.</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">9</font></td>
+    <td WIDTH="15%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Oxygen
+    temperature</font></td>
+    <td WIDTH="6%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">o2temp</font></td>
+    <td WIDTH="18%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">degrees
+    C</font></td>
+    <td WIDTH="10%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">xx.xx</font></td>
+    <td WIDTH="8%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">5.2f</font></td>
+    <td WIDTH="10%" HEIGHT="27"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">4.16</font></td>
+    <td WIDTH="27%" HEIGHT="27"></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">10</font></td>
+    <td WIDTH="15%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Change
+    in oxygen</font></td>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">o2delta</font></td>
+    <td WIDTH="18%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">unitless</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">x.xxxx</font></td>
+    <td WIDTH="8%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">6.4f</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">0.0001</font></td>
+    <td WIDTH="27%" HEIGHT="16"></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="33"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">11</font></td>
+    <td WIDTH="15%" HEIGHT="33"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Transmissometer
+    volts</font></td>
+    <td WIDTH="6%" HEIGHT="33"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">transvolt</font></td>
+    <td WIDTH="18%" HEIGHT="33"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">volts</font></td>
+    <td WIDTH="10%" HEIGHT="33"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">x.xxxx</font></td>
+    <td WIDTH="8%" HEIGHT="33"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">6.4f</font></td>
+    <td WIDTH="10%" HEIGHT="33"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">4.4509</font></td>
+    <td WIDTH="27%" HEIGHT="33"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">5
+    volt instrument. Light=660 nm and path=25 cm</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">12</font></td>
+    <td WIDTH="15%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Latitude</font></td>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">lat</font></td>
+    <td WIDTH="18%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">decimal
+    degrees</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">xx.xxxxxxxx</font></td>
+    <td WIDTH="8%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">11.8f</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">36.78317011</font></td>
+    <td WIDTH="27%" HEIGHT="16"></td>
+  </tr>
+  <tr>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">13</font></td>
+    <td WIDTH="15%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">Longitude</font></td>
+    <td WIDTH="6%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">lon</font></td>
+    <td WIDTH="18%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="LEFT">decimal
+    degrees</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">-xxx.xxxxxxxx</font></td>
+    <td WIDTH="8%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">13.8f</font></td>
+    <td WIDTH="10%" HEIGHT="16"><font face="Arial" size="2" color="#000000"><p ALIGN="RIGHT">-121.85925551</font></td>
+    <td WIDTH="27%" HEIGHT="16"></td>
+  </tr>
+</table>
+
+<p><font face="Arial" size="2" color="#000000">*Format specifiers x.y where x=total number
+of places (sign and decimal point included) and y=decimal point</font></p>
+
+<p><small><small>Last updated: <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%m/%d/%Y %H:%M" startspan -->02/01/2000 09:02<!--webbot bot="Timestamp" endspan i-checksum="25248" --> JBP and HAB</small></small></p>
+</body>
+</html>

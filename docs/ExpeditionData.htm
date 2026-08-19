@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>Expedition Log Overview</title>
+</head>
+
+<body>
+
+<h2>Expedition Data Links </h2>
+
+<p>Early each morning two scripts are run which populate the ExpeditionData table 
+  in the Expd database. They are <font face="Courier">popExpeditionData.pl</font> 
+  and <font face="Courier">popEDwithDBqueries.pl</font>. A batch job in \\godzilla\DTS\EXPD\Expedition 
+  named <font face="Courier">ExpeditionDataLoads.bat</font> is run by SQL Server 
+  at 0200 each morning. Parameters for how far back in time these scripts look 
+  are placed in this batch file.</p>
+
+<p>As of 28 February 2003 we look back 40 days for new file links and 365 days 
+  for database query links. If Samples, Annotations, or rovctd database entries 
+  are made that precede this time window then <font face="Courier">popEDwithDBqueries.pl</font> 
+  can be run by hand following the instructions below. </p>
+<h3>Running <font face="Courier">popEDwithDBqueries.pl</font> by hand</h3>
+
+<ol>
+  <li>Install ActiveState perl version 5.22 on your computer. Download the installer 
+    from <a href="APi522e.exe">here</a> and execute it on your system.</li>
+  <li>Create a drive mapping from \\godzilla\SQL7DATA to a drive letter on your 
+    machine, e.g. G:</li>
+  <li>Execute a query of the Expedition database for the expeditions that need 
+    database query links added. Note the beginning and ending ExpeditionID number 
+    for the range of expeditions that need the links added. These numbers are 
+    listed in the lower right hand corner of the Expedition Report cell in the 
+    data table return page, so you should check the data table format radio button 
+    on the query form.</li>
+  <li>Once you have the start and end ExpedtionID numbers execute the following 
+    on your PC:</li>
+</ol>
+<p><font face="Courier">g:<br>
+  cd \DTS\EXPD\Expedition</font><font face="Courier"><br>
+  perl popEDwithDBqueries.pl 2420 2420 </font>(for a single expedition)</p>
+<p>or</p>
+<p><font face="Courier">perl popEDwithDBqueries.pl 1899 2095 </font>(for all expeditions 
+  in year 2000)</p>
+<p>Note that ExpeditionIDs are assigned sequentially during the precruise entry 
+  process. A range of ExpeditionID numbers may not encompass all of the expeditions 
+  within a certain time range.</p>
+<p>&nbsp;</p>
+<h3>Running <font face="Courier">popExpeditionData.pl</font> by hand</h3>
+<ol>
+  <li>Install ActiveState perl version 5.22 on your computer. Download the installer 
+    from <a href="APi522e.exe">here</a> and execute it on your system.</li>
+  <li>Create a drive mapping from \\godzilla\SQL7DATA to a drive letter on your 
+    machine, e.g. G:</li>
+  <li>For the range of time you need to update links for execute <font face="Courier">popExpeditionData.pl</font> 
+    with the proper YYYYDDD arguments, e.g.:</li>
+</ol>
+<p><font face="Courier">g:<br>
+  cd \DTS\EXPD\Expedition</font><font face="Courier"><br>
+  perl popExpeditionData.pl 2000001 2000365 </font>(for all expeditions in year 
+  2000)</p>
+<p>&nbsp;</p>
+
+<h3>Plain old documentation for the programs</h3>
+<ul>
+  <li><a href="DOWD.html">DOWD.pm - Directory Of Web Data- Provide info on Expedition data that live on the web</a></li>
+  <li><a href="popExpeditionData.html">popExpeditionData.pl - Populate ExpeditionData table</a></li>
+  <li><a href="popEDwithDBqueries.html">popEDwithDBqueries.pl - Populate ExpeditionData table with Database queries</a></li>
+</ul>
+
+<hr>
+
+<p>Last updated: 
+  <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B %Y" startspan -->
+  3 March 2003 
+  <!--webbot bot="Timestamp" endspan i-checksum="15102" -->
+  , Mike McCann<br>
+<small>Copyright © 1999 Monterey Bay Aquarium Research Institute (MBARI)</small></p>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<HTML>
+<HEAD>
+<TITLE>popExpeditionData.pl - Populate ExpeditionData table</TITLE>
+<LINK REV="made" HREF="mailto:">
+</HEAD>
+
+<BODY>
+
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#NAME">NAME</A>
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#SEE_ALSO">SEE ALSO</A>
+	<LI><A HREF="#AUTHOR">AUTHOR</A>
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="NAME">NAME</A></H1>
+<P>
+popExpeditionData.pl - Populate ExpeditionData table
+
+<P>
+<HR>
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE>    &gt; popExpeditionData.pl &lt;startYYYY[DDD]&gt; [endYYYYDDD] | &lt;last(ndays)&gt;
+</PRE>
+<P>
+<HR>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+This script examines all of the files that reside in the Web tree starting
+at <A
+href="/ARCHIVE,">http://mww.mbari.org/ARCHIVE,</A>
+determines the start and end time for the file, checks the Expedition and
+Dive tables to capture Expedition and Dive foreign keys for placement as a
+record in the ExpeditionData table. If there is no foreign key match then
+no record is added.
+
+<P>
+If no arguments are specified then the last 7 days or so of data
+directories are examined and linked in.
+
+<P>
+The process is basically as follows:
+
+<P>
+1. Loop through the years
+
+<P>
+2. Loop through the data types
+
+<P>
+3. Loop though all possible Parent directories for the data type (e.g.
+Camera Log is in both logger and camlog)
+
+<P>
+4. Loop through each possible platform dir for each parent dir.
+
+<P>
+5. For each ``file'' found look up the dive/expedition it belongs to.
+Assemble info into a record.
+
+<P>
+6. Loop through each of these records and insert them into the database
+using a stored procedure.
+
+<P>
+<HR>
+<H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
+<P>
+<PRE>        LWP
+</PRE>
+<P>
+<HR>
+<H1><A NAME="AUTHOR">AUTHOR</A></H1>
+<P>
+Mike McCann <EM>&lt;mccann@mbari.org&gt;</EM>
+
+
+
+<P>
+This script was developed as part of the 1999 MBARI ROVCTD Data migration
+project.
+
+<P>
+<A HREF="http://www.mbari.org/~mccann">http://www.mbari.org/~mccann</A>
+
+</BODY>
+
+</HTML>

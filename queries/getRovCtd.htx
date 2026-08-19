@@ -1,0 +1,16 @@
+<html>
+
+<head>
+<title>New Page </title>
+</head>
+
+<body>
+
+<p>Results of query</p>
+
+<p><font face="Courier New"><%begindetail%><%usec%>: <%Pres%>,<%Temper%> <%Salin%><br>
+<%enddetail%></font></p>
+
+<p>&nbsp;</p>
+</body>
+</html>

@@ -1,0 +1,51 @@
+Date: Tue, 07 Jul 1998 16:12:08 -0700
+From: Dan Davis <dada@mbari.org>
+To: Mike McCann <mccann@mbari.org>
+CC: debbie@mbari.org
+Subject: Re: Camera log file format
+
+Dear Mike,
+
+I am just back from vacation for a week, so sorry for the delay. You missed
+one field - timecode. The record is all  ASCII and as I recall the field
+units are as follows:
+
+ Year - four digit integer
+
+ Day - three digit integer  Julian day, in the common usage
+
+Hour - decimal universal coordinated time accurate to 0.004 (the Point
+Lobos standard clock)
+
+Timecode - hour:minutes:seconds:frame, where each  portion is a two digit
+integer, (with leading zero if necessary) and there are 30 frames to the
+second.
+
+Frame -  this is timecode converted to an absolute integer sequential frame
+number..using 30 frames a second, 1800 frames a minute, etc. the idea being
+that timecode and frame number are unique addresses to a specific frame on
+each tape. In standard usage, that is, tape counter zeroed at the beginning
+of a dive and not reset as tapes are added, this number is the unique and
+absolute address of each frame on a dive.....so dive number and this number
+identify the frame.
+
+Depth - ROV ParoScientific depth...recently discontinued...
+
+Focus- 10 bit signed integer representing raw telemetry from the focus
+feedback pot.
+
+Zoom - 10 bit signed integer representing raw telemetry from the zoom
+feedback pot.
+
+Iris- 10 bit signed integer representing raw telemetry from the iris
+feedback pot.
+
+Fieldwidth- width of the image in centimeters , calculated from the
+calibrated focus and zoom telemetry data above using a two variable
+approximation as explained in the Camera Control User's Guide Appendix and
+the paper, Daniel Davis,  "Measurements with Underwater Video: Camera
+FieldWidth Calibration and Structured Lighting" , Journal of the Marine
+Technology Society, Vol 26., No. 4, Winter, 1992-3.
+
+Hope this helps...
+Dan

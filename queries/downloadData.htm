@@ -1,0 +1,713 @@
+<html>
+
+<head>
+<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+<title>Download ROV CTD Data</title>
+</head>
+
+<body BGCOLOR="#FFFFFF" text="#000000">
+
+<table BORDER="0" CELLPADDING="5">
+  <tr>
+    <td VALIGN="top" WIDTH="100"><a href="http://www.mbari.org/"><img src="../images/mbarilogo-120_sh.gif" alt="mbarilogo-120_sh.gif (3156 bytes)" border="0" WIDTH="120" HEIGHT="70"></a><p><a href="/cruises/"><strong><small><font face="Arial">Expedition search</font></small></strong></a></p>
+    <p><a href="/itd/DataArchives/ArchiveInfo.htm"><strong><small><font face="Arial">Data Archives</font></small></strong></a></td>
+    <td VALIGN="TOP" WIDTH="80%"><table border="0" cellpadding="3" cellspacing="1" width="500">
+      <tr>
+        <td><h2 align="left"><font face="Arial,Helvetica">Download ROV CTD Data</font></h2>
+        <p align="left">The ROVs <em>Ventana </em>and <em>Tiburon</em> have sensors that measure
+        the conductivity, temperature, pressure, dissolved oxygen, and light transmission of
+        seawater during each dive. These ROV CTD data are processed daily and archived in the
+        MBARI Expedition Database.</td>
+      </tr>
+    </table>
+    <table border="3" cellspacing="1" cellpadding="3" bordercolorlight="#008080" bordercolordark="#C0C0C0">
+      <tr>
+        <td width="100%"><!--webbot BOT="GeneratedScript" PREVIEW=" " startspan --><script Language="JavaScript"><!--
+function FrontPage_Form1_Validator(theForm)
+{
+
+  if (theForm.year.selectedIndex < 0)
+  {
+    alert("Please select one of the \"year\" options.");
+    theForm.year.focus();
+    return (false);
+  }
+
+  if (theForm.yday.value.length > 3)
+  {
+    alert("Please enter at most 3 characters in the \"yday\" field.");
+    theForm.yday.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-";
+  var checkStr = theForm.yday.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"yday\" field.");
+    theForm.yday.focus();
+    return (false);
+  }
+
+  var chkVal = allNum;
+  var prsVal = parseInt(allNum);
+  if (chkVal != "" && !(prsVal >= "1" && prsVal <= "366"))
+  {
+    alert("Please enter a value greater than or equal to \"1\" and less than or equal to \"366\" in the \"yday\" field.");
+    theForm.yday.focus();
+    return (false);
+  }
+
+  if (theForm.dive.value.length > 8)
+  {
+    alert("Please enter at most 8 characters in the \"dive\" field.");
+    theForm.dive.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-";
+  var checkStr = theForm.dive.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"dive\" field.");
+    theForm.dive.focus();
+    return (false);
+  }
+
+  if (theForm.srt_mm.value.length > 2)
+  {
+    alert("Please enter at most 2 characters in the \"srt_mm\" field.");
+    theForm.srt_mm.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-.";
+  var checkStr = theForm.srt_mm.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    if (ch == ".")
+    {
+      allNum += ".";
+      decPoints++;
+    }
+    else
+      allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"srt_mm\" field.");
+    theForm.srt_mm.focus();
+    return (false);
+  }
+
+  if (decPoints > 1)
+  {
+    alert("Please enter a valid number in the \"srt_mm\" field.");
+    theForm.srt_mm.focus();
+    return (false);
+  }
+
+  var chkVal = allNum;
+  var prsVal = parseFloat(allNum);
+  if (chkVal != "" && !(prsVal >= "1" && prsVal <= "12"))
+  {
+    alert("Please enter a value greater than or equal to \"1\" and less than or equal to \"12\" in the \"srt_mm\" field.");
+    theForm.srt_mm.focus();
+    return (false);
+  }
+
+  if (theForm.srt_dd.value.length > 2)
+  {
+    alert("Please enter at most 2 characters in the \"srt_dd\" field.");
+    theForm.srt_dd.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-.";
+  var checkStr = theForm.srt_dd.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    if (ch == ".")
+    {
+      allNum += ".";
+      decPoints++;
+    }
+    else
+      allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"srt_dd\" field.");
+    theForm.srt_dd.focus();
+    return (false);
+  }
+
+  if (decPoints > 1)
+  {
+    alert("Please enter a valid number in the \"srt_dd\" field.");
+    theForm.srt_dd.focus();
+    return (false);
+  }
+
+  var chkVal = allNum;
+  var prsVal = parseFloat(allNum);
+  if (chkVal != "" && !(prsVal >= "1" && prsVal <= "31"))
+  {
+    alert("Please enter a value greater than or equal to \"1\" and less than or equal to \"31\" in the \"srt_dd\" field.");
+    theForm.srt_dd.focus();
+    return (false);
+  }
+
+  if (theForm.srt_hh.value.length > 2)
+  {
+    alert("Please enter at most 2 characters in the \"srt_hh\" field.");
+    theForm.srt_hh.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-.";
+  var checkStr = theForm.srt_hh.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    if (ch == ".")
+    {
+      allNum += ".";
+      decPoints++;
+    }
+    else
+      allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"srt_hh\" field.");
+    theForm.srt_hh.focus();
+    return (false);
+  }
+
+  if (decPoints > 1)
+  {
+    alert("Please enter a valid number in the \"srt_hh\" field.");
+    theForm.srt_hh.focus();
+    return (false);
+  }
+
+  var chkVal = allNum;
+  var prsVal = parseFloat(allNum);
+  if (chkVal != "" && !(prsVal >= "0" && prsVal <= "23"))
+  {
+    alert("Please enter a value greater than or equal to \"0\" and less than or equal to \"23\" in the \"srt_hh\" field.");
+    theForm.srt_hh.focus();
+    return (false);
+  }
+
+  if (theForm.srt_min.value.length > 2)
+  {
+    alert("Please enter at most 2 characters in the \"srt_min\" field.");
+    theForm.srt_min.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-";
+  var checkStr = theForm.srt_min.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"srt_min\" field.");
+    theForm.srt_min.focus();
+    return (false);
+  }
+
+  var chkVal = allNum;
+  var prsVal = parseInt(allNum);
+  if (chkVal != "" && !(prsVal >= "0" && prsVal <= "59"))
+  {
+    alert("Please enter a value greater than or equal to \"0\" and less than or equal to \"59\" in the \"srt_min\" field.");
+    theForm.srt_min.focus();
+    return (false);
+  }
+
+  if (theForm.srt_ss.value.length > 2)
+  {
+    alert("Please enter at most 2 characters in the \"srt_ss\" field.");
+    theForm.srt_ss.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-";
+  var checkStr = theForm.srt_ss.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"srt_ss\" field.");
+    theForm.srt_ss.focus();
+    return (false);
+  }
+
+  var chkVal = allNum;
+  var prsVal = parseInt(allNum);
+  if (chkVal != "" && !(prsVal >= "0" && prsVal <= "59"))
+  {
+    alert("Please enter a value greater than or equal to \"0\" and less than or equal to \"59\" in the \"srt_ss\" field.");
+    theForm.srt_ss.focus();
+    return (false);
+  }
+
+  if (theForm.end_mm.value.length > 2)
+  {
+    alert("Please enter at most 2 characters in the \"end_mm\" field.");
+    theForm.end_mm.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-.";
+  var checkStr = theForm.end_mm.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    if (ch == ".")
+    {
+      allNum += ".";
+      decPoints++;
+    }
+    else
+      allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"end_mm\" field.");
+    theForm.end_mm.focus();
+    return (false);
+  }
+
+  if (decPoints > 1)
+  {
+    alert("Please enter a valid number in the \"end_mm\" field.");
+    theForm.end_mm.focus();
+    return (false);
+  }
+
+  var chkVal = allNum;
+  var prsVal = parseFloat(allNum);
+  if (chkVal != "" && !(prsVal >= "1" && prsVal <= "12"))
+  {
+    alert("Please enter a value greater than or equal to \"1\" and less than or equal to \"12\" in the \"end_mm\" field.");
+    theForm.end_mm.focus();
+    return (false);
+  }
+
+  if (theForm.end_dd.value.length > 2)
+  {
+    alert("Please enter at most 2 characters in the \"end_dd\" field.");
+    theForm.end_dd.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-.";
+  var checkStr = theForm.end_dd.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    if (ch == ".")
+    {
+      allNum += ".";
+      decPoints++;
+    }
+    else
+      allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"end_dd\" field.");
+    theForm.end_dd.focus();
+    return (false);
+  }
+
+  if (decPoints > 1)
+  {
+    alert("Please enter a valid number in the \"end_dd\" field.");
+    theForm.end_dd.focus();
+    return (false);
+  }
+
+  var chkVal = allNum;
+  var prsVal = parseFloat(allNum);
+  if (chkVal != "" && !(prsVal >= "1" && prsVal <= "31"))
+  {
+    alert("Please enter a value greater than or equal to \"1\" and less than or equal to \"31\" in the \"end_dd\" field.");
+    theForm.end_dd.focus();
+    return (false);
+  }
+
+  if (theForm.end_hh.value.length > 2)
+  {
+    alert("Please enter at most 2 characters in the \"end_hh\" field.");
+    theForm.end_hh.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-";
+  var checkStr = theForm.end_hh.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"end_hh\" field.");
+    theForm.end_hh.focus();
+    return (false);
+  }
+
+  var chkVal = allNum;
+  var prsVal = parseInt(allNum);
+  if (chkVal != "" && !(prsVal >= "0" && prsVal <= "23"))
+  {
+    alert("Please enter a value greater than or equal to \"0\" and less than or equal to \"23\" in the \"end_hh\" field.");
+    theForm.end_hh.focus();
+    return (false);
+  }
+
+  if (theForm.end_min.value.length > 2)
+  {
+    alert("Please enter at most 2 characters in the \"end_min\" field.");
+    theForm.end_min.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-";
+  var checkStr = theForm.end_min.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"end_min\" field.");
+    theForm.end_min.focus();
+    return (false);
+  }
+
+  var chkVal = allNum;
+  var prsVal = parseInt(allNum);
+  if (chkVal != "" && !(prsVal >= "0" && prsVal <= "59"))
+  {
+    alert("Please enter a value greater than or equal to \"0\" and less than or equal to \"59\" in the \"end_min\" field.");
+    theForm.end_min.focus();
+    return (false);
+  }
+
+  if (theForm.end_ss.value.length > 2)
+  {
+    alert("Please enter at most 2 characters in the \"end_ss\" field.");
+    theForm.end_ss.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-";
+  var checkStr = theForm.end_ss.value;
+  var allValid = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"end_ss\" field.");
+    theForm.end_ss.focus();
+    return (false);
+  }
+
+  var chkVal = allNum;
+  var prsVal = parseInt(allNum);
+  if (chkVal != "" && !(prsVal >= "0" && prsVal <= "59"))
+  {
+    alert("Please enter a value greater than or equal to \"0\" and less than or equal to \"59\" in the \"end_ss\" field.");
+    theForm.end_ss.focus();
+    return (false);
+  }
+  return (true);
+}
+//--></script><!--webbot BOT="GeneratedScript" endspan --><form method="GET" action="http://expd.mbari.org/expd/queries/rovctd-data.asp" onsubmit="return FrontPage_Form1_Validator(this)" name="FrontPage_Form1">
+          <div align="center"><center><table border="0">
+            <tr>
+              <td bgcolor="#A3D1D1"><font face="Arial, Helvetica" color="#400040"><strong>1.
+              &nbsp;Choose the date</strong></font></td>
+            </tr>
+            <tr>
+              <td>&nbsp;<input type="radio" value="yyyyddd" name="date_type" checked>Year
+                <!--webbot bot="Validation" B-Value-Required="TRUE" --><select name="year" size="1" onFocus="document.FrontPage_Form1.date_type[0].checked=true;">
+                <option value="2004" selected>2004</option>
+                <option value="2003">2003</option>
+                <option value="2002">2002</option>
+                <option value="2001">2001</option>
+                <option value="2000">2000</option>
+                <option value="1999">1999</option>
+                <option value="1998">1998</option>
+                <option value="1997">1997</option>
+                <option value="1996">1996</option>
+                <option value="1995">1995</option>
+                <option value="1994">1994</option>
+                <option value="1993">1993</option>
+                <option value="1992">1992</option>
+                <option value="1991">1991</option>
+                <option value="1990">1990</option>
+                <option value="1989">1989</option>
+                <option value="1988">1988</option>
+              </select>&nbsp;&nbsp;&nbsp;&nbsp; Day of year <em>ddd</em>&nbsp; <!--webbot bot="Validation" S-Data-Type="Integer" S-Number-Separators="x" I-Maximum-Length="3" S-Validation-Constraint="Greater than or equal to" S-Validation-Value="1" S-Validation-Constraint="Less than or equal to" S-Validation-Value="366" --><input type="text" name="yday" size="3" maxlength="3" value="001" onFocus="document.FrontPage_Form1.date_type[0].checked=true;"> &nbsp;&nbsp;<font color="#408080">OR</font></td>
+            </tr>
+            <tr>
+              <td>&nbsp;<input type="radio" value="dive" name="date_type">Dive <!--webbot bot="Validation" S-Data-Type="Integer" S-Number-Separators="x" I-Maximum-Length="8" --><input type="text" name="dive" size="8" maxlength="8" onFocus="document.FrontPage_Form1.date_type[1].checked=true;"> &nbsp;&nbsp;<font color="#408080">OR</font></td>
+            </tr>
+            <tr>
+              <td>&nbsp;<input type="radio" value="srt_end" name="date_type">Start <em>mm/dd/yyyy</em> 
+                <!--webbot bot="Validation" S-Data-Type="Number" S-Number-Separators="x." I-Maximum-Length="2" S-Validation-Constraint="Greater than or equal to" S-Validation-Value="1" S-Validation-Constraint="Less than or equal to" S-Validation-Value="12" --><input type="text" name="srt_mm" size="2" maxlength="2" value="01" onFocus="document.FrontPage_Form1.date_type[2].checked=true;"> <strong>/</strong> 
+                <!--webbot bot="Validation" S-Data-Type="Number" S-Number-Separators="x." I-Maximum-Length="2" S-Validation-Constraint="Greater than or equal to" S-Validation-Value="1" S-Validation-Constraint="Less than or equal to" S-Validation-Value="31" --><input type="text" name="srt_dd" size="2" maxlength="2" value="01" onFocus="document.FrontPage_Form1.date_type[2].checked=true;"> / <select name="srt_yyyy" size="1" onFocus="document.FrontPage_Form1.date_type[2].checked=true;">
+                <option value="2004" selected>2004</option>
+                <option value="2003">2003</option>
+                <option value="2002">2002</option>
+                <option value="2001">2001</option>
+                <option value="2000">2000</option>
+                <option value="1999">1999</option>
+                <option value="1998">1998</option>
+                <option value="1997">1997</option>
+                <option value="1996">1996</option>
+                <option value="1995">1995</option>
+                <option value="1994">1994</option>
+                <option value="1993">1993</option>
+                <option value="1992">1992</option>
+                <option value="1991">1991</option>
+                <option value="1990">1990</option>
+                <option value="1989">1989</option>
+                <option value="1988">1988</option>
+              </select> &nbsp;&nbsp;<em>hh:mm:ss</em>   <!--webbot bot="Validation" S-Data-Type="Number" S-Number-Separators="x." I-Maximum-Length="2" S-Validation-Constraint="Greater than or equal to" S-Validation-Value="0" S-Validation-Constraint="Less than or equal to" S-Validation-Value="23" --><input type="text" name="srt_hh" size="2" maxlength="2" value="00" onFocus="document.FrontPage_Form1.date_type[2].checked=true;">:<!--webbot bot="Validation" S-Data-Type="Integer" S-Number-Separators="x" I-Maximum-Length="2" S-Validation-Constraint="Greater than or equal to" S-Validation-Value="0" S-Validation-Constraint="Less than or equal to" S-Validation-Value="59" --><input type="text" name="srt_min" size="2" maxlength="2" value="00" onFocus="document.FrontPage_Form1.date_type[2].checked=true;">:<!--webbot bot="Validation" S-Data-Type="Integer" S-Number-Separators="x" I-Maximum-Length="2" S-Validation-Constraint="Greater than or equal to" S-Validation-Value="0" S-Validation-Constraint="Less than or equal to" S-Validation-Value="59" --><input type="text" name="srt_ss" size="2" maxlength="2" value="00" onFocus="document.FrontPage_Form1.date_type[2].checked=true;"><br>
+              &nbsp; &nbsp;&nbsp;&nbsp; End <em>mm/dd/yyyy</em>&nbsp; <!--webbot bot="Validation" S-Data-Type="Number" S-Number-Separators="x." I-Maximum-Length="2" S-Validation-Constraint="Greater than or equal to" S-Validation-Value="1" S-Validation-Constraint="Less than or equal to" S-Validation-Value="12" --><input type="text" name="end_mm" size="2" maxlength="2" value="01" onFocus="document.FrontPage_Form1.date_type[2].checked=true;"> /
+                <!--webbot bot="Validation" S-Data-Type="Number" S-Number-Separators="x." I-Maximum-Length="2" S-Validation-Constraint="Greater than or equal to" S-Validation-Value="1" S-Validation-Constraint="Less than or equal to" S-Validation-Value="31" --><input type="text" name="end_dd" size="2" maxlength="2" value="01" onFocus="document.FrontPage_Form1.date_type[2].checked=true;"> / <select name="end_yyyy" size="1" onFocus="document.FrontPage_Form1.date_type[2].checked=true;">
+                <option value="2004" selected>2004</option>
+                <option value="2003">2003</option>
+                <option value="2002">2002</option>
+                <option value="2001">2001</option>
+                <option value="2000">2000</option>
+                <option value="1999">1999</option>
+                <option value="1998">1998</option>
+                <option value="1997">1997</option>
+                <option value="1996">1996</option>
+                <option value="1995">1995</option>
+                <option value="1994">1994</option>
+                <option value="1993">1993</option>
+                <option value="1992">1992</option>
+                <option value="1991">1991</option>
+                <option value="1990">1990</option>
+                <option value="1989">1989</option>
+                <option value="1988">1988</option>
+              </select>&nbsp; &nbsp;<em>hh:mm:ss</em>   <!--webbot bot="Validation" S-Data-Type="Integer" S-Number-Separators="x" I-Maximum-Length="2" S-Validation-Constraint="Greater than or equal to" S-Validation-Value="0" S-Validation-Constraint="Less than or equal to" S-Validation-Value="23" --><input type="text" name="end_hh" size="2" maxlength="2" value="23" onFocus="document.FrontPage_Form1.date_type[2].checked=true;">:<!--webbot bot="Validation" S-Data-Type="Integer" S-Number-Separators="x" I-Maximum-Length="2" S-Validation-Constraint="Greater than or equal to" S-Validation-Value="0" S-Validation-Constraint="Less than or equal to" S-Validation-Value="59" --><input type="text" name="end_min" size="2" maxlength="2" value="59" onFocus="document.FrontPage_Form1.date_type[2].checked=true;">:<!--webbot bot="Validation" S-Data-Type="Integer" S-Number-Separators="x" I-Maximum-Length="2" S-Validation-Constraint="Greater than or equal to" S-Validation-Value="0" S-Validation-Constraint="Less than or equal to" S-Validation-Value="59" --><input type="text" name="end_ss" size="2" maxlength="2" value="59" onFocus="document.FrontPage_Form1.date_type[2].checked=true;"></td>
+            </tr>
+            <tr>
+              <td><blockquote>
+                <p><em><font face="Arial,Helvetica"><small>Time is in UTC. Leave the default times to
+                return data by entire UTC days. </small></font></em></p>
+              </blockquote>
+              </td>
+            </tr>
+            <tr>
+              <td bgcolor="#A3D1D1"><font face="Arial, Helvetica" color="#400040"><strong>2.
+              &nbsp;Choose the vehicle</strong></font></td>
+            </tr>
+            <tr>
+              <td>&nbsp;<input type="radio" value="vnta" name="pltfrm" checked><img src="images/ventana.jpg" alt="ventana.jpg (2692 bytes)" WIDTH="67" HEIGHT="48"> <em>Ventana</em>&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="radio" name="pltfrm" value="tibr"><img src="images/sm_tiburonp.gif" alt="sm_tiburonp.gif (2139 bytes)" WIDTH="51" HEIGHT="50"> <em>Tiburon</em></td>
+            </tr>
+            <tr>
+              <td bgcolor="#A3D1D1"><font face="Arial, Helvetica" color="#400040"><strong>3.
+              &nbsp;Choose the format of the results</strong></font></td>
+            </tr>
+            <tr>
+              <td>&nbsp;<input type="radio" value="comma" checked name="return_type">Comma delimited
+              &nbsp;&nbsp;<input type="radio" name="return_type" value="table">HTML Table&nbsp;&nbsp; <input type="radio" name="return_type" value="excel">Microsoft Excel </td>
+            </tr>
+            <tr>
+              <td><blockquote>
+                <em><font face="Arial,Helvetica"><small><p>Warning: large queries may fill your computer's
+                memory cache and crash the browser (especially if you choose the HTML Table format). Break
+                your query into shorter time periods, or see use <a href="http://expd.mbari.org/rovctd/UserDocs/userdocs.htm#Getting to the Data">other query
+                methods</a>.</small></font></em> </p>
+              </blockquote>
+              </td>
+            </tr>
+            <tr>
+              <td><input type="submit" value="Submit" name="B3">&nbsp;&nbsp;&nbsp; <input type="reset" value="Reset" name="B4"></td>
+            </tr>
+          </table>
+          </center></div>
+        </form>
+        </td>
+      </tr>
+    </table>
+    <font face="Arial,Helvetica"><p><strong>For More Information</font> </strong><ul>
+      <li><a href="../UserDocs/queryFormat.htm">Data formats</a> (units, precision, etc.). </li>
+      <li><a href="../UserDocs/userdocs.htm">Documentation</a> about ROVCTD data.</li>
+      <li>Looking for the raw data? Navigate through the <a href="/ARCHIVE/rovctd/">ARCHIVE</a> file tree.</li>
+      <li>Search the <a href="/cruises/">expedition database</a>.</li>
+      <li>Instrument technician web pages (TBD).</li>
+    </ul>
+    <p><small><small>Questions about this page? Contact<a href="mailto:paje@mbari.org"> Jenny
+    Paduan</a></small></small>.<br>
+    <small><small>Last updated: <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%m/%d/%y %H:%M" startspan -->02/01/00 09:04<!--webbot bot="Timestamp" endspan i-checksum="15476" --></small></small><big> </big></td>
+  </tr>
+</table>
+</body>
+</html>

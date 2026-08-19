@@ -1,0 +1,162 @@
+<HTML>
+<HEAD>
+<TITLE>dive.asp - Dive edit/update/delete Active Server Page</TITLE>
+<LINK REV="made" HREF="mailto:">
+</HEAD>
+
+<BODY>
+
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#FUNCTIONS">FUNCTIONS</A>
+	<UL>
+
+		<UL>
+
+			<LI><A HREF="#edit_">edit()</A>
+			<LI><A HREF="#list_dives_">list_dives()</A>
+			<LI><A HREF="#update_">update()</A>
+			<LI><A HREF="#delete_rec_">delete_rec()</A>
+			<LI><A HREF="#SelectEpoch_">SelectEpoch()</A>
+			<LI><A HREF="#construct_option_lists_">construct_option_lists()</A>
+			<LI><A HREF="#add_dive_form_">add_dive_form()</A>
+			<LI><A HREF="#insert_dive_">insert_dive()</A>
+			<LI><A HREF="#email_dive_insert_">email_dive_insert()</A>
+		</UL>
+
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE>    &gt; <A HREF="http://expd.mbari.org/expd/log/dive.asp">http://expd.mbari.org/expd/log/dive.asp</A>
+</PRE>
+<P>
+<HR>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+Pages for inserting, updating or deleting dives that belong to expeditions.
+
+<P>
+<HR>
+<H1><A NAME="FUNCTIONS">FUNCTIONS</A></H1>
+<P>
+<HR>
+<H3><A NAME="edit_">edit()</A></H3>
+<P>
+Present the info for the dive indicated by the ID passed.
+
+<P>
+Mike McCann
+
+<P>
+Date Created: 7/13/99
+
+<P>
+<HR>
+<H3><A NAME="list_dives_">list_dives()</A></H3>
+<P>
+Present list of dives with an opportunity to edit each record.
+
+<P>
+Mike McCann
+
+<P>
+Date Created: 7/13/99
+
+<P>
+<HR>
+<H3><A NAME="update_">update()</A></H3>
+<P>
+Update Dive record with changes made on the form.
+
+<P>
+Mike McCann
+
+<P>
+Date Created: 7/15/99
+
+<P>
+<HR>
+<H3><A NAME="delete_rec_">delete_rec()</A></H3>
+<P>
+Delete a record.
+
+<P>
+Mike McCann
+
+<P>
+Date Created: 7/14/99
+
+<P>
+<HR>
+<H3><A NAME="SelectEpoch_">SelectEpoch()</A></H3>
+<P>
+Select epoch seconds from database field specified.
+
+<P>
+Mike McCann
+
+<P>
+Date Created: 10/28/98
+
+<P>
+<HR>
+<H3><A NAME="construct_option_lists_">construct_option_lists()</A></H3>
+<P>
+Construct option lists for use in the DTG Month/day/year pull-down boxes.
+
+<P>
+Mike McCann
+
+<P>
+Date Created: 11/19/98
+
+<P>
+<HR>
+<H3><A NAME="add_dive_form_">add_dive_form()</A></H3>
+<P>
+Present blank form for user to enter dive info.
+
+<P>
+Mike McCann
+
+<P>
+Date Created: 10/30/99
+
+<P>
+<HR>
+<H3><A NAME="insert_dive_">insert_dive()</A></H3>
+<P>
+dd a dive to the dive table using stored procedure that prevents duplicate
+entries.
+
+<P>
+Mike McCann
+
+<P>
+Date Created: 11/20/98
+
+<P>
+<HR>
+<H3><A NAME="email_dive_insert_">email_dive_insert()</A></H3>
+<P>
+Process the form field entries and mail to the Logistics coordinator.
+
+<P>
+Mike McCann
+
+<P>
+Date Created: 11/5/99
+
+</BODY>
+
+</HTML>

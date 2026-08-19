@@ -1,0 +1,94 @@
+/* This style sheet is for the modern CSS that tens to break older Netscape 4 browsers*/
+
+#sectiontitle { margin: 16px 15px 0 0; }
+#pagetitle { padding: 5px 5px 5px 5px; }
+#pagetitle_2lines { padding: 5px 5px 5px 5px; }
+#navtitle { margin: 0 0 20px 0; }
+#navbar_cell { padding: 0 5px 0 5px; }
+
+.subnavbar
+{
+	padding: 5px 0px 5px 5px;
+	border-color: #336699;
+	border-width: 0px;
+	border-style: solid;
+}
+
+.navlink
+{
+	display: block;
+	border-color: black;
+	border-style: solid;
+	border-width: 0px;
+	margin: -2px 0 -2px 0;
+	padding: 0px;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.subnavlink
+{
+	display: block;
+	border-color: black;
+	border-style: solid;
+	border-width: 0px;
+	padding: 0px;
+	margin: -4px 0 -4px 0;
+}
+
+/* HORIZONTAL RULES*/
+.blue_line
+{
+	display: block;
+	padding: 2px 0 2px 0;
+	background-color: #336699;
+	margin: 6px 0 6px 0;
+}
+
+.sand_line
+{
+	display: block;
+	padding: 2px 0 2px 0;
+	background-color: #E1E2D5;
+	margin: 6px 0 6px 0;
+}
+ul {
+
+	list-style-image: url(http://www.mbari.org/art/interior_levels/bullets/blue_v.gif);
+	list-style-position: outside;
+	margin: 20px 0 20px 40px;
+}
+
+ul ul
+{
+	list-style-image: url(http://www.mbari.org/art/interior_levels/bullets/brown_dot.gif);
+	list-style-position: outside;
+	margin: 20px 0 20px 40px;
+}
+
+
+ul ul ul 
+{
+	list-style-image: url(http://www.mbari.org/art/interior_levels/bullets/brown_v.gif);
+	list-style-position: outside;
+	margin: 20px 0 20px 40px;
+}
+
+ul ul ul ul
+{
+	list-style-image: url(http://www.mbari.org/art/interior_levels/bullets/blue_dot.gif);
+	list-style-position: outside;
+	margin: 20px 0 20px 40px;
+}
+
+p.caption {
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+	font-size: 0.9em;
+	text-align: center;
+	margin-top: -1px;
+}
+.top_photo {
+	text-align: center;
+	display: block;
+}
+

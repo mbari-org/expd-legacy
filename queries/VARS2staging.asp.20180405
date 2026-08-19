@@ -1,0 +1,1586 @@
+<%@ LANGUAGE = PerlScript %>
+
+<%
+
+=head1 NAME
+
+VARS2staging.asp - Build Samples DB staging web page that presents annotated Samples to be loaded into the Samples Database
+
+=head1 SYNOPSIS
+
+    > http://mww.mbari.org/expd/queries/VARS2staging.asp?ROVName=vnta&DiveNumber=2606
+
+=head1 DESCRIPTION
+Query the local VARS database for sample annotations from the specified dive and construct
+a nice web page showing images and collection event information for those samples.
+
+$Id: VARS2staging.asp,v 1.39 2017/11/02 18:59:45 mccann Exp $
+
+=cut
+
+
+use Win32::ASP;
+use OLE;
+use LWP::Simple;
+use POSIX;
+
+
+$progVer = '$Id: VARS2staging.asp,v 1.39 2017/11/02 18:59:45 mccann Exp $';
+$this_script = 'VARS2staging.asp';
+
+#
+# See which host the asp is running on and set proper places for data
+#
+#chop($thishost = `hostname`);		# typhoon (shore), glacierwind (lobos), wharfrat (flyer)
+$thishost = "typhoon";		# typhoon (shore), glacierwind (lobos), wharfrat (flyer)
+($norovSelected, $vntaSelected, $tibrSelected) = ('', '', '');
+if ( $thishost =~ /typhoon/i ) {
+	$dsn = "Server=perseus,1433;Database=VARS;UID=***;******;";
+	$dsnExpd = "Server=solstice;Database=EXPD;UID=***;******;";
+	$dsnSamples = "Server=perseus;Database=MBARI_Samples;UID=***;******;";
+	$loadAction = 'https://mww.mbari.org/samplesDB/loads/loadcoll.asp';
+	$webRoot = 'http://mww.mbari.org';
+	$pageLogo = 'mbarilogo-120_sh.gif';
+}
+elsif ( $thishost =~ /glacierwind/i ) {
+	$dsn = "Server=glacierwind,1433;Database=VARS;UID=***;******;";
+	$dsnExpd = "Server=solstice;Database=EXPD;UID=***;******;";
+	$dsnSamples = "Server=perseus;Database=MBARI_Samples;UID=***;******;";
+	$loadAction = 'https://mww.mbari.org/samplesDB/loads/loadcoll.asp';
+	$webRoot = 'http://glacierwind.pl.mbari.org';
+	$pageLogo = 'lobos-120.jpg';
+	$rovName eq 'Ventana';
+}
+elsif ( $thishost =~ /wharfrat/i ) {
+	$dsn = "Server=alaskanwind,1433;Database=VARS;UID=***;******;";
+	$dsnExpd = "Server=solstice;Database=EXPD;UID=***;******;";
+	$dsnSamples = "Server=perseus;Database=MBARI_Samples;UID=***;******;";
+	$loadAction = 'https://mww.mbari.org/samplesDB/loads/loadcoll.asp';
+	$webRoot = 'http://fww.wf.mbari.org';
+	$pageLogo = 'wf1-120.jpg';
+	$rovName eq 'Tiburon';
+}
+else {
+	die "VARS2staging.asp not configured to run on host $thishost\n";
+}
+
+
+#
+# Get parameters passed into this asp and set names as needed by VARS query
+# RovName and either start and end DateTimes or DiveNumber (from with Expd provides start and end times)
+#
+$rovName = GetFormValue('RovName');
+if ( $rovName eq 'tibr' || $rovName eq 'Tiburon' || GetFormValue('ROV') eq 'tibr' || GetFormValue('ROV') eq 'Tiburon' ) {
+	$varsPlatformName = 'Tiburon';
+	$tibrSelected = 'SELECTED';
+}
+elsif ( $rovName eq 'vnta' || $rovName eq 'Ventana' || GetFormValue('ROV') eq 'vnta' || GetFormValue('ROV') eq 'Ventana') {
+	$varsPlatformName = 'Ventana';
+	$vntaSelected = 'SELECTED';
+}
+elsif ( $rovName eq 'docr' || $rovName =~ /Doc/ || GetFormValue('ROV') eq 'docr' || GetFormValue('ROV') eq 'DocRicketts') {
+	$varsPlatformName = 'Doc Ricketts';
+	$docrSelected = 'SELECTED';
+}
+else {
+	die "Must specify RovName=tibr|vnta|docr";
+}
+
+# e.g. qSCollDTG=3/24/2003+7:13:15+PM&qECollDTG=3/24/2003+9:48:15+PM
+$SCollDTG = GetFormValue('qSCollDTG');
+$ECollDTG = GetFormValue('qECollDTG');
+$diveNameNumber = GetFormValue('qDiveNameNum');
+$diveNumber = $diveNameNumber;
+$diveNumber =~ s/[a-z]+//;		# Remove 'vnta' or 'tibr'
+
+#
+# Get start and end times from expd dive number (if not specified above)
+#
+if ( !$SCollDTG || !$ECollDTG ) {
+	$diveNumber = GetFormValue('DiveNumber') || GetFormValue('DiveName');
+} # End if ( !$SCollDTG || !$ECollDTG )
+
+#
+# VARS uses ShipName, set it from RovName
+#
+$varsShipName = 'Western Flyer' if $varsPlatformName eq 'Tiburon';
+$varsShipName = 'Western Flyer' if $varsPlatformName eq 'Doc Ricketts';
+$varsShipName = 'Point Lobos' if $varsPlatformName eq 'Ventana';
+
+
+#
+# Detail query template for each sample
+#                     
+$sqlDetailBeg = "SELECT  LinkName, LinkValue, ToConcept, ObservationID_FK
+FROM   dbo.Association 
+WHERE dbo.Association.ObservationID_FK = ";
+
+
+#
+# Determine what to do: 1) build webpage for display back to browser 2) send web page as email 3) Present form that calls loadcoll.asp
+#
+##die "action = " . GetFormValue('action');
+
+if ( GetFormValue('action') eq 'Email' ) { 
+	emailForm();
+}
+elsif ( GetFormValue('action') eq 'Review Samples to load' ) { 
+	loadForm();
+}
+elsif ( $varsPlatformName && $diveNumber ) {
+	buildWebPage();
+}
+elsif ( !$SCollDTG && !$ECollDTG ) { 
+	if ( $varsPlatformName && ! $diveNumber ) {		# Likely running aboard ship.  Present for to ask for dive number
+		enterDiveNumberForm();
+	}
+}
+elsif ( $SCollDTG && $ECollDTG ) { 
+	Win32::ASP::DebugPrint("\nQuerying VARS by time, not dive number.\n$sql");
+	buildWebPage();
+}
+else {
+	die "Cannot process form entries, need ?RovName=tibr|vnta&amp;DiveNumber=a_number"; 
+}
+
+exit;
+
+# ------------------------------- Subroutines -------------------------------
+#
+
+# ---------------------------------------------------------------------------
+#
+sub buildWebPage {
+#
+# Open database connections to VARS
+#
+$Application->Lock();
+$Conn = CreateObject OLE "ADODB.Connection";
+$Conn->{'Provider'} = "sqloledb";
+
+$Conn->Open($dsn);
+
+Win32::ASP::AddDeathHook( sub { $Conn->Close } );	# In case asp dies do some cleanup
+
+if(keys %{$Conn->Errors()}) {
+        $Errors = $Conn->Errors();
+        print "<B>Error in opening connection to $dsn:</B>";
+        foreach $error (keys %$Errors) {
+                print $error->{Description}, "\n";
+        }
+        die "<BR>Cannot open VARS database.";
+}
+
+
+$chiefScientist = GetFormValue("ChiefScientist");
+$collector = GetFormValue('Collector');
+$waypointName = GetFormValue('WaypointName');
+		
+#
+# Web page top from reusable subroutine
+#
+$Response->write(getWebPageTop());
+
+#
+# Query for sampled-by annotations from VARS Annotations view
+#
+if ( $diveNumber ) {
+	$sql = "
+SELECT DISTINCT 
+      CONVERT(varchar(22), RecordedDate, 120) as DateTime24, DateDiff(ss, '01/01/70', RecordedDate) AS Esecs, TapeTimeCode, ConceptName, Image, 
+      Depth, Latitude, Longitude, CameraDirection, ISNULL(Observer, '') AS Observer, 
+      AnnotationMode, ObservationID_FK
+FROM  dbo.Annotations
+WHERE (RovName = '$varsPlatformName') AND (DiveNumber = $diveNumber) AND (LinkName = 'sampled-by')
+ORDER BY TapeTimeCode, DateTime24
+";
+}
+else {
+	$sql = "
+SELECT DISTINCT 
+      CONVERT(varchar(22), RecordedDate, 120) as DateTime24, DateDiff(ss, '01/01/70', RecordedDate) AS Esecs, TapeTimeCode, ConceptName, Image, 
+      Depth, Latitude, Longitude, CameraDirection, ISNULL(Observer, '') AS Observer, 
+      AnnotationMode, ObservationID_FK
+FROM  dbo.Annotations
+WHERE (RovName = '$varsPlatformName') AND (RecordedDate BETWEEN '$SCollDTG' AND '$ECollDTG') AND (LinkName = 'sampled-by')
+ORDER BY TapeTimeCode, DateTime24
+";
+}
+
+#
+# Execute SQL and get Sample records from VARS
+#
+Win32::ASP::DebugPrint("\nExecuting SQL: \n$sql");
+my $RS = $Conn->Execute($sql);
+$nSamples = 0;
+if(!$RS) {
+ 	 $Response->Write("<BR>Empty Return Set: RS. for <br>$sql <br>From dsn = $dsn");
+}
+else {
+	
+	while ( !$RS->EOF ) { 
+		$stillImageURL = $RS->Fields('Image')->Value;
+		$observationID = $RS->Fields('ObservationID_FK')->Value;
+		$dateTime = $RS->Fields('DateTime24')->Value;
+		$strDateTime = $dateTime . " GMT" ;
+		$strDateTime =~ s/\s+/&nbsp;/g;	# Fill with non breaking spaces so that text does not wrap in table cell
+		$strDateTime =~ s/-/\//g;	# Replace dashes with slashes that don't break on lines
+		$esecs = $RS->Fields('Esecs')->Value;
+		$tapeTimeCode = $RS->Fields('TapeTimeCode')->Value;
+		$conceptName = $RS->Fields('ConceptName')->Value;
+		$observer = $RS->Fields('Observer')->Value;
+		
+		#
+		# Check for check boxes and fields passed in from emailed "form" link
+		#
+		$comment = GetFormValue("${tapeTimeCode}_c");
+		$load = GetFormValue("${tapeTimeCode}_l");
+		
+		#
+		# Ancillary data from database, will result in '' aboard ship - need to read from files
+		#
+		$varsLatitude = ($RS->Fields('Latitude')->Value) ? sprintf("%.6f", $RS->Fields('Latitude')->Value) : '';
+		$varsLongitude = ($RS->Fields('Longitude')->Value) ? sprintf("%.6f", $RS->Fields('Longitude')->Value) : '';
+		$varsDepth = ($RS->Fields('Depth')->Value) ? sprintf("%.1f", $RS->Fields('Depth')->Value) : '';
+		$varsDepthString = $varsDepth . " m" if $varsDepth;
+		
+		$nSamples++;
+		
+		$sqlDetail = $sqlDetailBeg . $observationID;
+		Win32::ASP::DebugPrint("\nExecuting SQL: \n$sqlDetail");
+
+		my $RSdetail = $Conn->Execute($sqlDetail);
+		$sampleReference = '';
+		$equipment = '';
+		$varsComment = '';
+		if(!$RSdetail) {
+ 	 		$Response->Write("<BR>Empty Return Set: RSdetail. for <br>$sql <br>From dsn = $dsn");
+		}
+		else {
+			while ( !$RSdetail->EOF ) {
+				Win32::ASP::DebugPrint("\nLinkName = " . $RSdetail->Fields('LinkName')->Value . "\n");
+				
+				if ( $RSdetail->Fields('LinkName')->Value eq 'sample-reference') {
+					$sampleReference = $RSdetail->Fields('LinkValue')->Value;
+				}
+				elsif ( $RSdetail->Fields('LinkName')->Value eq 'identity-reference') {
+					$identityReference = $RSdetail->Fields('LinkValue')->Value;
+				}
+				elsif ( $RSdetail->Fields('LinkName')->Value eq 'sampled-by') {
+					$linkValue = $RSdetail->Fields('LinkValue')->Value;
+					$toConcept = $RSdetail->Fields('ToConcept')->Value;
+				}
+				elsif ( $RSdetail->Fields('LinkName')->Value =~ /comment/) {
+					$varsComment = $RSdetail->Fields('LinkValue')->Value;
+				}
+				$RSdetail->MoveNext;
+			}
+			$sampleReference = ($sampleReference) ? $sampleReference : $identityReference;
+			Win32::ASP::DebugPrint("\nlinkValue = $linkValue, toConcept = $toConcept\n");
+			if ($toConcept eq 'equipment') {
+				$equipment = $linkValue;		# The old pre-VARS way of handing equipment
+			}
+			else {
+				$equipment = $toConcept;
+			}
+				
+		}
+		$RSdetail->Close();
+		
+		if ($thishost =~ /typhoon/i) {
+			#
+			# Check if this sample is already in the Samples Database
+			#
+			$sampleID = getSampleID($sampleReference, $tapeTimeCode);
+			
+			#
+			# Query Expedition database view for edited (clean) nav data
+			#
+			($editedLatitude, $editedLongitude, $editedDepth) = getEditedNav($varsPlatformName, $esecs);
+			$editedDepthString = $editedDepth . " m" if $editedDepth;
+			
+			#
+			# Assign navigation, use edited if it exists
+			#
+			$latitude = ($editedLatitude) ? $editedLatitude : $varsLatitude;
+			$longitude = ($editedLongitude) ? $editedLongitude : $varsLongitude;
+			$depth = ($editedDepth) ? $editedDepth : $varsDepth;
+		}
+		
+		#
+		# Build hidden field that gets passed to loadColl.asp
+		# e.g. <INPUT TYPE="hidden" NAME="SAMPLES" VALUE="|http://mww.mbari.org/Ventana/stills/2001/096/00_25_32_07.jpg|02:20:06:18|986584116|04/06/01 07:08:36 PM||ophiurida|manipulator|L1956A6|| 36.783703|-121.959512|556.8|">
+		#
+		my $null = '';
+		$SampPipes = "$null|$stillImageURL|$tapeTimeCode|$esecs|";
+		$SampPipes .= "$dateTime|$observer|$conceptName|";
+		$SampPipes .= "$equipment|$sampleReference|$null|";
+		$SampPipes .= "$latitude|$longitude|$depth|$nSamples|$null";	
+		
+		#
+		# Need to pass vars and edited nav data for it to appear in email form
+		#
+		$VarsNavPipes = "$varsLatitude|$varsLongitude|$varsDepth";
+		$EditedNavPipes = "$editedLatitude|$editedLongitude|$editedDepth";
+		
+		#
+		# Table row HTML
+		#
+		$Response->write(getSampleRow());
+		
+		$RS->MoveNext;
+		
+	} # End while ( !$RS->EOF )
+} # End if(!$RS)
+
+$RS->Close();
+$Conn->Close();
+$Application->Unlock();
+
+#
+# Output end of web page
+#
+$Response->write(getWebPageBottom());
+
+} #End buildWebPage()
+
+
+# ---------------------------------------------------------------------------
+#
+sub getWebPageTop {
+
+	($buildFor) = @_;
+	
+	#
+	# Here document that can be called from buildWebPage() or emailWebPage().
+	#
+
+	if ( $buildFor =~ /email/i ) {
+		$disableText = "disabled";
+	}
+	else {
+		$disableText = "";
+	}
+	
+	$webPageTop = <<EOH;
+<!doctype html public "-//w3c//dtd html 4.01 transitional//en">
+
+<html>
+
+<head>
+<title>Samples from VARS to be loaded into the Samples database</title>
+<link rel="stylesheet" type="text/css" href="$webRoot/expd/styles/expd.css">
+<script language="JavaScript" type="text/javascript">
+function checkAll() {
+	var value = document.processSamples.checkall.checked;
+	var checks = document.processSamples.elements['LOAD'];
+	
+	if (checks.length) {
+		var i;
+		for (i = 0; i < checks.length; i++) {
+			checks[i].checked = value;
+		}
+	} else {
+		checks.checked = value;
+	}
+}
+
+function ValidateTop() {
+
+	theForm = document.processSamples;
+	
+	if(CheckTopFields(theForm) == false) return false;
+
+	return true;
+}
+
+function ValidateTopAndEmail() {
+
+	theForm = document.processSamples;
+	
+	if(CheckTopFields(theForm) == false) return false;
+
+	if(CheckEmail(theForm) == false) return false;
+
+	return true;
+}
+
+function ValidateTopAndPassword() {
+
+	theForm = document.processSamples;
+	
+	if(CheckTopFields(theForm) == false) return false;
+
+	if(CheckPassword(theForm) == false) return false;
+
+	return true;
+}
+
+function CheckTopFields(theForm) {
+
+	if (theForm.ChiefScientist.value == "") {
+		alert("Please enter Chief Scientist who collected these samples.");
+		theForm.ChiefScientist.focus();
+		return (false);
+	}
+	if (theForm.Collector.value == "") {
+		alert("Please enter PI for whom these samples were collected.");
+		theForm.Collector.focus();
+		return (false);
+	}
+	if (theForm.WaypointName.value == "") {
+		alert("Please enter waypoint name where these samples were collected.");
+		theForm.WaypointName.focus();
+		return (false);
+	}
+
+	return (true);
+}
+
+function CheckEmail(theForm) {
+	if (theForm.emailAddress.value == "" ) {
+		alert("Please enter your email address.");
+		theForm.emailAddress.focus();
+		return (false);
+	}
+	
+	return (true);
+}
+
+function CheckPassword(theForm) {
+	if (theForm.Password.value == "" ) {
+		alert("Please enter the password.");
+		theForm.Password.focus();
+		return (false);
+	}
+	
+	return (true);
+}
+</script>
+
+</head>
+
+<body>
+
+<!-- *** begin page content here *** -->
+<table id="pagetable" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr><td>
+<div id="content" align="left">
+<!--/div at the end of the content part-->
+
+<!--SamplesDB header - links -->
+<table border="0" cellpadding="5">
+  <tr>
+    <td valign="top" rowspan="2"><a href="$webRoot">
+      <img src="$webRoot/expd/images/$pageLogo" alt="Logo to indicate origin of page" border="0" WIDTH="120" HEIGHT="70"></a>
+    </td>
+    
+EOH
+if ( $thishost =~ /typhoon/i ) {
+	$webPageTop .= <<EOH;
+     <td valign="top">
+	<!--begin navbar links -->
+	<div class="topNavbar">
+	  &nbsp;|&nbsp;
+	  <a href="/samplesDB/Queries/" target="_blank">Samples Database</a>
+	  &nbsp;|&nbsp;
+	  <a href="/samples/" target="_blank">Sample Collection Web</a>
+	  &nbsp;|&nbsp;
+	  <a href="/samplesDB/documentation/Default.htm" target="_blank">System Documentation</a>
+	  &nbsp;|&nbsp;
+	  <a href="/cruises/" target="_blank">Expedition Search</a>
+	  &nbsp;|&nbsp; 
+	</div>
+     </td>
+EOH
+}
+
+$webPageTop .= <<EOH;
+
+  </tr> 
+EOH
+	if ( $buildFor =~ /load/i ) {
+		$webPageTop .= <<EOH;
+  <tr>
+    <td>
+      <h2 align="center">Load samples into the Samples database</h2>
+    </td>
+  </tr> 
+</table>
+<!-- Submit to loadcoll.asp - $loadAction set above depending on $this_host - for now just the shore-side db-->
+<FORM name="processSamples" METHOD="POST" ACTION="$loadAction" ENCTYPE="application/x-www-form-urlencoded">
+EOH
+	}
+	else {
+		$webPageTop .= <<EOH;
+  <tr>
+    <td>
+      <h2 align="center">Samples from VARS to be loaded into the Samples database</h2>
+    </td>
+  </tr> 
+</table>
+<!-- Submit back to self for dispatch processing, either call loadcoll.asp form or email -->
+<FORM name="processSamples" METHOD="POST" ACTION="VARS2staging.asp" ENCTYPE="application/x-www-form-urlencoded">
+EOH
+	}
+	
+	$webPageTop .= <<EOH;
+	
+<!-- Order of fields in the hidden pipe delimited field - used by loadcoll.asp-->
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="CollectionEventID">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="FrameGrabImageURL">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="TapeTimeCode">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="EpochSeconds">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="CollectionEventDTG">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="Interpreter">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="CollectionVIMSConcept">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="Equipment">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="CollectionRefName">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="CollectionGroupID">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="Latitude">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="Longitude">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="Depth">
+<INPUT TYPE="hidden" NAME="DBCOLS" VALUE="SampleNumber">
+
+<INPUT TYPE="hidden" NAME="StartDTG" VALUE="$startDate">
+<INPUT TYPE="hidden" NAME="Ship" VALUE="$varsShipName">
+
+<!-- Table that holds all form entries -->
+<table border="0" cellspacing="0" cellpadding="5">
+<tr>
+<td colspan="5">  
+<!-- Nested table for fields that apply to all samples to be loaded-->
+<table border="0" cellspacing="0" cellpadding="5" width="100%">
+   <TR>
+   	<td class="coloredCell" colspan="2">
+ 		Enter information that applies to each sample to be loaded into the Samples database
+	</TD>
+   	<td class="coloredCell" align="right">
+ 		<B>Chief Scientist:</B>
+ 	</TD>
+ 	<TD class="coloredCell">
+EOH
+ 		if ( $buildFor =~ /load/i ) {		# Present pull-down list for Chief Scientist	
+ 			$webPageTop .= <<EOH;
+ 		<SELECT NAME="ChiefScientist">
+ 			<OPTION VALUE=""></OPTION>
+EOH
+			foreach $lastName (getSampleLastNames()) {
+				if ($lastName =~ /$chiefScientist/i) {
+					$webPageTop .= "<OPTION VALUE=\"$lastName\" SELECTED>$lastName</OPTION>\n";
+				}
+				else {
+					$webPageTop .= "<OPTION VALUE=\"$lastName\">$lastName</OPTION>\n";
+				}
+			}
+			$webPageTop .= <<EOH;
+ 		</SELECT>
+EOH
+ 		}
+ 		else {					# A simple text box
+ 			$webPageTop .= <<EOH;
+ 		<INPUT TYPE="text" NAME="ChiefScientist" VALUE="$chiefScientist" SIZE=15 MAXLENGTH=30 tabindex="1" $disableText> (last name only)<BR>
+EOH
+ 		}
+
+		$webPageTop .= <<EOH;		
+	</TD>
+  </TR>
+  <TR>  
+	<TD class="coloredCell" align="right">
+ 		<B>ROV:</B>
+ 	</TD>
+ 	<TD class="coloredCell">
+		<SELECT NAME="ROV" $disableText>
+			<OPTION VALUE="" $norovSelected></option>
+			<OPTION VALUE="Ventana" $vntaSelected>Ventana</option>
+			<OPTION VALUE="Tiburon" $tibrSelected>Tiburon</option>
+			<OPTION VALUE="DocRicketts" $docrSelected>DocRicketts</option>
+		</SELECT>
+		<BR>
+	</td>
+	<TD class="coloredCell" align="right">
+		<B>Collector:</B>
+	</TD>
+ 	<TD class="coloredCell">
+ 	
+ 	
+EOH
+ 		if ( $buildFor =~ /load/i ) {		# Present pull-down list for Collector	
+ 			$webPageTop .= <<EOH;
+ 		<SELECT NAME="Collector">
+ 			<OPTION VALUE=""></OPTION>
+EOH
+			foreach $lastName (getSampleLastNames()) {
+				if ($lastName =~ /$collector/i) {
+					$webPageTop .= "<OPTION VALUE=\"$lastName\" SELECTED>$lastName</OPTION>\n";
+				}
+				else {
+					$webPageTop .= "<OPTION VALUE=\"$lastName\">$lastName</OPTION>\n";
+				}
+			}
+			$webPageTop .= <<EOH;
+ 		</SELECT>
+EOH
+ 		}
+ 		else {					# A simple text box
+ 			$webPageTop .= <<EOH;
+ 		<INPUT TYPE="text" NAME="Collector" VALUE="$collector" SIZE=15 MAXLENGTH=30 tabindex="2" $disableText> (PI for whom samples were collected)<BR>
+EOH
+ 		}
+
+		$webPageTop .= <<EOH;	
+ 	
+ 	
+ 	
+ 	
+
+	</TD>
+	
+   </TR>
+   <TR>
+   	<TD class="coloredCell" align="right">
+ 		<B>DiveNumber(s):</B>
+ 	</TD>
+ 	<TD class="coloredCell">
+		<INPUT TYPE="text" NAME="DiveName" VALUE="$diveNumber" SIZE=20 MAXLENGTH=30 $disableText>
+	</TD>
+	<TD class="coloredCell" align="right">
+ 		<B>Waypoint:</B>
+ 	</TD>
+ 	<TD class="coloredCell">
+		<INPUT TYPE="text" NAME="WaypointName" VALUE="$waypointName" SIZE=20 MAXLENGTH=30 tabindex="3" $disableText>(e.g. Diamond Head)
+	</TD>
+  </TR>
+</table>
+</TD>
+
+</tr>  
+<tr>
+	<td class="captionCell">One<br>check<br>per<br>sample</td>
+	<td class="captionCell" align="center">Framegrab</td>
+	<td class="captionCell">Sample<br>Observer<br>Date&nbsp;time<br>Video&nbsp;frame</td>
+	<td class="captionCell">VARS Concept<br>Equipment<br>Comment</td>
+	<td class="captionCell">Latitude<br>Longitude<br>Depth</td>
+</tr>
+EOH
+
+	return $webPageTop;
+
+} # End getWebPageTop()
+
+
+# -----------------------------------------------------------------------------------
+#
+sub getSampleRow {
+
+	($buildFor) = @_;
+	
+	#
+	# Many variables needed in memroy for this to work.  Just keep them global for now.
+	# They include: 
+	#   $nSamples, $observationID, $tapeTimeCode, $stillImageURL, $sampleReference,
+	#   $observer, $dateTime, $esecs, $strDateTime, $tapeTimeCode, $sampleID, $equipment,
+	#   $varsLatitude, $varsLongitudem, $varsDepth, $varsDepthString,
+	#   $editedLatitude, $editedLongitude, $editedDepth, $editedDepthString,
+	#   $comment
+	
+	if ( $buildFor =~ /email/i ) {
+		$disableText = "disabled";
+	}
+	else {
+		$disableText = "";
+	}
+
+	$sampleRow = <<EOH;
+<tr>
+		  <!-- Sample $nSamples: ObservationID = $observationID (tapeTimeCode)-->
+		  <td CLASS="checkboxCell"> 
+		  	<INPUT TYPE="checkbox" NAME="LOAD" VALUE="$nSamples" class="bigCheckbox" $disableText 
+EOH
+	if ( $load ) { 
+		$sampleRow .= " checked>\n";
+		##$sampleRow .= $load;
+	} 
+	else { 
+		$sampleRow .= ">\n";
+		##$sampleRow .= $load;
+	} 
+	
+	$sampleRow .= <<EOH;
+			<INPUT TYPE="hidden" NAME="SAMPLES" VALUE="$SampPipes">
+			<INPUT TYPE="hidden" NAME="VARSNAV" VALUE="$VarsNavPipes">
+			<INPUT TYPE="hidden" NAME="EDITEDNAV" VALUE="$EditedNavPipes">
+		  </td>
+		  <td class="imageCell"> 
+EOH
+	$imageEsecs = '';
+	if ($stillImageURL) { 
+		#
+		# For shipboard images translate file url to mapping to shipboard web server
+		#
+		if ( $stillImageURL =~ /(file\:\/C\:\/Documents and Settings\/tiburon\/VARS\/data\/Tiburon)/ ) {
+			$stillImageURL =~ s/$1/http:\/\/fww.wf.mbari.org\/Tiburon/;
+		}
+		($imageTitle, $imageEsecs) = getImageTitleTime($stillImageURL);
+		$sampleRow .= "			<a HREF=\"$stillImageURL\" target=\"_blank\"><img src=\"$stillImageURL\" ";
+		$sampleRow .= "width=\"360\" border=\"0\" alt=\"framegrab\" title=\"$imageTitle\"></a>\n";
+	}
+	else { 
+		$sampleRow .= "			No image\n";
+	} 
+	
+	$sampleRow .= <<EOH;
+		  </td>
+		  
+		  <td class="topCell">
+EOH
+	if ( $sampleReference ) {
+		$sampleRow .= "		    <p class=\"largertext\">$sampleReference</p>\n";
+	}
+	else {
+		$sampleRow .= "		    <p class=\"errorText\">WARNING: No sample-reference</p>\n";
+	}
+	$sampleRow .= <<EOH;
+		    $observer
+EOH
+	if ( $dateTime ) {
+		if ( $imageEsecs ) {		# Warning if VARS time is far away from image time - two independent tests (before VARS on ship)
+			if ( abs($imageEsecs - $esecs) > 1800 ) {
+				$minDiff = sprintf("%d", ($imageEsecs - $esecs) / 60);
+				$sampleRow .= "		    <br><br>$strDateTime<br><span class=\"errorText\">WARNING: VARS time is $minDiff minutes away from image time</span>\n";
+			}
+			else {
+				$sampleRow .= "		    <br><br>$strDateTime\n";
+			}
+		}	
+		else {
+			$sampleRow .= "		    <br><br>$strDateTime\n";
+		}
+	}
+	else {
+		$sampleRow .= "		    <br><br><span class=\"errorText\">No time</span>\n";
+	}
+	
+	$sampleRow .= <<EOH;
+		    <br><br>$tapeTimeCode
+EOH
+	if ( $sampleID ) { 
+		$sampleRow .= "		      <br><br><a href=\"http://mww.mbari.org/samplesDB/Queries/selectSample.asp?ID=$sampleID\" ";
+		$sampleRow .= "target=\"SampleDetail\">Exists in Samples database</a>\n";
+	} 
+	
+	# $comment may be something in emailed web form
+	$comment = ($comment) ? $comment : $varsComment;	# Prime with comment from VARS
+	$sampleRow .= <<EOH;
+		  </td>  
+		  
+		  <td class="topCell">
+		    $conceptName
+		    <br><br>Sampled by: $equipment
+		    <br><br>Comments at collection:
+		    <BR>
+		    <textarea name="Comments" cols="24" rows="8" $disableText>$comment</textarea>
+		  </td>
+		 
+		  <td class="topCell">
+		    <span class="underline">VARS&nbsp;Ancillary</span>
+EOH
+	if ( $varsLatitude && $varsLongitude && $varsDepth ) {
+		$sampleRow .= <<EOH;
+		    <br>$varsLatitude
+		    <br>$varsLongitude
+		    <br>$varsDepthString
+		    <br><br>
+EOH
+	}
+	else {
+		$sampleRow .= "		    <br><span class=\"errorText\">No VARS nav.<br>Merge needed?</span>\n";
+	}	    
+		 
+	$sampleRow .= <<EOH;   
+		    <br><span class="underline">Edited&nbsp;nav</span>
+EOH
+	if ( $editedLatitude && $editedLongitude && $editedDepth ) {
+		$sampleRow .= <<EOH;
+		    <br>$editedLatitude
+		    <br>$editedLongitude
+		    <br>$editedDepthString
+EOH
+	}
+	else {
+		$sampleRow .= "		    <br><span class=\"errorText\">No edited nav</span>\n";
+	}
+	
+	$sampleRow .= <<EOH; 	    
+		  </td>           
+		</tr>	
+EOH
+
+	return $sampleRow;
+	
+} # End getSampleRow()
+
+
+# ---------------------------------------------------------------------------
+#
+sub getWebPageBottom {
+
+	($buildFor, $parms) = @_;
+	
+	#
+	# Here document that can be called from buildWebPage() or emailWebPage().
+	#
+
+	$webPageBottom = <<EOH;
+EOH
+	if ( $buildFor =~ /email/i ) {
+		my $url = "http://mww.mbari.org/expd/queries/VARS2staging.asp?RovName=$varsPlatformName&amp;DiveNumber=$diveNumber";
+		$url .= "&amp;" . $parms;
+		$webPageBottom .= <<EOH;
+</td></tr>
+<!-- End of table that holds all form entries -->
+</TABLE>
+</form>
+
+<br>
+<br>Transfer entries to <a href="$url">Shore-side Samples load form</a>	
+    
+<!--footer-->
+<p class="brownText">
+The above field entries cannot be modified.  Click the link above to query the shore-side databases.  
+The selected samples and comments will be transferred to that form.  If all looks good, i.e. Edited nav was found and
+there are no other warnings the samples may then be loaded from there into the Samples database.
+</p>
+<P class="smalltext">Copyright &copy; 2005 MBARI
+<br>Questions? Comments? Please contact 
+  <a href="http://www.mbari.org/staff/mccann/">Mike McCann</a> or
+  <a href="http://www.mbari.org/staff/paje/">Jenny Paduan</a></p>
+
+<!-- *** end page content *** -->
+</div>
+</td></tr></table>
+   </BODY>
+</HTML>
+EOH
+	}
+	elsif ( $buildFor =~ /load/i ) {	# Button to actually load the Samples database
+	
+		#
+		# Query EXPD to get start and end times for Samples query URL
+		#
+		my ($date1, $date2) = getExpdDiveTimes($rovName, $diveNumber);
+		if ($date1 && $date2) {
+			$samplesURL = "http://mww.mbari.org/SamplesDB/queries/returnTable.asp?";
+			$samplesURL .= "date1=$date1&amp;date2=$date2&amp;ShipName=$varsShipName";
+		}
+		
+		$webPageBottom .= <<EOH;
+<tr>
+	<td class="checkboxCell"><input name="checkall" type="checkbox" value="" onclick="checkAll();">all</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+</tr>   
+<tr>
+<td colspan="5" class="coloredCell">
+Review comments to be loaded into the Samples Database
+</td></tr>
+<tr>
+<td class="coloredCell">&nbsp;</td>
+<td colspan="4" class="coloredCell">Enter password <INPUT TYPE="password" NAME="Password" VALUE="" SIZE=9 MAXLENGTH=15> to 
+	<INPUT TYPE="submit" NAME="action" VALUE="Load Samples" ONCLICK="return ValidateTopAndPassword()"> <span class="browntext">Make sure Edited nav exists. See Samples Coordinator for password.</span>
+</td></tr>
+<tr>
+<td class="coloredCell">&nbsp;</td>
+<td colspan="4" class="coloredCell">
+EOH
+if ($samplesURL) {
+	$webPageBottom .="<a href=\"$samplesURL\" target=\"_blank\">Check Samples Database for existing samples from this dive</a>";
+}
+$webPageBottom .= <<EOH;
+
+</td></tr>
+<!-- End of table that holds all form entries -->
+</table>
+</form>
+
+<!--footer-->
+<!--Phrase query-->
+<hr>
+
+<P class="smalltext">Copyright &copy; 2005 MBARI
+<br>Questions? Comments? Please contact 
+  <a href="http://www.mbari.org/staff/mccann/">Mike McCann</a> or
+  <a href="http://www.mbari.org/staff/paje/">Jenny Paduan</a></p>
+
+<!-- *** end page content *** -->
+</div>
+</td></tr></table>
+   </BODY>
+</HTML>
+EOH
+	
+	
+	}
+	else {					# Web form queried from database
+		if ( $nSamples ) {
+			$webPageBottom .= <<EOH;
+<tr>
+	<td class="checkboxCell"><input name="checkall" type="checkbox" value="" onclick="checkAll();">all</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+</tr>   
+<tr>
+<td colspan="5" class="coloredCell">
+<p>Do one of the following:</p>
+</td></tr>
+<tr>
+<td class="coloredCell">&nbsp;</td>
+<td colspan="4" class="coloredCell"> 
+	<INPUT TYPE="submit" NAME="action" VALUE="Review Samples to load" ONCLICK="return ValidateTop()"> <span class="browntext">See that Edited nav exists for each checked sample.</span>
+</td></tr>
+<tr>
+<td class="coloredCell">&nbsp;</td>
+<td colspan="4" class="coloredCell">
+	<INPUT TYPE="submit" NAME="action" VALUE="Email" onClick="return ValidateTopAndEmail();"> form entries to 
+	<INPUT TYPE="text" NAME="emailAddress" VALUE="" SIZE=20> <span class="browntext">to save for later loading, e.g. wf3\@wf.mbari.org</span>
+</td></tr>
+<tr>
+<td class="coloredCell">&nbsp;</td>
+<td colspan="4" class="coloredCell"><a href="#" onclick="self.focus();self.print();self.close();">Print this form with comments</a>
+</td></tr>
+EOH
+		}
+		else {
+			$webPageBottom .= <<EOH;
+<tr>
+	<td class="checkboxCell" colspan="5"><span class="errorText">No Annotated Samples for this dive</span></td>
+</tr>   
+EOH
+		}
+		$webPageBottom .= <<EOH;
+
+<!-- End of table that holds all form entries -->
+</table>
+</form>
+
+<!--footer-->
+<!--Phrase query-->
+<hr>
+<BR>$nSamples rows returned from the MBARI VARS Database 
+<BR>using the SQL query
+<PRE>$sql</pre>
+<P class="smalltext">Copyright &copy; 2005 MBARI
+<br>Questions? Comments? Please contact 
+  <a href="http://www.mbari.org/staff/mccann/">Mike McCann</a> or
+  <a href="http://www.mbari.org/staff/paje/">Jenny Paduan</a></p>
+
+<!-- *** end page content *** -->
+</div>
+</td></tr></table>
+   </BODY>
+</HTML>
+EOH
+	}
+
+	return $webPageBottom;
+	
+} # End getWebPageBottom()
+
+
+# -----------------------------------------------------------------------------------
+#
+sub emailForm {
+	
+	use MIME::Lite;
+	
+	my $from_address = GetFormValue('emailAddress');
+	my $to_address = GetFormValue('emailAddress');
+	my $subject = "VARS samples for " . GetFormValue('ROV') . GetFormValue('DiveName');
+	my $mime_type = 'text/html:';
+
+	$chiefScientist = GetFormValue('ChiefScientist');
+	$collector = GetFormValue('Collector');
+	$waypointName = GetFormValue('WaypointName');
+
+	%>
+<!doctype html public "-//w3c//dtd html 4.01 transitional//en">
+
+<html>
+
+<head>
+<title>Samples form emailed</title>
+<link rel="stylesheet" type="text/css" href="<%=$webRoot%>/expd/styles/expd.css">
+</head>
+
+<body>
+<%
+	#
+	# Repeat HTML from above in message to specified user
+	#
+	$emailText = getWebPageTop('email');		# Top of page
+	
+	#
+	# Loop through hidden vars to get sample collection info, pop comments that match (hopefully)
+	#
+	my @comments = Win32::OLE::in ($Request->Form('COMMENTS'));
+	my @loads = Win32::OLE::in ($Request->Form('LOAD'));
+	my @varsNavs = Win32::OLE::in ($Request->Form('VARSNAV'));
+	my @editedNavs = Win32::OLE::in ($Request->Form('EDITEDNAV'));
+
+
+	$checksAndFields = "ChiefScientist=" . GetFormValue("ChiefScientist") . "&amp;";
+	$checksAndFields .= "Collector=" . GetFormValue('Collector') . "&amp;";
+	$checksAndFields .= "WaypointName=" . GetFormValue('WaypointName') . "&amp;";
+	
+	$nSamples = 0;
+	$nChecked = 0;
+	foreach my $s (Win32::OLE::in ($Request->Form('SAMPLES'))) {
+		$nSamples++;
+		##$Response->write("<br> Sample: $s");
+		$comment = shift @comments;
+		$varsNav = shift @varsNavs;
+		$editedNav = shift @editedNavs;
+		
+		##$Response->write("<br> Comment= $comment <br>");
+		
+		#   $nSamples, *$observationID, $tapeTimeCode, $stillImageURL, $sampleReference,
+		#   $observer, $dateTime, $esecs, $strDateTime, $tapeTimeCode, *$sampleID, $equipment,
+		#   $varsLatitude, $varsLongitudem, $varsDepth, $varsDepthString,
+		#   $latitude, $longitude, $depth, $editedDepthString
+		
+		($CollectionEventID, $stillImageURL, $tapeTimeCode, $esecs, 
+			$dateTime, $observer, $conceptName, 
+			$equipment, $sampleReference, undef, 
+			$latitude, $longitude, $depth, undef) = split('\|', $s);
+		
+		($varsLatitude, $varsLongitude, $varsDepth, undef) = split('\|', $varsNav);
+		$varsDepthString = $varsDepth . " m" if $varsDepth;
+		
+		($editedLatitude, $editedLongitude, $editedDepth, undef) = split('\|', $editedNav);
+		$editedDepthString = $editedDepth . " m" if $editedDepth;
+		
+		$strDateTime = $dateTime . " GMT" ;
+		$strDateTime =~ s/\s+/&nbsp;/g;	# Fill with non breaking spaces so that text does not wrap in table cell 
+		$strDateTime =~ s/-/\//g;	# Replace dashes with slashes that don't break on lines
+		
+		$checksAndFields .= "${tapeTimeCode}_c=$comment&amp;" if $comment;
+		##$Response->write("<br> tapeTimeCode= $tapeTimeCode <br>");
+		$load = '';
+		foreach (@loads) {
+			##$Response->write("<br>&nbsp;&nbsp;&nbsp; _load= $_ <br>");
+			if ($_ eq $tapeTimeCode) {
+				$checksAndFields .= "${tapeTimeCode}_l=$tapeTimeCode&amp;";
+				$load = $_;
+				$nChecked++;
+				last;	# $load is set for getSampleRow() call below
+			}
+		}
+		
+		#
+		# Build sample row, checks and comments passed via $load and $comment
+		#
+		##$Response->write("<br>Calling getSampleRow(): load = $load<br>");
+		$emailText .= getSampleRow('email');
+	}
+	
+	$emailText .= getWebPageBottom('email', $checksAndFields);	# End of page
+
+	my $message = "$emailText\n";
+	
+	
+	# Create the initial text of the message
+	my $mime_msg = MIME::Lite->new(
+		From => $from_address,
+		To   => $to_address,
+		Subject => $subject,
+		Type => $mime_type,
+		Data => $message
+	)
+	or die "Error creating MIME body: $!\n";
+
+	
+	# Let MIME::Lite handle the Net::SMTP details
+	$ServerName = 'mail.shore.mbari.org';
+	MIME::Lite->send('smtp', $ServerName);
+	$mime_msg->send() or die "Error sending message: $!\n";
+	
+	%>
+
+<h1>Samples to load web page emailed to <%=$to_address%></h1>
+
+<%
+	my $count = length($checksAndFields);
+	Win32::ASP::DebugPrint("\nchecksAndFields character count = $count\n");
+	if ( $count > 2000 ) {
+%>
+<P class="largertext">
+<span class="errorText">Warning: too many characters (<%=$count%>) in URL.  Link in email message will not work.</span>
+<BR>A work around is to email subsets of the form.  Go back, remove some comments
+(preferably copying them to a scratch area) and submit again.  You can then take the comments from your scratch
+area and paste them back into the form, removing the previous comments.  Do this until all your samples have been emailed.</p>
+<%
+	}
+	else {
+%>
+<p><%=$nSamples%> samples from <%=$varsPlatformName%> <%=$diveNumber%>, <%=$nChecked%> of them checked for loading into Samples DB.</p>
+<%
+	}
+%>
+</body>
+</HTML>
+	<%
+	  
+	
+
+} # End emailForm()
+
+
+
+# -----------------------------------------------------------------------------------
+#
+sub loadForm {
+	
+	#
+	# Present form that actually calls the loadcoll.asp action
+	#	
+	$chiefScientist = GetFormValue('ChiefScientist');
+	$collector = GetFormValue('Collector');
+	$waypointName = GetFormValue('WaypointName');
+	
+	#
+	# Loop through hidden vars to get sample collection info, pop comments that match (hopefully)
+	#
+	my @comments = Win32::OLE::in ($Request->Form('COMMENTS'));
+	my @loads = Win32::OLE::in ($Request->Form('LOAD'));
+	my @varsNavs = Win32::OLE::in ($Request->Form('VARSNAV'));
+	my @editedNavs = Win32::OLE::in ($Request->Form('EDITEDNAV'));
+	
+	#
+	# Find first good date of these samples for the StartDTG hidden field in top of web page
+	#
+	foreach my $s (Win32::OLE::in ($Request->Form('SAMPLES'))) {
+		($CollectionEventID, $stillImageURL, $tapeTimeCode, $esecs, 
+			$dateTime, $observer, $conceptName, 
+			$equipment, $sampleReference, undef, 
+			$latitude, $longitude, $depth, undef) = split('\|', $s);
+		last if $startEsecs = $esecs;
+	}
+	$startDate = POSIX::strftime("%m/%d/%y", gmtime($startEsecs)) if $startEsecs;
+	
+	#
+	# Show HTML form once again
+	#
+	$Response->write(getWebPageTop('load'));		# Top of page with loadcoll.asp action
+
+	$checksAndFields = "ChiefScientist=" . GetFormValue("ChiefScientist") . "&amp;";
+	$checksAndFields .= "Collector=" . GetFormValue('Collector') . "&amp;";
+	$checksAndFields .= "WaypointName=" . GetFormValue('WaypointName') . "&amp;";
+	
+	$nSamples = 0;
+	$nChecked = 0;
+	foreach my $s (Win32::OLE::in ($Request->Form('SAMPLES'))) {
+		$nSamples++;
+		##$Response->write("<br> Sample: $s");
+		$comment = shift @comments;
+		$varsNav = shift @varsNavs;
+		$editedNav = shift @editedNavs;
+		
+		##$Response->write("<br> Comment= $comment <br>");
+		
+		#   $nSamples, *$observationID, $tapeTimeCode, $stillImageURL, $sampleReference,
+		#   $observer, $dateTime, $esecs, $strDateTime, $tapeTimeCode, *$sampleID, $equipment,
+		#   $varsLatitude, $varsLongitudem, $varsDepth, $varsDepthString,
+		#   $editedLatitude, $editedLongitude, $editedDepth, $editedDepthString
+		
+		($CollectionEventID, $stillImageURL, $tapeTimeCode, $esecs, 
+			$dateTime, $observer, $conceptName, 
+			$equipment, $sampleReference, undef, 
+			$latitude, $longitude, $depth, undef) = split('\|', $s);
+			
+		$editedDepthString = $editedDepth . " m" if $editedDepth;
+		
+		($varsLatitude, $varsLongitude, $varsDepth, undef) = split('\|', $varsNav);
+		$varsDepthString = $varsDepth . " m" if $varsDepth;
+		
+		($editedLatitude, $editedLongitude, $editedDepth, undef) = split('\|', $editedNav);
+		$editedDepthString = $editedDepth . " m" if $editedDepth;
+		
+		$strDateTime = $dateTime . " GMT" ;
+		$strDateTime =~ s/\s+/&nbsp;/g;	# Fill with non breaking spaces so that text does not wrap in table cell 
+		$strDateTime =~ s/-/\//g;	# Replace dashes with slashes that don't break on lines
+		
+		$checksAndFields .= "${nSamples}_c=$comment&amp;" if $comment;
+		##$Response->write("<br> tapeTimeCode= $tapeTimeCode, SampleNumber = $nSamples<br>");
+		$load = '';
+		foreach (@loads) {
+			##$Response->write("<br>&nbsp;&nbsp;&nbsp; _load= $_ <br>");
+			if ($_ eq $nSamples) {
+				$checksAndFields .= "${nSamples}_l=$nSamples&amp;";
+				$load = $_;
+				$nChecked++;
+				last;	# $load is set for getSampleRow() call below
+			}
+		}
+		
+		#
+		# Check if this sample is already in the Samples Database
+		#
+		$sampleID = getSampleID($sampleReference, $tapeTimeCode);
+		
+		#
+		# Build hidden field that gets passed to loadColl.asp
+		# e.g. <INPUT TYPE="hidden" NAME="SAMPLES" VALUE="|http://mww.mbari.org/Ventana/stills/2001/096/00_25_32_07.jpg|02:20:06:18|986584116|04/06/01 07:08:36 PM||ophiurida|manipulator|L1956A6|| 36.783703|-121.959512|556.8|">
+		#
+		my $null = '';
+		$SampPipes = "$null|$stillImageURL|$tapeTimeCode|$esecs|";
+		$SampPipes .= "$dateTime|$observer|$conceptName|";
+		$SampPipes .= "$equipment|$sampleReference|$null|";
+		$SampPipes .= "$latitude|$longitude|$depth|$nSamples|$null";
+		
+		#
+		# Need to pass vars and edited nav data for it to appear in load form
+		#
+		$VarsNavPipes = "$varsLatitude|$varsLongitude|$varsDepth";
+		$EditedNavPipes = "$editedLatitude|$editedLongitude|$editedDepth";
+		
+		#
+		# Build sample row, checks and comments passed via $load and $comment
+		#
+
+		$Response->write(getSampleRow('load'));
+	}
+	
+	$Response->write(getWebPageBottom('load'));	# End of page with actual LOAD button
+
+	  
+
+} # End loadForm()
+
+
+# -----------------------------------------------------------------------------------
+#
+sub enterDiveNumberForm {
+
+	$rovName = GetFormValue('RovName');
+	$enterDiveNumberForm = <<EOH;
+<!doctype html public "-//w3c//dtd html 4.01 transitional//en">
+
+<html>
+
+<head>
+<title>Samples from VARS to be loaded into the Samples database</title>
+<link rel="stylesheet" type="text/css" href="$webRoot/expd/styles/expd.css">
+</head>
+
+<body>
+
+<!-- Submit back to self for dispatch processing, either call loadcoll.asp form or email -->
+<FORM name="enterDiveNumber" METHOD="GET" ACTION="VARS2staging.asp" ENCTYPE="application/x-www-form-urlencoded">
+  <INPUT TYPE="hidden" NAME="RovNAme" VALUE="$rovName">
+  <table border="0" cellspacing="0" cellpadding="5">
+   <TR>
+   	<TD align="right">
+ 		<B>Enter $rovName DiveNumber to display Samples from VARS:</B>
+ 	</TD>
+ 	<TD>
+		<INPUT TYPE="text" NAME="DiveName" VALUE="$diveNumber" SIZE=20 MAXLENGTH=30 $disableText>
+	</TD>
+   </tr>
+  </table>
+</form>
+</body>
+</html>
+EOH
+
+$Response->write($enterDiveNumberForm);
+
+} # End enterDiveNumberForm()
+
+
+# -----------------------------------------------------------------------------------
+#
+sub getSampleID {
+
+	local ($sampleReference, $tapeTimeCode) = @_;
+
+	return '' unless $sampleReference;
+	
+	#
+	# Open Samples Database
+	#
+	$ConnSamples = CreateObject OLE "ADODB.Connection";
+	$ConnSamples->{'Provider'} = "sqloledb";
+	
+	$ConnSamples->Open($dsnSamples);
+	Win32::ASP::AddDeathHook( sub { $ConnSamples->Close } );	# In case asp dies do some cleanup
+	
+	if(keys %{$ConnSamples->Errors()}) {
+	        $Errors = $ConnSamples->Errors();
+	        print "<B>Error in opening connection to $dsnDive:</B>";
+	        foreach $error (keys %$Errors) {
+	                print $error->{Description}, "\n";
+	        }
+	        die "<BR>Cannot open EXPD database.";
+	}
+		
+	#
+	# Check id Sample-reference is already in the Samples database
+	#
+	$sqlSample = " SELECT SampleID FROM vwCollSamplePerson WHERE SampleRefName = '$sampleReference' AND TapeTimeCode = '$tapeTimeCode'";
+		
+	
+	Win32::ASP::DebugPrint("\nExecuting SQL: \n$sqlSample");
+	my $RSsample = $ConnSamples->Execute($sqlSample);
+	$sampleID = '';
+	if(!$RSsample) {
+	 	$Response->Write("<BR>Empty Return Set: RSsample. for <br>$sqlSample <br>From dsn = $dsnSamples");
+	}
+	else {
+		$sampleID = $RSsample->Fields('SampleID')->Value;
+	}
+	$RSsample->Close();
+	
+	$ConnSamples->Close();
+	
+	return $sampleID;
+
+} # End getSampleID()
+
+# -----------------------------------------------------------------------------------
+#
+sub getSampleLastNames {
+
+	local $sampleReference = $_[0];
+
+	#
+	# Open Samples Database
+	#
+	$ConnSamples = CreateObject OLE "ADODB.Connection";
+	$ConnSamples->{'Provider'} = "sqloledb";
+	
+	$ConnSamples->Open($dsnSamples);
+	Win32::ASP::AddDeathHook( sub { $ConnSamples->Close } );	# In case asp dies do some cleanup
+	
+	if(keys %{$ConnSamples->Errors()}) {
+	        $Errors = $ConnSamples->Errors();
+	        print "<B>Error in opening connection to $dsnDive:</B>";
+	        foreach $error (keys %$Errors) {
+	                print $error->{Description}, "\n";
+	        }
+	        die "<BR>Cannot open EXPD database.";
+	}
+		
+	#
+	# Check id Sample-reference is already in the Samples database
+	#
+	$sqlSample = " SELECT DISTINCT LastName FROM Person ORDER BY LastName";
+		
+	
+	Win32::ASP::DebugPrint("\nExecuting SQL: \n$sqlSample");
+	my $RSlastName = $ConnSamples->Execute($sqlSample);
+	@lastNames = ();
+	if(!$RSlastName) {
+	 	$Response->Write("<BR>Empty Return Set: RSlastName. for <br>$sqlSample <br>From dsn = $dsnSamples");
+	}
+	else {
+		while ( !$RSlastName->EOF ) {
+			push @lastNames, $RSlastName->Fields('LastName')->Value;
+			$RSlastName->MoveNext;
+		}
+	}
+	$RSlastName->Close();
+	
+	$ConnSamples->Close();
+	
+	return @lastNames;
+
+} # End getSampleLastNames()
+
+
+
+
+# -----------------------------------------------------------------------------------
+#
+sub getEditedNav {
+
+	($rovName, $esecs) = @_;
+	
+	$view = $rovName;	# Must be Ventana, Tiburon, or DocRicketts 
+	$view =~ s/\s+//;	# (without the space)
+	
+	##if ( $rovName eq 'Ventana' ) {
+	##	 if ( $esecs < 977249672 ) {
+	##	 	$eCrit = 5;			# 10 second interval before V1888 on 2000-12-19
+	##	 }
+	##	 else {
+	##	 	$eCrit = 2;
+	##	 }	
+	##}
+	
+	#
+	# Find out the sampling interval by first doing a 10 minute gap query
+	#
+	$eCrit = 300;
+	$lowEsecs = $esecs - $eCrit;
+	$highEsecs = $esecs + $eCrit;
+	my $sqlEditedNav = "SELECT EpochSecs
+                   FROM dbo.${view}CleanNavData
+                   WHERE (EpochSecs BETWEEN $lowEsecs AND $highEsecs)";
+                   
+        $ConnExpd = CreateObject OLE "ADODB.Connection";
+	$ConnExpd->{'Provider'} = "sqloledb";
+	
+	$ConnExpd->Open($dsnExpd);
+	Win32::ASP::AddDeathHook( sub { $ConnExpd->Close } );	# In case asp dies do some cleanup
+
+	if(keys %{$ConnExpd->Errors()}) {
+	        $Errors = $ConnExpd->Errors();
+	        print "<B>Error in opening connection to $dsnDive:</B>";
+	        foreach $error (keys %$Errors) {
+	                print $error->{Description}, "\n";
+	        }
+	        die "<BR>Cannot open EXPD database.";
+	}
+	
+	Win32::ASP::DebugPrint("\nExecuting SQL: \n$sqlEditedNav");
+	my $RSExpd = $ConnExpd->Execute($sqlEditedNav);
+	if(!$RSExpd) {
+	 	##$Response->Write("<BR>Empty Return Set: RSExpd. for <br>$sqlEditedNav <br>From dsn = $dsnExpd");
+	}
+	else {
+		my $lastEs = 0;
+		while( !$RSExpd->EOF ) {
+			my $es = $RSExpd->Fields('EpochSecs')->Value;
+			$RSExpd->MoveNext;
+			$diffEs = $es - $lastEs if $lastEs;
+			$lastEs = $es;
+		}
+	}
+	
+	$eCrit = $diffEs / 2;
+	
+	$lowEsecs = $esecs - $eCrit;
+	$highEsecs = $esecs + $eCrit;
+        
+        my $sqlEditedNav = "SELECT Latitude, Longitude, Pressure, Depth
+                   FROM dbo.${view}CleanNavData
+                   WHERE (EpochSecs BETWEEN $lowEsecs AND $highEsecs)";
+                   
+        $ConnExpd = CreateObject OLE "ADODB.Connection";
+	$ConnExpd->{'Provider'} = "sqloledb";
+	
+	$ConnExpd->Open($dsnExpd);
+	Win32::ASP::AddDeathHook( sub { $ConnExpd->Close } );	# In case asp dies do some cleanup
+
+	if(keys %{$ConnExpd->Errors()}) {
+	        $Errors = $ConnExpd->Errors();
+	        print "<B>Error in opening connection to $dsnDive:</B>";
+	        foreach $error (keys %$Errors) {
+	                print $error->{Description}, "\n";
+	        }
+	        die "<BR>Cannot open EXPD database.";
+	}
+	
+	Win32::ASP::DebugPrint("\nExecuting SQL: \n$sqlEditedNav");
+	my $RSExpd = $ConnExpd->Execute($sqlEditedNav);
+	$editedLatitude = '';
+	$editedLongitude= '';
+	$editedDepth = '';
+	if(!$RSExpd) {
+	 	##$Response->Write("<BR>Empty Return Set: RSExpd. for <br>$sqlEditedNav <br>From dsn = $dsnExpd");
+	}
+	else {
+		$editedLatitude = sprintf("%.6f", $RSExpd->Fields('Latitude')->Value) if $RSExpd->Fields('Latitude')->Value;
+		$editedLongitude = sprintf("%.6f", $RSExpd->Fields('Longitude')->Value) if $RSExpd->Fields('Longitude')->Value;
+		$editedDepth = sprintf("%.1f", $RSExpd->Fields('Depth')->Value) if $RSExpd->Fields('Depth')->Value;
+	}
+	$RSExpd->Close();
+	$ConnExpd->Close();
+        
+        return ($editedLatitude, $editedLongitude, $editedDepth);
+
+} # End getEditedNav()
+
+
+# -----------------------------------------------------------------------------------
+#
+sub getExpdDiveTimes {
+
+	($rovName, $diveNumber) = @_;
+	
+	if ( $rovName eq 'tibr' || $rovName eq 'Tiburon' || GetFormValue('ROV') eq 'tibr' || GetFormValue('ROV') eq 'Tiburon' ) {
+		$rovName = 'tibr';
+	}
+	elsif ( $rovName eq 'vnta' || $rovName eq 'Ventana' || GetFormValue('ROV') eq 'vnta' || GetFormValue('ROV') eq 'Ventana') {
+		$rovName = 'vnta';
+	}
+	     
+        my $sqlDiveTimes = "SELECT DiveStartDtg, DiveEndDtg
+                   FROM dbo.Dive
+                   WHERE (RovName = '$rovName' AND DiveNumber = $diveNumber)";
+                   
+        $ConnExpd = CreateObject OLE "ADODB.Connection";
+	$ConnExpd->{'Provider'} = "sqloledb";
+	
+	$ConnExpd->Open($dsnExpd);
+	Win32::ASP::AddDeathHook( sub { $ConnExpd->Close } );	# In case asp dies do some cleanup
+
+	if(keys %{$ConnExpd->Errors()}) {
+	        $Errors = $ConnExpd->Errors();
+	        print "<B>Error in opening connection to $dsnDive:</B>";
+	        foreach $error (keys %$Errors) {
+	                print $error->{Description}, "\n";
+	        }
+	        die "<BR>Cannot open EXPD database.";
+	}
+	
+	Win32::ASP::DebugPrint("\nExecuting SQL: \n$sqlDiveTimes");
+	my $RSExpd = $ConnExpd->Execute($sqlDiveTimes);
+	$diveStart = '';
+	$diveEnd= '';
+	if(!$RSExpd) {
+	 	$Response->Write("<BR>Empty Return Set: RSExpd. for <br>$sqlDiveTimes <br>From dsn = $dsnExpd");
+	}
+	else {
+		$diveStart = $RSExpd->Fields('DiveStartDtg')->Value;
+		$diveEnd= $RSExpd->Fields('DiveEndDtg')->Value;
+	}
+	$RSExpd->Close();
+	$ConnExpd->Close();
+        
+        return ($diveStart, $diveEnd);
+
+} # End getExpdDiveTimes()
+
+
+# -----------------------------------------------------------------------------------
+#
+sub getImageTitleTime {
+
+	($url) = @_;
+	
+	$url =~ s/.jpg$/.comment/i;
+	
+	$text = '';
+	Win32::ASP::DebugPrint("\nGetting lines from: \n$url");
+	foreach ( split("\n", get($url)) ) {
+		Win32::ASP::DebugPrint("\nline= \n$_");
+		if ( /EPOCHsecs = (\d+)/ ) {		# 
+			$imageEsecs = $1;
+		}
+		if ( /UTCTime/ ) {
+			$text = $_;
+			last;
+		}
+	}
+	
+	return ($text, $imageEsecs);
+	
+}
+
+%>

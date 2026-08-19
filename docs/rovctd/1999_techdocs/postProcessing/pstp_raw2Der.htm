@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>raw2Der.perl Postprocessing Program Documentation</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<div align="left">
+
+<table border="0" cellpadding="5" width="640">
+  <tr>
+    <td valign="top" width="20%"><!--webbot bot="Include" u-include="../toc_techdocs.htm" tag="BODY" startspan -->
+
+<p align="center"><a href="/index.html"><img src="../../../../images/mbarilogo-120_sh.gif" border="0" WIDTH="120" HEIGHT="70"></a><br>
+<small><small><font face="Tahoma" color="#008080"><strong>ROVCTD SOFTWARE</strong></font></small></small></p>
+
+<p align="left"><a href="../software.htm"><font size="3" face="Arial" color="#008080">Software
+Catalog</font></a><br>
+<br>
+<a href="../aquiring/acq_software.htm"><font size="3" face="Arial" color="#008080">Acquiring</font></a><br>
+<br>
+<a href="pstp_software.htm"><font size="3" face="Arial" color="#008080">Post
+processing</font></a><br>
+<br>
+<a href="../plotting/plot_software.htm"><font size="3" face="Arial" color="#008080">Plotting</font></a><br>
+<br>
+<a href="../dbLoading/dbl_software.htm"><font size="3" face="Arial" color="#008080">DB
+Loading</font></a> <br>
+<br>
+<a href="../HowTo.htm"><font size="3" face="Arial" color="#008080">Standard Procedures</font></a><br>
+</p>
+<!--webbot bot="Include" endspan i-checksum="30475" -->
+</td>
+    <td valign="top" width="80%"><!--webbot bot="ImageMap" rectangle="(530,14) (609, 34)  ../src_diag.htm" src="../../Images/PostProcessing.gif" alt="PostProcessing.gif (3022 bytes)" border="0" startspan --><MAP NAME="FrontPageMap"><AREA SHAPE="RECT" COORDS="530, 14, 609, 34" HREF="../src_diag.htm"></MAP><a href="../../../../_vti_bin/shtml.dll/docs/rovctd/1999_techdocs/postProcessing/pstp_raw2Der.htm/map"><img ismap usemap="#FrontPageMap" border="0" height="44" alt="PostProcessing.gif (3022 bytes)" src="../../Images/PostProcessing.gif" width="613"></a><!--webbot bot="ImageMap" endspan i-checksum="34959" --><br>
+    &nbsp;&nbsp; <font size="3" face="Times New Roman"><table border="1" cellpadding="5" width="100%" bordercolor="#008080" bordercolordark="#008080" bordercolorlight="#008080" height="297">
+      <tr>
+        <td valign="top" width="19%" height="19"><em>Program Name</em></td>
+        <td valign="top" width="81%" height="19">raw2Der.perl</td>
+      </tr>
+      <tr>
+        <td valign="top" width="19%" height="19"><em>Summary</em></td>
+        <td valign="top" width="81%" height="19">This processs take the YYYYDDDxxxxRovCtdRaw.txt
+        and YYYYDDDxxxRovCtdCoef.txt files, bin averages the data to 15 seconds, despikes it using
+        <a href="pstp_despikeCIN.htm">despikeCIN</a>, processes it through <a href="pstp_recalcCtd.htm">recalcCtd</a>, cleans it up and produces
+        theYYYYDDDxxxxRovCtdDer.txt file.</td>
+      </tr>
+      <tr>
+        <td valign="top" width="19%" height="19"><em>Usage</em></td>
+        <td valign="top" width="81%" height="19">raw2Der.perl [fromYYJJJ [toYYJJJ]]</td>
+      </tr>
+      <tr>
+        <td valign="top" width="19%" height="19"><em>Options</em></td>
+        <td valign="top" width="81%" height="19">fromYYYYJJJ - Starting date number<br>
+        toYYYYJJJ - Ending date number (assume one day if empty)<br>
+        if left blank does last 30 days</td>
+      </tr>
+      <tr>
+        <td valign="top" width="19%" height="19"><em>Language</em></td>
+        <td valign="top" width="81%" height="19">perl</td>
+      </tr>
+      <tr>
+        <td valign="top" width="19%" height="19"><em>Author</em></td>
+        <td valign="top" width="81%" height="19">Holly Baum</td>
+      </tr>
+      <tr>
+        <td valign="top" width="19%" height="19"><em>Contact</em></font></td>
+        <td valign="top" width="81%" height="19">Dan Wilkin</td>
+      </tr>
+      <tr>
+        <td valign="top" width="19%" height="19"><em>Src Location</em></td>
+        <td valign="top" width="81%" height="19">$HOME/bin</td>
+      </tr>
+      <tr>
+        <td valign="top" width="19%" height="19"><em>Dependencies</em></td>
+        <td valign="top" width="81%" height="19">requires perl version 5.00 or higher<br>
+        requires environment variables; HOME, rovName, process, archive, DEBUG<br>
+        <a href="pstp_despikeCIN.htm">$HOME/bin/despikeCIN</a><br>
+        <a href="pstp_recalcCtd.htm">$HOME/bin/recalcCtd</a></td>
+      </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+</div>
+</body>
+</html>

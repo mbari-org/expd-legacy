@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<title>User Documentation for ROVCTD Data</title>
+</head>
+
+<body>
+
+<table border="0" cellpadding="5" cellspacing="0" width="660">
+  <tr>
+    <td valign="top" align="left"><!--webbot bot="Include" U-Include="toc-rovctd.htm" TAG="BODY" startspan -->
+
+<p><a href="http://www.mbari.org/"><img src="../images/mbarilogo-120_sh.gif" alt="mbarilogo-120_sh.gif (3156 bytes)" border="0" WIDTH="120" HEIGHT="70"></a></p>
+
+<p><a href="../Queries/downloadData.htm"><strong><small><font face="Arial">ROVCTD data</font></small></strong></a></p>
+
+<p><a href="/cruises/"><strong><small><font face="Arial">Expedition
+search</font></small></strong></a></p>
+
+<p><a href="/itd/DataArchives/ArchiveInfo.htm"><strong><small><font face="Arial">Data Archives</font></small></strong></a></p>
+<!--webbot bot="Include" endspan i-checksum="65177" -->
+
+</td>
+    <td><h1>All About ROVCTD Data</h1>
+    <p><a href="userdocs.htm#What is measured">Instruments/Measurements</a> <font FACE="Symbol">· </font><a href="userdocs.htm#General acquisition and processing">General acquisition/processing</a> <font FACE="Symbol">· </font><a href="userdocs.htm#Getting to the Data">Getting to the Data</a></p>
+    <h2><a name="What is measured">Instruments and Measurements</a></h2>
+    <ul>
+      <li><a href="FormatCtdRaw.htm">Measured parameters</a>, with formats, units and precision</li>
+      <li><a href="FormatCtdDer.htm">Calculated parameters</a>, with formats, units and precision</li>
+      <li><a href="http://www.falmouth.com/products/micro_ctd2/index.html">Falmouth product info</a>
+        for the ROV CTD sensors</li>
+    </ul>
+    <font SIZE="2"><p></font><font size="3"><strong><em>Ventana</em> CTD System </strong><br>
+    The sensor suite on the ROV <em>Ventana</em> currently consists of a Falmouth Scientific
+    micro-CTD, a Sea Tech 25 cm path transmissometer operating at 660 nanometers, and a pumped
+    Sea-Bird model 13 oxygen sensor with a Beckman type membrane. Data are acquired at a
+    nominal rate of 4 Hz, then averaged and archived in 15 second bins. Prior to 1996 CTD data
+    were acquired with a Sea-Bird model 9 CTD system.</p>
+    <p><strong><em>Tiburon</em> CTD System </strong><br>
+    The sensor suite on the ROV <em>Tiburon</em> currently consists of modular Falmouth
+    Scientific conductivity, temperature and pressure sensors, a Chelsea Alphatracka 25 cm
+    path transmissometer operating at 660 nanometers, and a pumped Sea-Bird model 13 oxygen
+    sensor with a Beckman type membrane. Data are acquired at a nominal rate of 10Hz, then
+    averaged and archived in 15 second bins.</p>
+    </font><hr>
+    <h2><a name="General acquisition and processing">General acquisition and processing</a></h2>
+    <p><em>TBD. Graphic/words showing the instruments, ROV, connection to the shipboard
+    computers, transfer to shore, load into the database, and the copies that are stored on
+    barnacle. </em></p>
+    <p>The <a href="http://expd.mbari.org/expd/docs/default.htm">system documentation</a>
+    describes the software developed by MBARI for ROVCTD processing.</p>
+    <p>Find out how <a href="calcDepth.htm">depth is calculated from pressure</a>. </p>
+    <hr>
+    <h2><a name="Getting to the Data">Getting to the Data</a></h2>
+    <h3>Standard Queries</h3>
+    <p>Use the following web-based queries to download ROVCTD data for analysis. The data
+    source is the Expedition database and the returned data include <a href="rovctd_quality_flags.htm">quality flags</a>. Note that times are in UTC; subtract 7
+    or 8 hours for local time, depending on whether it is daylight savings time or not.<ul>
+      <li><a href="../Queries/downloadData.htm">ROVCTD search page</a></li>
+      <li><a href="/cruises/">Expedition search pages</a></li>
+    </ul>
+    <h3><a name="Advanced Queries: Using Other Tools">Advanced Queries: Using Other Tools</a></h3>
+    <p>If you have more number-crunching needs, you can write your own queries. Microsoft
+    Office provides ODBC drivers that allow you to map the Expedition database to your
+    desktop. Once you've enabled ODBC to the database, you can use analysis applications such
+    as MS Excel and MS Access to create your own custom queries.</p>
+    <p><em>Initial Setup&#151;</em>Before you get started, you need to make sure that your
+    computer has the following components by completing the <a href="initialSetup.htm">initial
+    setup steps</a> (only need to do this once):<ul>
+      <li><a href="initialSetup.htm#Microsoft SQL Server Driver Setup">Install the Microsoft SQL
+        Server driver and MS Query</a>.</li>
+      <li><a href="initialSetup.htm#ODBC Setup">Create a 32-bit ODBC link to the Expedition SQL
+        Server database</a>.</li>
+    </ul>
+    <p><em>Login name and password&#151;</em>The other important information that you will
+    need is the username and password to use. Whenever you are prompted by the Expedition
+    database, use:</p>
+    <blockquote>
+      <p>username:<strong> everyone<br>
+      </strong>password:<strong> guest</strong></p>
+    </blockquote>
+    <p><em>Know the fields&#151;</em>You will need to know the table and field names that you
+    want to retrieve. The primary data tables are shown is this <a href="primaryTables.htm">graphic</a>.</p>
+    <h5><img src="../queries/images/triangle.gif" alt="triangle.gif (983 bytes)" WIDTH="25" HEIGHT="11">Using MS Excel</h5>
+    <ul>
+      <li>Open a blank MS Excel spreadsheet and select <strong>Data-&gt;Get External Data</strong>.</li>
+      <li>Select <strong>Run a New Query</strong>. </li>
+      <li>In the data source list, select the name of the Expedition database.</li>
+      <li>The wizard will guide you through the process of creating your query. Refer to the
+        Microsoft Help pages for troubleshooting and advanced options.</li>
+    </ul>
+    <h5><img src="../queries/images/triangle.gif" alt="triangle.gif (983 bytes)" WIDTH="25" HEIGHT="11">Using MS Access</h5>
+    <p>Using Access to query a SQL Server database like Expedition is very similar to working
+    with a locally-created database. All you need to do is to first link or load in the tables
+    you want to query. Linking tables is recommended so that you always have the current data.
+    Select <strong>File-&gt;Get External Data-&gt;Link Tables</strong>. Refer to Microsoft
+    Help for more information.</p>
+    <h5><img src="../queries/images/triangle.gif" alt="triangle.gif (983 bytes)" WIDTH="25" HEIGHT="11">Using MS Query</h5>
+    <p>This tool can let you quickly develop a query and see the results. It is much faster
+    than Access or Excel due to the execution engines of those two programs. Queries created
+    with MS Query (.dqy files) can be run directly from MS Excel. You'll probably need to
+    create your own shortcut to this program in your start bar. Look in the directory where MS
+    Office has been installed to find the program.</p>
+    <h3>Data processing files</h3>
+    <p>As a separate archive, the ROVCTD files created during processing are saved on a
+    server. You can access these from the <a href="/cruises/">Expedition
+    search pages</a> or <a href="/ARCHIVE/rovctd/">directly from the
+    ARCHIVE file tree</a>. These files include the raw data files, &quot;derived files&quot;
+    (with the processed data and calculated values), postscript and gif formatted plots, daily
+    statistics, the coefficients, and log files. These data files do not contain quality flags
+    (<a href="../Queries/downloadData.htm">download ROVCTD data</a> from the Expedition
+    database for quality flags).</p>
+    <hr>
+    <p><small>Questions about this page? Contact <a href="mailto:paje@mbari.org">Jenny Paduan</a>
+    or <a href="mailto:debbie@mbari.org">Debbie Meyer</a>.<br>
+    Last edited <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%m/%d/%Y" startspan -->02/01/2000<!--webbot bot="Timestamp" endspan i-checksum="12496" --> by DNM</small></p>
+    <p>&nbsp;</td>
+  </tr>
+</table>
+</body>
+</html>

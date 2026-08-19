@@ -1,0 +1,179 @@
+<HTML>
+<HEAD>
+<TITLE>precruise.asp - Application for submitting precruises</TITLE>
+<LINK REV="made" HREF="mailto:">
+</HEAD>
+
+<BODY>
+
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#FUNCTIONS">FUNCTIONS</A>
+	<UL>
+
+		<UL>
+
+			<LI><A HREF="#step1_">step1()</A>
+			<LI><A HREF="#step2_">step2()</A>
+			<LI><A HREF="#load_">load()</A>
+			<LI><A HREF="#email_">email()</A>
+			<LI><A HREF="#precruise_mail_out_">precruise_mail_out()</A>
+			<LI><A HREF="#revise_">revise()</A>
+			<LI><A HREF="#SelectEpoch_">SelectEpoch()</A>
+			<LI><A HREF="#construct_option_lists_">construct_option_lists()</A>
+			<LI><A HREF="#update_">update()</A>
+		</UL>
+
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE>    <A HREF="http://expd.mbari.org/expd/log/precruise.asp">http://expd.mbari.org/expd/log/precruise.asp</A>
+</PRE>
+<P>
+<HR>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+Precruise processing Active Server Page. Collect info for planed expedition
+and insert new record to the Expedition table.
+
+<P>
+Mike McCann MBARI
+
+<P>
+November 1998
+
+<P>
+<HR>
+<H1><A NAME="FUNCTIONS">FUNCTIONS</A></H1>
+<P>
+<HR>
+<H3><A NAME="step1_">step1()</A></H3>
+<P>
+Present first form for user to fill out. This is where the ship, time,
+chief scientist, purpose, etc. for cruise is entered. Don't go onto step 2
+until all these fields are properly filled.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 10/21/98
+
+<P>
+Redesigned: 9 Feb 1999 (combined with old <CODE>step2())</CODE>
+
+<P>
+<HR>
+<H3><A NAME="step2_">step2()</A></H3>
+<P>
+Present entries from <CODE>step1()</CODE> for the user to view and check
+before submitting.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 10/21/98
+
+<P>
+<HR>
+<H3><A NAME="load_">load()</A></H3>
+<P>
+Process the form field entries and insert into the database Here is where
+we need to map the names we have on the HTML forms for all the fields to
+the names of the fields that are actaully in the database table.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 10/28/98
+
+<P>
+<HR>
+<H3><A NAME="email_">email()</A></H3>
+<P>
+Process the form field entries and mail to the Logistics coordinator.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 11/5/98
+
+<P>
+<HR>
+<H3><A NAME="precruise_mail_out_">precruise_mail_out()</A></H3>
+<P>
+Process the form field entries and mail to the address specified, <A
+HREF="mailto:precruise@mbari.org">precruise@mbari.org</A> is the default.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 9/2/99
+
+<P>
+<HR>
+<H3><A NAME="revise_">revise()</A></H3>
+<P>
+Present form for user to fill out to revise an exiting precruise record.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 9/2/99
+
+<P>
+<HR>
+<H3><A NAME="SelectEpoch_">SelectEpoch()</A></H3>
+<P>
+Select epoch seconds from database field specified.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 10/28/98
+
+<P>
+<HR>
+<H3><A NAME="construct_option_lists_">construct_option_lists()</A></H3>
+<P>
+Construct option lists for use in the DTG Month/day/year pull-down boxes.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 11/19/98
+
+<P>
+<HR>
+<H3><A NAME="update_">update()</A></H3>
+<P>
+Process the form field entries and update the database record. Here is
+where we need to map the names we have on the HTML forms for all the fields
+to the names of the fields that are actually in the database table.
+
+<P>
+Author: Mike McCann
+
+<P>
+Date Created: 9/3/98
+
+</BODY>
+
+</HTML>
