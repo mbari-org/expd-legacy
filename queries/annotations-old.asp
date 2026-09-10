@@ -55,7 +55,7 @@
   ' establish a connection to the VIMS Database
   Set oConn = Server.CreateObject("ADODB.Connection")
   oConn.Provider = "sqloledb"
-  oConn.Open "Server=godzilla;DATABASE=Vims;UID=***;******;"
+  oConn.Open "Server=godzilla;DATABASE=Vims;UID=everyone;Password=guest;"
 
   ' get the values from the HTTP Request Object    
   strShipName = Request.QueryString("qShipName")

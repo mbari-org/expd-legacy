@@ -3,5 +3,5 @@ SQLStatement: select *
 +from RovCtd
 + where usec > '%start%' and usec < '%end%'
 Template: getRovCtd.htx
-Username: ***
-Password: ***
+Username: expddba
+Password: password

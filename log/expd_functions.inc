@@ -41,8 +41,8 @@ sub open_database {
 	my $_debug = 0;
 	Win32::ASP::DebugPrint("\nopen_database(): passed in dsn = '$dsn'\n") if $_debug;
 
-	$Application->{'DSN'} = "Server=perseus;Database=expd;UID=***;******;" unless $dsn;
-	#$Application->{'DSN'} = "Server=fog;Database=expd_ks;UID=***;******;" unless $dsn;
+	$Application->{'DSN'} = "Server=perseus;Database=expd;UID=expddba;PWD=password;" unless $dsn;
+	#$Application->{'DSN'} = "Server=fog;Database=expd_ks;UID=expddba;PWD=password;" unless $dsn;
 	$dsn = $Application->{'DSN'} unless $dsn;
 	Win32::ASP::DebugPrint("\nopen_database(): dsn = '$dsn'\n") if $_debug;
 
@@ -87,7 +87,7 @@ sub open_vars_database {
 
 	Win32::ASP::DebugPrint("\nopen_vars_database(): passed in dsn = '$dsn'\n");
 
-	$dsn = "Server=cassiopeia,1433;Database=VARS;UID=***;******;" unless $dsn;
+	$dsn = "Server=cassiopeia,1433;Database=VARS;UID=everyone;PWD=guest;" unless $dsn;
 	Win32::ASP::DebugPrint("\nopen_vars_database(): using dsn = '$dsn'\n");
 
 	# VARS still used for Tapes - Mike McCann 6 March 2019
@@ -99,8 +99,8 @@ sub open_vars_database {
 	$ConnVARS->Open($dsn);
 
 	# Also open a connection to the M3_ANNOTATIONS database - Mike McCann 6 March 2019
-	$dsn_m3 = "Server=venus,1433;Database=M3_ANNOTATIONS;UID=***;******;";
-	#$dsn_m3 = "Server=fog,1433;Database=M3_ANNOTATIONS;UID=***;******;";
+	$dsn_m3 = "Server=venus,1433;Database=M3_ANNOTATIONS;UID=everyone;PWD=guest;";
+	#$dsn_m3 = "Server=fog,1433;Database=M3_ANNOTATIONS;UID=everyone;PWD=guest;";
 	Win32::ASP::DebugPrint("\nopen_M3_ANNOTATIONS_database(): using dsn = '$dsn'\n");
 	$ConnM3 = CreateObject OLE "ADODB.Connection";
 	$ConnM3->{'Provider'} = "sqloledb";
@@ -149,8 +149,8 @@ sub open_samples_database {
 
 	Win32::ASP::DebugPrint("\nopen_samples_database(): passed in dsn = '$dsn'\n");
 
-	$dsn = "Server=perseus;Database=MBARI_Samples;UID=***;******;" unless $dsn;
-	#$dsn = "Server=fog;Database=MBARI_Samples;UID=***;******;" unless $dsn;
+	$dsn = "Server=perseus;Database=MBARI_Samples;UID=everyone;PWD=guest;" unless $dsn;
+	#$dsn = "Server=fog;Database=MBARI_Samples;UID=everyone;PWD=guest;" unless $dsn;
 	Win32::ASP::DebugPrint("\nopen_samples_database(): using dsn = '$dsn'\n");
 
 	$ConnSamples = CreateObject OLE "ADODB.Connection";
@@ -1203,8 +1203,8 @@ sub init_AppVars {
 	# Define application variables
 	#
 	$Application->{'providerStr'} = "sqloledb";
-	$Application->{'DSN'} = "Server=perseus;Database=expd;UID=***;******;";
-	##$Application->{'DSN'} = "Server=fog;Database=expd_ks;UID=***;******;";
+	$Application->{'DSN'} = "Server=perseus;Database=expd;UID=expddba;PWD=password;";
+	##$Application->{'DSN'} = "Server=fog;Database=expd_ks;UID=expddba;PWD=password;";
 
 	$Application->{'AppDir'} = "/expd/log";
 	$Application->{'BaseURL'} = "https://mww.mbari.org";

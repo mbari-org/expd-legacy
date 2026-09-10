@@ -108,8 +108,8 @@ On Error Resume Next
 Server.ScriptTimeout = 600 'seconds (10 minutes)
 
 Application("providerStr") = "sqloledb"
-Application("connectionStr") = "Server=fog;Database=expd_ks;UID=***;******;"
-'Application("connectionStr") = "Server=perseus;Database=expd;UID=***;******;"
+Application("connectionStr") = "Server=fog;Database=expd_ks;UID=expddba;PWD=password;"
+'Application("connectionStr") = "Server=perseus;Database=expd;UID=expddba;PWD=password;"
 
 ' create a connection object
 Set conRovctd = Server.CreateObject("ADODB.Connection")

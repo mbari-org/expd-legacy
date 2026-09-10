@@ -160,8 +160,7 @@ elsif ( GetFormValue('step') eq 'revise') {
 elsif ( GetFormValue('step') eq 'update') {
   %><h2 align="center">Results of <%=GetFormValue('ShipName')%><%=GetFormValue('ShipSeqNum')%> revision</h2>
   </td></tr></table><%
-  update();
-  precruise_mail_out('REVISED:');
+  precruise_mail_out('REVISED:') unless update();
 }
 else {
   %><h2 align="center">Unknown step <%= GetFormValue('step')%></h2>
@@ -5672,14 +5671,16 @@ $sql .= $Session->{ShipSeqNum} . ")";
 Win32::ASP::DebugPrint("\nSQL = $sql ");
 
 $RS = $Conn->Execute($sql);
-
-$Errors = $Conn->Errors();
-if ( keys %$Errors ) {
+if (!$RS) {
+  $Response->Write("<h3>Precruise revision failed. The cruise was not saved.</h3>");
+  $Response->Write("<p>The record-count check failed. Please contact database support.</p>");
   $Response->Write("Database Load Error(s): ");
-  foreach $error (keys %$Errors)
-        {
-          $Response->Write($error->{Description});
-    }
+  $Errors = $Conn->Errors();
+  foreach $error (keys %$Errors) {
+    $Response->Write($error->{Description});
+  }
+  $Conn->Close if $Conn;
+  return 1;
 }
 
 Win32::ASP::DebugPrint("\ncnt = " . $RS->Fields(cnt)->Value );
@@ -5688,7 +5689,9 @@ if ( $RS->Fields(cnt)->Value != 1 ) {
   %><h2><%= $RS->Fields(cnt)->Value%> records would be updated!</h2>
   Only one record should be updated.  Please contact your database support to have this problem fixed.
   <%
-  return;
+  $RS->Close if $RS;
+  $Conn->Close if $Conn;
+  return 1;
 }
 $RS->Close;
 
@@ -5707,7 +5710,10 @@ foreach $f ( @{$Application->{'PreUpdateExpeditionFields'}} ) {
   $sql .= "\n$f = " . FixString( $Session->{$f}, 'text') . ",";
   $nfields++;
 }
-return unless $nfields;
+if (!$nfields) {
+  $Conn->Close if $Conn;
+  return 1;
+}
 $sql =~ s/,$//;
 
 $sql .= "WHERE ( StatCode != 'cmpl' AND ShipName = '";
@@ -5717,24 +5723,31 @@ $sql .= $Session->{ShipSeqNum} . ")";
 Win32::ASP::DebugPrint("\nSQL = $sql ");
 
 $RS = $Conn->Execute($sql);
-
-$Errors = $Conn->Errors();
-if ( keys %$Errors ) {
+if (!$RS) {
+  $Response->Write("<h3>Precruise revision failed. The cruise was not saved.</h3>");
+  $Response->Write("<p>The database update failed. Please contact database support and include the details below.</p>");
   $Response->Write("Database Load Error(s): ");
-  foreach $error (keys %$Errors)
-  {
+  $Errors = $Conn->Errors();
+  foreach $error (keys %$Errors) {
     $Response->Write($error->{Description});
   }
+  $Response->Write("<pre>");
+  $Response->Write("Purpose length: " . length($Session->{'Purpose'}) . "\n");
+  $Response->Write("EquipmentDesc length: " . length($Session->{'EquipmentDesc'}) . "\n");
+  $Response->Write("Participants length: " . length($Session->{'Participants'}) . "\n");
+  $Response->Write("PlannedTrackDesc length: " . length($Session->{'PlannedTrackDesc'}) . "\n");
+  $Response->Write("</pre>");
+  $Conn->Close if $Conn;
+  return 1;
 }
-
 
 %>
 <h3>Updated precruise <%= $Session->{'ShipName'}%><%= $Session->{'ShipSeqNum'}%></h3>
-
 <%
 
 $RS->Close;
 $Conn->Close;
+return 0;
 
 } # End update()
 %>

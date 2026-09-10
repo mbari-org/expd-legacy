@@ -40,7 +40,7 @@ EOS
 	
 	$Conn = CreateObject OLE "ADODB.Connection";
 	$Conn->{'Provider'} = "sqloledb";
-	$Conn->Open("Server=perseus;Database=Expd;UID=***;******;");
+	$Conn->Open("Server=perseus;Database=Expd;UID=everyone;PWD=guest;");
 	
 	$RS = $Conn->Execute($sql);
 	

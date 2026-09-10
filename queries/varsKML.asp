@@ -28,7 +28,7 @@
 	#
 	$Conn = CreateObject OLE "ADODB.Connection";
 	$Conn->{'Provider'} = "sqloledb";
-	$Conn->Open("Server=perseus,1433;Database=VARS;UID=***;******;");
+	$Conn->Open("Server=perseus,1433;Database=VARS;UID=everyone;PWD=guest;");
 		
 	#
 	# Count the records in this view

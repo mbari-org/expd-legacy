@@ -61,7 +61,7 @@ $dataSince = POSIX::strftime("%Y-%m-%d %H:%M:%S", POSIX::gmtime(time-(3600*$hour
 #
 $Conn = CreateObject OLE "ADODB.Connection";
 $Conn->{'Provider'} = "SQLNCLI";
-$Conn->Open("Server=EQUINOX\SQL2008;Database=MBARItracking;UID=***;******;");
+$Conn->Open("Server=EQUINOX\SQL2008;Database=MBARItracking;UID=everyone;PWD=guest;");
 
 $Errors = $Conn->Errors();
 foreach $error (keys %$Errors) {

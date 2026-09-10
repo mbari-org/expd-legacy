@@ -22,7 +22,7 @@ use OLE;
 ##$Response->Buffer(0);
 ##$Server->ScriptTimeout(300);
 
-$_dsn = "Server=perseus;Database=expd;UID=***;******;";
+$_dsn = "Server=perseus;Database=expd;UID=expddba;PWD=password;";
 
 $ROVName = GetFormValue('ROVName');
 $DiveNumber = GetFormValue('DiveNumber');

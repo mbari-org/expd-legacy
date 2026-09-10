@@ -50,7 +50,7 @@
   ' establish a connection to the VARS Database
   Set oConn = Server.CreateObject("ADODB.Connection")
   oConn.Provider = "sqloledb"
-  oConn.Open "Server=alaskanwind;DATABASE=VARS;UID=***;******;"
+  oConn.Open "Server=alaskanwind;DATABASE=VARS;UID=everyone;Password=guest;"
 
   ' HTTP request should look like http://fww.wf.mbari.org/expd/queries/annotations.asp?qDiveName=879
 

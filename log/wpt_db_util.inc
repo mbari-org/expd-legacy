@@ -19,7 +19,7 @@
 	'3/28/2017
 	'wptConn.Provider = Application("providerStr")
     'wptConn.Open (Application("DSN"))
-    wptConn.Open "PROVIDER=SQLOLEDB;DATA SOURCE=perseus;UID=***;******;DATABASE=expd"
+    wptConn.Open "PROVIDER=SQLOLEDB;DATA SOURCE=perseus;UID=expddba;PWD=password;DATABASE=expd"
 
     
     If (IsNull(wptConn)) Then

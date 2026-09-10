@@ -17,8 +17,8 @@ camlog-data.asp - Return camera log data from the Expedition database
 use Win32::ASP;
 use OLE;
 
-##$_dsn = "Server=fog;Database=expd_ks;UID=***;******;";
-$_dsn = "Server=perseus;Database=expd;UID=***;******;";
+##$_dsn = "Server=fog;Database=expd_ks;UID=expddba;PWD=password;";
+$_dsn = "Server=perseus;Database=expd;UID=expddba;PWD=password;";
 
 
 $ROVName = GetFormValue('ROVName');

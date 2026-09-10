@@ -35,26 +35,26 @@ $this_script = 'VARS2staging.asp';
 $thishost = "typhoon";		# typhoon (shore), glacierwind (lobos), wharfrat (flyer)
 ($norovSelected, $vntaSelected, $tibrSelected) = ('', '', '');
 if ( $thishost =~ /typhoon/i ) {
-	$dsn = "Server=venus,1433;Database=M3_ANNOTATIONS;UID=***;******;";
-	$dsnExpd = "Server=perseus;Database=EXPD;UID=***;******;";
-	$dsnSamples = "Server=perseus;Database=MBARI_Samples;UID=***;******;";
+	$dsn = "Server=venus,1433;Database=M3_ANNOTATIONS;UID=everyone;PWD=guest;";
+	$dsnExpd = "Server=perseus;Database=EXPD;UID=everyone;PWD=guest;";
+	$dsnSamples = "Server=perseus;Database=MBARI_Samples;UID=everyone;PWD=guest;";
 	$loadAction = 'https://mww.mbari.org/samplesDB/loads/loadcoll.asp';
 	$webRoot = 'http://mww.mbari.org';
 	$pageLogo = 'mbarilogo-120_sh.gif';
 }
 elsif ( $thishost =~ /glacierwind/i ) {
-	$dsn = "Server=glacierwind,1433;Database=M3_ANNOTATIONS;UID=***;******;";
-	$dsnExpd = "Server=perseus;Database=EXPD;UID=***;******;";
-	$dsnSamples = "Server=perseus;Database=MBARI_Samples;UID=***;******;";
+	$dsn = "Server=glacierwind,1433;Database=M3_ANNOTATIONS;UID=everyone;PWD=guest;";
+	$dsnExpd = "Server=perseus;Database=EXPD;UID=everyone;PWD=guest;";
+	$dsnSamples = "Server=perseus;Database=MBARI_Samples;UID=everyone;PWD=guest;";
 	$loadAction = 'https://mww.mbari.org/samplesDB/loads/loadcoll.asp';
 	$webRoot = 'http://glacierwind.pl.mbari.org';
 	$pageLogo = 'lobos-120.jpg';
 	$rovName eq 'Ventana';
 }
 elsif ( $thishost =~ /wharfrat/i ) {
-	$dsn = "Server=alaskanwind,1433;Database=M3_ANNOTATIONS;UID=***;******;";
-	$dsnExpd = "Server=perseus;Database=EXPD;UID=***;******;";
-	$dsnSamples = "Server=perseus;Database=MBARI_Samples;UID=***;******;";
+	$dsn = "Server=alaskanwind,1433;Database=M3_ANNOTATIONS;UID=everyone;PWD=guest;";
+	$dsnExpd = "Server=perseus;Database=EXPD;UID=everyone;PWD=guest;";
+	$dsnSamples = "Server=perseus;Database=MBARI_Samples;UID=everyone;PWD=guest;";
 	$loadAction = 'https://mww.mbari.org/samplesDB/loads/loadcoll.asp';
 	$webRoot = 'http://fww.wf.mbari.org';
 	$pageLogo = 'wf1-120.jpg';

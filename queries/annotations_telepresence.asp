@@ -49,9 +49,9 @@
   Set oConn = Server.CreateObject("ADODB.Connection")
   oConn.Provider = "sqloledb"
   oConn.ConnectionTimeout=180
-  'oConn.Open "Server=perseus,1433;DATABASE=VARS;UID=***;******;"
-  oConn.Open "Server=perseus,1433;DATABASE=M3_ANNOTATIONS;UID=***;******;"
-  'oConn.Open "Server=fog,1433;DATABASE=M3_ANNOTATIONS;UID=***;******;" 
+  'oConn.Open "Server=perseus,1433;DATABASE=VARS;UID=everyone;Password=guest;"
+  oConn.Open "Server=perseus,1433;DATABASE=M3_ANNOTATIONS;UID=everyone;Password=guest;"
+  'oConn.Open "Server=fog,1433;DATABASE=M3_ANNOTATIONS;UID=everyone;Password=guest;" 
 
   ' get the values from the HTTP Request Object    
   strShipName = Request.QueryString("qShipName")
